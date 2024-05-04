@@ -22,9 +22,13 @@ import NodeInfo from './NodeInfo'
 import TemplateModule from './TemplateModule'
 import Transfer from './Transfer'
 import Upgrade from './Upgrade'
+import CyborgDapp from './cyborg'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
+  // const cyborgDapp = () => {
+  //   <CyborgDapp />
+  // }
 
   const loader = text => (
     <Dimmer active>
@@ -45,6 +49,7 @@ function Main() {
       </Grid.Column>
     </Grid>
   )
+
 
   if (apiState === 'ERROR') return message(apiError)
   else if (apiState !== 'READY') return loader('Connecting to Substrate')
@@ -94,7 +99,10 @@ function Main() {
 export default function App() {
   return (
     <SubstrateContextProvider>
-      <Main />
+      <CyborgDapp />
+      <div className='hidden'>
+        <Main />
+      </div> 
     </SubstrateContextProvider>
   )
 }
