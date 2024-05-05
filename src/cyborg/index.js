@@ -19,7 +19,6 @@ function CyborgDapp() {
                 <Dashboard />
             </div>
         </div>
-        {/* <Dashboard /> */}
     </div>
   )
 }
