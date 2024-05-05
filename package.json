@@ -1,17 +1,19 @@
 {
-  "name": "substrate-front-end-template",
-  "version": "monthly-2022-01",
+  "name": "cyborg-connect",
+  "version": "0.0.1",
   "private": true,
-  "author": "Parity Technologies <admin@parity.io>",
+  "author": "Cyborg Network",
   "license": "Unlicense",
-  "homepage": "https://substrate-developer-hub.github.io/substrate-front-end-template",
+  "homepage": "https://cyborg-network.github.io/cyborg-connect/",
   "bugs": {
     "url": "https://github.com/substrate-developer-hub/substrate-front-end-template/issues"
   },
   "keywords": [
     "substrate",
     "substrate-ui",
-    "polkadot-js"
+    "polkadot-js",
+    "cyborg-network",
+    "cyborg-connect"
   ],
   "scripts": {
     "start": "react-app-rewired start",
@@ -22,7 +24,7 @@
     "eslint:write": "eslint --fix --ext .jsx,.js src/",
     "prettier:check": "prettier -c src/*",
     "prettier:write": "prettier -w src/*",
-    "deploy": "gh-pages -d build -m '[ci skip] Updates'"
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@polkadot/api": "^10.6.1",
