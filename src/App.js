@@ -1,4 +1,4 @@
-import React, { createRef } from 'react'
+import React, { createRef, useState } from 'react'
 import {
   Container,
   Dimmer,
@@ -6,6 +6,7 @@ import {
   Grid,
   Sticky,
   Message,
+  Button,
 } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 
@@ -23,6 +24,7 @@ import TemplateModule from './TemplateModule'
 import Transfer from './Transfer'
 import Upgrade from './Upgrade'
 import CyborgDapp from './cyborg'
+import { CyborgContextProvider } from './cyborg/CyborgContext'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -97,12 +99,22 @@ function Main() {
 }
 
 export default function App() {
+  const [ devMode, setDevMode ] = useState(false)
   return (
     <SubstrateContextProvider>
-      <CyborgDapp />
-      <div className='hidden'>
-        <Main />
-      </div> 
+      <CyborgContextProvider>
+        <div className='relative w-screen h-screen'>
+          <div className={`${devMode?'hidden':''}`}>
+            <CyborgDapp />
+          </div>
+          
+          <div className={`${!devMode?'hidden':''}`}>
+            <Main/>
+          </div> 
+
+          <Button className='absolute bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ devMode? 'Test Cyborg Substrate Chain': 'Test Cyborg Dapp'}</Button>
+        </div>
+      </CyborgContextProvider>
     </SubstrateContextProvider>
   )
 }
