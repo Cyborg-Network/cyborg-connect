@@ -14,13 +14,13 @@ function SubmitButton() {
 }
 
 function ChoosePath() {
-    const { provideCompute, accessCompute } = useCyborg()
+    const { accessCompute } = useCyborg()
     // const [ path, setPath ] = useState(null)
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col items-center justify-center'>
     <h1 className='text-white'>Choose Your Path</h1>
     <div className='flex'>
-        <ServiceButton name={'Provide Compute'} setPath={provideCompute} />
+        <ServiceButton name={'Provide Compute'} setPath={null} />
         <ServiceButton name={'Access Compute'} setPath={accessCompute} />
     </div>
     
