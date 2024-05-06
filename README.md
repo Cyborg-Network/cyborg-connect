@@ -2,6 +2,8 @@
 
 This front-end application is developed on a fork of [substrate-front-end-template](https://github.com/substrate-developer-hub/substrate-front-end-template).
 
+Access the hosted version of the application here: https://cyborg-network.github.io/cyborg-connect/
+
 ### Installation
 
 ```bash
