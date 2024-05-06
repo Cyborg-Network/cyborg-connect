@@ -7,6 +7,7 @@ import { useSubstrateState } from '../../../substrate-lib';
 import { useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
+// import axios from 'axios'
 
 function AddNodeButton({addNode}) {
     return (
@@ -26,6 +27,25 @@ function NoNodes({addNode}) {
                 <button onClick={()=>addNode(true)} className='hover:text-cb-green'><u>Add your first node</u></button>
             </div>
         </div>
+    )
+}
+function GetLogs({url}) {
+    // const [data, setData] = useState(null);
+  
+    // useEffect(() => {
+    //   const fetchData = async () => {
+    //     try {
+    //       const response = await axios.get(`${url}/logs/`);
+    //       setData(response.data);
+    //     } catch (error) {
+    //       console.error(error);
+    //     } 
+    //   };
+  
+    //   fetchData();
+    // }, []);
+    return (
+        <code className='bg-cb-gray-700 w-full rounded-md p-2'>{`Logs: ${""}`}:</code>
     )
 }
 function NodeList({nodes}) {
@@ -65,22 +85,27 @@ function NodeList({nodes}) {
             </span>
                 <div className='bg-white bg-opacity-10 m-4 rounded-lg'>
                     {nodes.length > 0 && nodes.map((item, index) => (
+                        <div>
                             <span key={index} className='flex justify-between w-full items-center py-4 px-5'>
-                            <ul className='grid grid-cols-4 w-full items-center'>
-                                <li className='flex items-center gap-3'>
-                                    <a>
-                                        <img src={cyberdock} />
-                                    </a>
-                                    <div>
-                                        <h3 className='mb-0'>{item.name}</h3>
-                                        <p className='mt-0 text-sm'>{item.account.slice(0,16)}</p>
-                                    </div>
-                                </li>
-                                <li>Providers</li>
-                                <li>{`${item.ip.ipv4.join('.')}:${item.port}`}</li>
-                                <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li>
-                            </ul>
-                        </span>
+                                <ul className='grid grid-cols-4 w-full items-center'>
+                                    <li className='flex items-center gap-3]'>
+                                        <a>
+                                            <img src={cyberdock} />
+                                        </a>
+                                        <div>
+                                            <h3 className='mb-0'>{item.name}</h3>
+                                            <p className='mt-0 text-sm'>{item.account.slice(0,16)}</p>
+                                        </div>
+                                    </li>
+                                    <li>Providers</li>
+                                    <li>{`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}</li>
+                                    <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li>
+                                </ul>
+                            </span>
+                            <div className='p-1 flex w-full'>
+                                <GetLogs url={`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}/>
+                            </div>
+                        </div>
                     ))}
                 </div>
         </div>
