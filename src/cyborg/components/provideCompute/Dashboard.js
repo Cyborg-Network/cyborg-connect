@@ -1,8 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import nondeployed from '../../../../public/assets/icons/nondeployed.png' 
 import deploymentsTab from '../../../../public/assets/icons/deployment-logo.png' 
 import cyberdock from '../../../../public/assets/icons/cyberdockDash.png' 
 import { FiPlusCircle } from "react-icons/fi";
+import { useSubstrateState } from '../../../substrate-lib';
+import { useCyborg, useCyborgState } from '../../CyborgContext';
+import { Button } from 'semantic-ui-react';
+import { TbRefresh } from "react-icons/tb";
 
 function AddNodeButton({addNode}) {
     return (
@@ -24,7 +28,7 @@ function NoNodes({addNode}) {
         </div>
     )
 }
-function NodeList() {
+function NodeList({nodes}) {
     return (
         <div className='flex flex-col w-full text-white text-opacity-70 '>
             <span className='flex w-5/6 py-2 px-5'>
@@ -51,11 +55,63 @@ function NodeList() {
                     </ul>
                 </span>
             </div>
+            <span className={`${nodes.length < 1? 'hidden' : ''} flex w-full py-2 px-5`}>
+                <ul className='grid grid-cols-4 w-full'>
+                    <li>Name / Address</li>
+                    <li>Type</li>
+                    <li>URL / IP</li>
+                    <li>Status</li>
+                </ul>
+            </span>
+                <div className='bg-white bg-opacity-10 m-4 rounded-lg'>
+                    {nodes.length > 0 && nodes.map((item, index) => (
+                            <span key={index} className='flex justify-between w-full items-center py-4 px-5'>
+                            <ul className='grid grid-cols-4 w-full items-center'>
+                                <li className='flex items-center gap-3'>
+                                    <a>
+                                        <img src={cyberdock} />
+                                    </a>
+                                    <div>
+                                        <h3 className='mb-0'>{item.name}</h3>
+                                        <p className='mt-0 text-sm'>{item.account.slice(0,16)}</p>
+                                    </div>
+                                </li>
+                                <li>Providers</li>
+                                <li>{`${item.ip.ipv4.join('.')}:${item.port}`}</li>
+                                <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li>
+                            </ul>
+                        </span>
+                    ))}
+                </div>
         </div>
     )
 }
+
 function Dashboard() {
     const [node, addNode]=useState(false)
+    const { api } = useSubstrateState()
+    const [refresh, setRefresh] = useState(false)
+    const [nodeCount, setNodeCount] = useState(0)
+    const { listWorkers } = useCyborg()
+    const { workerList } = useCyborgState()
+    console.log("workerList: ", workerList)
+
+    useEffect(() => {
+        const workerCount = async () => {
+            const count = await api.query.workerRegistration.nextClusterId()
+            setNodeCount(count.toNumber())
+        }
+        const getRegisteredWorkers = async () => {
+            let workers = []
+            for (let i = 0; i < nodeCount; i++) {
+                const worker = await api.query.workerRegistration.workerClusters(i)
+                workers.push(worker.toHuman()) 
+            }
+            listWorkers(workers)
+        }
+        workerCount()
+        getRegisteredWorkers()
+    },[nodeCount, refresh])
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col '>
         <div className='flex items-center justify-between mx-2 text-white'>
@@ -66,11 +122,14 @@ function Dashboard() {
                     <p className='text-white text-opacity-70'>Dashboard / Node List</p>
                 </div>
             </div>
-            <AddNodeButton addNode={addNode} />
+            <div className='flex gap-2'>
+                <Button onClick={()=>setRefresh(!refresh)}><TbRefresh /></Button>
+                <AddNodeButton addNode={addNode} />
+            </div>
         </div>
         {   !node?
             <NoNodes addNode={addNode} /> :
-            <NodeList />
+            <NodeList nodes={workerList} />
         }
     </div>
   )

@@ -12,7 +12,8 @@ const initialState = {
     selectedPath: null,
     devMode: false,
     service: null,
-    serviceStatus: null
+    serviceStatus: null,
+    workerList: null
 }
 
 ///
@@ -23,7 +24,8 @@ const ACTIONS = {
     SELECT_ACCESSOR: 'SELECT_ACCESSOR',
     TOGGLE_DEV_MODE: 'TOGGLE_DEV_MODE',
     SELECT_SERVICE: 'SELECT_SERVICE',
-    DEPLOY_SERVICE: 'DEPLOY_SERVICE'
+    DEPLOY_SERVICE: 'DEPLOY_SERVICE',
+    LIST_WORKERS: 'LIST_WORKERS'
 }
 
 ///
@@ -42,6 +44,8 @@ const reducer = (state, action) => {
     return { ...state, devMode: null }
     case ACTIONS.SELECT_SERVICE:
       return { ...state, service: action.payload }
+    case ACTIONS.LIST_WORKERS:
+      return { ...state, workerList: action.payload }
     default:
       throw new Error(`Unknown type: ${action.type}`)
   }
@@ -72,10 +76,14 @@ const CyborgContextProvider = props => {
 
     const selectService = (service) => {
       dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
-  }
+    }
+
+    const listWorkers = (list) => {
+      dispatch({ type: ACTIONS.LIST_WORKERS, payload: list})
+    }
 
   return (
-    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, provideCompute, accessCompute, selectService }}>
+    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, provideCompute, accessCompute, selectService, listWorkers }}>
       {props.children}
     </CyborgContext.Provider>
   )
