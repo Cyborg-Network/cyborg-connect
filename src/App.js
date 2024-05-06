@@ -29,9 +29,6 @@ import RpcSelector from './cyborg/components/utils/RpcSelector'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
-  // const cyborgDapp = () => {
-  //   <CyborgDapp />
-  // }
 
   const loader = text => (
     <Dimmer active>
@@ -101,7 +98,7 @@ function Main() {
 
 export default function App() {
   const [ devMode, setDevMode ] = useState(false)
-  // const { connectSubstrate } = useSubstrate()
+
   return (
     <SubstrateContextProvider>
       <CyborgContextProvider>
@@ -113,7 +110,7 @@ export default function App() {
           <div className={`${!devMode?'hidden':''}`}>
             <Main/>
           </div> 
-          {/* <Button className='absolute bottom-2 right-2 z-40' onClick={()=>{connectSubstrate(!devMode)}}>Connect Wallet</Button> */}
+
           <Button className='fixed bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ !devMode? 'Test Substrate Chain': 'Test Cyborg Dapp'}</Button>
           <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
         </div>

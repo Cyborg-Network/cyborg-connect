@@ -15,7 +15,7 @@ const SOCKETS = {
 }
 
 const parsedQuery = new URLSearchParams(window.location.search)
-const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.RELAY_DEV
+const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.LOCAL
 ///
 // Initial state for `useReducer`
 
@@ -37,9 +37,11 @@ const registry = new TypeRegistry()
 // Reducer function for `useReducer`
 
 const reducer = (state, action) => {
+  console.log("action: ", action)
+  console.log("state: ", state)
   switch (action.type) {
     case 'SWITCH_PROVIDER':
-      return { ...state, apiState: 'SWITCH_PROVIDER', socket: action.payload }
+      return { ...initialState, apiState: 'SWITCH_PROVIDER', socket: action.payload }
     case 'CONNECT_INIT':
       return { ...state, apiState: 'CONNECT_INIT' }
     case 'CONNECT':
@@ -151,10 +153,13 @@ const SubstrateContextProvider = props => {
   connect(state, dispatch)
 
   useEffect(() => {
-    const { apiState, keyringState } = state
+    const { apiState, keyringState, api } = state
     if (apiState === 'READY' && !keyringState && !keyringLoadAll) {
       keyringLoadAll = true
       loadAccounts(state, dispatch)
+    }
+    if (apiState === null || api === null) {
+      connect(state, dispatch)
     }
   }, [state, dispatch])
 
@@ -171,7 +176,7 @@ const SubstrateContextProvider = props => {
   }
 
   function setLocalProvider() {
-    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.CYBORG })
+    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.LOCAL })
   }
 
   return (
