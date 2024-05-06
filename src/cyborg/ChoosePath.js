@@ -9,7 +9,7 @@ function ServiceButton({name, setPath }) {
 
 function SubmitButton() {
     return (
-        <button className='size-30 text-white py-3 px-6 rounded-md hover:border-cb-green m-2 focus:border-cb-green bg-cb-green focus:bg-cb-gray-400'>Get Started</button>
+        <button className='size-30 text-black py-3 px-6 rounded-md hover:border-cb-green m-2 focus:border-cb-green bg-cb-green focus:bg-cb-gray-400'>Get Started</button>
     )
 }
 

@@ -1,8 +1,8 @@
 import React from 'react'
 import Header from './layouts/Header'
-import Dashboard from './components/accessCompute/Dashboard'
+import Dashboard from './components/provideCompute/Dashboard'
 import SideBar from './layouts/SideBar'
-import ChooseServices from './components/provideCompute/ChooseServices'
+import ChooseServices from './components/accessCompute/ChooseServices'
 import ChoosePath from './ChoosePath'
 import { useCyborgState } from './CyborgContext'
 
@@ -13,7 +13,7 @@ function CyborgDapp() {
         { !selectedPath? (
             <><Header /><ChoosePath /></>
         ): (
-            (selectedPath === 'ACCESSOR')? (
+            (selectedPath === 'PROVIDER')? (
                 <div className='flex'>
                     <div className='fixed top-0 left-0 w-80'>
                         <SideBar />
@@ -23,7 +23,7 @@ function CyborgDapp() {
                     </div>
                 </div>
             ) : (
-                <ChooseServices />
+                <><Header /><ChooseServices /></>
             )
         )}
     </div>

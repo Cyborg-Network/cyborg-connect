@@ -100,6 +100,7 @@ function Main() {
 
 export default function App() {
   const [ devMode, setDevMode ] = useState(false)
+  // const { connectSubstrate } = useSubstrate()
   return (
     <SubstrateContextProvider>
       <CyborgContextProvider>
@@ -111,10 +112,10 @@ export default function App() {
           <div className={`${!devMode?'hidden':''}`}>
             <Main/>
           </div> 
-
-          <Button className='absolute bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ devMode? 'Test Cyborg Substrate Chain': 'Test Cyborg Dapp'}</Button>
+          {/* <Button className='absolute bottom-2 right-2 z-40' onClick={()=>{connectSubstrate(!devMode)}}>Connect Wallet</Button> */}
+          <Button className='fixed bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ !devMode? 'Test Cyborg Substrate Chain': 'Test Cyborg Dapp'}</Button>
         </div>
-      </CyborgContextProvider>
+        </CyborgContextProvider>
     </SubstrateContextProvider>
   )
 }

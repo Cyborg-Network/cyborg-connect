@@ -10,7 +10,7 @@ import { TypeRegistry } from '@polkadot/types/create'
 import config from '../config'
 
 const parsedQuery = new URLSearchParams(window.location.search)
-const connectedSocket = parsedQuery.get('rpc') || config.PROVIDER_SOCKET
+const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER
 ///
 // Initial state for `useReducer`
 
@@ -33,6 +33,8 @@ const registry = new TypeRegistry()
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case 'SWITCH_PROVIDER':
+      return { ...state, apiState: 'SWITCH_PROVIDER', socket: action.payload }
     case 'CONNECT_INIT':
       return { ...state, apiState: 'CONNECT_INIT' }
     case 'CONNECT':
@@ -60,7 +62,7 @@ const reducer = (state, action) => {
 const connect = (state, dispatch) => {
   const { apiState, socket, jsonrpc } = state
   // We only want this function to be performed once
-  if (apiState) return
+  if (!(apiState == null || apiState == 'SWITCH_PROVIDER')) return
 
   dispatch({ type: 'CONNECT_INIT' })
 
