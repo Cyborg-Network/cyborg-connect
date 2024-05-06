@@ -15,7 +15,7 @@ function LoadDeployCyberDock() {
               <Loader size='massive'/>
             <img height={75} width={75} src={dockdeploy} />
           </a>
-          <p>Deploying you container securely!</p>
+          <p>Deploying your container securely!</p>
         </div>
       </Dimmer>
   )

@@ -25,6 +25,7 @@ import Transfer from './Transfer'
 import Upgrade from './Upgrade'
 import CyborgDapp from './cyborg'
 import { CyborgContextProvider } from './cyborg/CyborgContext'
+import RpcSelector from './cyborg/components/utils/RpcSelector'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -113,7 +114,8 @@ export default function App() {
             <Main/>
           </div> 
           {/* <Button className='absolute bottom-2 right-2 z-40' onClick={()=>{connectSubstrate(!devMode)}}>Connect Wallet</Button> */}
-          <Button className='fixed bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ !devMode? 'Test Cyborg Substrate Chain': 'Test Cyborg Dapp'}</Button>
+          <Button className='fixed bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ !devMode? 'Test Substrate Chain': 'Test Cyborg Dapp'}</Button>
+          <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
         </div>
         </CyborgContextProvider>
     </SubstrateContextProvider>

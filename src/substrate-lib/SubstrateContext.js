@@ -8,9 +8,14 @@ import { isTestChain } from '@polkadot/util'
 import { TypeRegistry } from '@polkadot/types/create'
 
 import config from '../config'
+const SOCKETS = {
+  RELAY_DEV: 'wss://rococo-rpc.polkadot.io',
+  CYBORG: 'ws://65.108.229.2:9944',
+  LOCAL: 'ws://127.0.0.1:9944'
+}
 
 const parsedQuery = new URLSearchParams(window.location.search)
-const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER
+const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.RELAY_DEV
 ///
 // Initial state for `useReducer`
 
@@ -62,7 +67,7 @@ const reducer = (state, action) => {
 const connect = (state, dispatch) => {
   const { apiState, socket, jsonrpc } = state
   // We only want this function to be performed once
-  if (!(apiState == null || apiState == 'SWITCH_PROVIDER')) return
+  if (!(apiState == null || apiState === 'SWITCH_PROVIDER')) return
 
   // if (apiState) return
 
@@ -157,8 +162,20 @@ const SubstrateContextProvider = props => {
     dispatch({ type: 'SET_CURRENT_ACCOUNT', payload: acct })
   }
 
+  function setRelaychainProvider() {
+    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.RELAY_DEV })
+  }
+
+  function setCyborgProvider() {
+    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.CYBORG })
+  }
+
+  function setLocalProvider() {
+    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.CYBORG })
+  }
+
   return (
-    <SubstrateContext.Provider value={{ state, setCurrentAccount }}>
+    <SubstrateContext.Provider value={{ state, setCurrentAccount, setRelaychainProvider, setCyborgProvider, setLocalProvider }}>
       {props.children}
     </SubstrateContext.Provider>
   )
