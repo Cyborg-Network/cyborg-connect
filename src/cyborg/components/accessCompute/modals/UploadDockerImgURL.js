@@ -1,24 +1,30 @@
 import React from 'react'
 import { Dimmer } from 'semantic-ui-react'
-
-function UploadDockerImgURL() {
+import { SERVICES, useCyborg } from '../../../CyborgContext'
+function UploadDockerImgURL({setService}) {
+  const { selectService } = useCyborg()
   return (
-    // <div>
-        <Dimmer active>
-            
-            <form className="max-w-md mx-auto mt-8 bg-cb-gray-700 rounded-sm p-20">
-              <h5>Upload Docker Image</h5>
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-white text-sm font-bold mb-2">Docker image URL</label>
-                <input type="email" id="email" name="email" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      <Dimmer active >
+          
+          <form className="bg-cb-gray-700 rounded-lg p-20">
+            <h5 className='flex'>Upload Docker Image</h5>
+            <div className="mb-4">
+              <label htmlFor="url" className="flex text-white text-sm font-bold py-4 mb-2">Docker image URL</label>
+              <input type="url" id="url" name="url" className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" />
+            </div>
+            <div className='grid grid-cols-2 gap-2'>
+              <div className=" flex items-center justify-between">
+                <button onClick={()=>setService(null)}
+                  className="bg-cb-gray-600 w-full hover:ring-2 ring-cb-gray-500 text-white py-2 rounded">Close</button>
               </div>
               <div className=" flex items-center justify-between">
-                <button type="submit" className="bg-cb-green hover:ring-4 ring-black  text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Submit</button>
+                <button onClick={()=>selectService(SERVICES.CYBER_DOCK)} 
+                  className="bg-cb-green w-full hover:ring-2 ring-white  text-black py-2 rounded">Submit</button>
               </div>
-            </form>
+            </div>
+          </form>
 
-        </Dimmer>
-    // </div>
+      </Dimmer>
   )
 }
 

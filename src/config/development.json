@@ -3,5 +3,6 @@
   "POLKADOT_PROVIDER": "wss://rpc.polkadot.io",
   "KUSAMA_PROVIDER": "wss://kusama-rpc.polkadot.io",
   "WESTEND_PROVIDER": "wss://westend-rpc.polkadot.io",
-  "ROCOCO_PROVIDER": "wss://rococo-rpc.polkadot.io"
+  "ROCOCO_PROVIDER": "wss://rococo-rpc.polkadot.io",
+  "PROVIDER_DEFAULT": "ws://127.0.0.1:9944"
 }

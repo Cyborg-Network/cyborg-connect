@@ -1,12 +1,18 @@
 import React, { useReducer, useContext } from 'react'
 
+export const SERVICES = {
+  CYBER_DOCK: 'CYBER_DOCK'
+}
+
 ///
 // Initial state for `useReducer`
   
 const initialState = {
   // These are the states
     selectedPath: null,
-    devMode: false
+    devMode: false,
+    service: null,
+    serviceStatus: null
 }
 
 ///
@@ -15,13 +21,16 @@ const ACTIONS = {
     RESET_PATH: 'RESET_PATH',
     SELECT_PROVIDER: 'SELECT_PROVIDER',
     SELECT_ACCESSOR: 'SELECT_ACCESSOR',
-    TOGGLE_DEV_MODE: 'TOGGLE_DEV_MODE'
+    TOGGLE_DEV_MODE: 'TOGGLE_DEV_MODE',
+    SELECT_SERVICE: 'SELECT_SERVICE',
+    DEPLOY_SERVICE: 'DEPLOY_SERVICE'
 }
 
 ///
 // Reducer function for `useReducer`
 
 const reducer = (state, action) => {
+  console.log("actions: ", action)
   switch (action.type) {
     case ACTIONS.SELECT_PROVIDER:
       return { ...state, selectedPath: 'PROVIDER' }
@@ -31,6 +40,8 @@ const reducer = (state, action) => {
       return { ...state, devMode: action.payload }
     case ACTIONS.RESET_PATH:
     return { ...state, devMode: null }
+    case ACTIONS.SELECT_SERVICE:
+      return { ...state, service: action.payload }
     default:
       throw new Error(`Unknown type: ${action.type}`)
   }
@@ -59,8 +70,12 @@ const CyborgContextProvider = props => {
         dispatch({ type: ACTIONS.RESET_PATH })
     }
 
+    const selectService = (service) => {
+      dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
+  }
+
   return (
-    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, provideCompute, accessCompute }}>
+    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, provideCompute, accessCompute, selectService }}>
       {props.children}
     </CyborgContext.Provider>
   )

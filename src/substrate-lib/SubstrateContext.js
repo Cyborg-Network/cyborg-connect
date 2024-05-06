@@ -64,6 +64,8 @@ const connect = (state, dispatch) => {
   // We only want this function to be performed once
   if (!(apiState == null || apiState == 'SWITCH_PROVIDER')) return
 
+  // if (apiState) return
+
   dispatch({ type: 'CONNECT_INIT' })
 
   console.log(`Connected socket: ${socket}`)

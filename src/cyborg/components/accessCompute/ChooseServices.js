@@ -43,7 +43,7 @@ function ChooseServices() {
         {
             service === SERVICES.CYBER_DOCK? (
                 <div className='h-full w-full absolute z-10'>
-                    <UploadDockerImgURL />
+                    <UploadDockerImgURL setService={setService}/>
                 </div>
             ) : (<></>)
         }
