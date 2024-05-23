@@ -1,11 +1,12 @@
 import React, {useState} from 'react'
 import { Dimmer } from 'semantic-ui-react'
-import { SERVICES, useCyborg } from '../../../CyborgContext'
+import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
 import { web3FromSource } from '@polkadot/extension-dapp'
+import toast from 'react-hot-toast';
 
 function UploadDockerImgURL({setService}) {
-  const { selectService } = useCyborg()
+  const { selectService, setTaskStatus } = useCyborg()
   const { api, currentAccount } = useSubstrateState()
   const [url,setUrl] = useState('')
 
@@ -30,11 +31,62 @@ function UploadDockerImgURL({setService}) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     selectService(SERVICES.CYBER_DOCK)
+    setTaskStatus(DEPLOY_STATUS.PENDING)
     console.log("url: ". url)
+    
     const fromAcct = await getFromAcct()
     const containerTask = api.tx.workerRegistration.taskScheduler(url)
-    const hash = await containerTask.signAndSend(...fromAcct);
-    console.log("hash: ", hash)
+    await containerTask.signAndSend(...fromAcct,({ status, events, dispatchError }) => {
+      // status would still be set, but in the case of error we can shortcut
+      // to just check it (so an error would indicate InBlock or Finalized)
+      if (dispatchError) {
+        if (dispatchError.isModule) {
+          // for module errors, we have the section indexed, lookup
+          const decoded = api.registry.findMetaError(dispatchError.asModule);
+          const { docs, name, section } = decoded;
+          toast.error(`Dispatch Module Error: ${section}.${name}: ${docs.join(' ')}`);
+          setTaskStatus(DEPLOY_STATUS.FAILED)
+          console.error(`Dispatch Module Error: ${section}.${name}: ${docs.join(' ')}`);
+        } else {
+          // Other, CannotLookup, BadOrigin, no extra info
+          toast.error(`Dispatch Module Error: ${dispatchError.toString()}`);
+          setTaskStatus(DEPLOY_STATUS.FAILED)
+          console.error(`Dispatch Module Error: ${dispatchError.toString()}`);
+        }
+      }
+      if (status.isInBlock || status.isFinalized) {
+        events
+          // find/filter for failed events
+          .filter(({ event }) =>
+            api.events.system.ExtrinsicFailed.is(event)
+          )
+          // we know that data for system.ExtrinsicFailed is
+          // (DispatchError, DispatchInfo)
+          .forEach(({ event: { data: [error, info] } }) => {
+            if (error.isModule) {
+              // for module errors, we have the section indexed, lookup
+              const decoded = api.registry.findMetaError(error.asModule);
+              const { docs, method, section } = decoded;
+              toast.error(`${section}.${method}: ${docs.join(' ')}`);
+              console.error(`${section}.${method}: ${docs.join(' ')}`);
+              setTaskStatus(DEPLOY_STATUS.FAILED)
+            } else {
+              // Other, CannotLookup, BadOrigin, no extra info
+              toast.error(error.toString());
+              console.error(error.toString());
+              setTaskStatus(DEPLOY_STATUS.FAILED)
+            }
+          });
+          const success = events
+          .filter(({ event }) =>
+            api.events.workerRegistration.TaskScheduled.is(event)
+          )
+          if ( success.length > 0 ) {
+            toast.success(`Task Scheduled`)
+            setTaskStatus(DEPLOY_STATUS.READY)
+          }
+      }
+    });
   }
   return (
       <Dimmer active >

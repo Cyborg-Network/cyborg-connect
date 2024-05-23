@@ -10,8 +10,13 @@ import { TypeRegistry } from '@polkadot/types/create'
 import config from '../config'
 const SOCKETS = {
   RELAY_DEV: 'wss://rococo-rpc.polkadot.io',
-  CYBORG: 'ws://65.108.229.2:9944',
+  CYBORG: 'wss://fraa-flashbox-3239-rpc.a.stagenet.tanssi.network',
   LOCAL: 'ws://127.0.0.1:9944'
+}
+const CHAIN = {
+  RELAY_DEV: 'Roccoco',
+  CYBORG: 'Cyborg Hosted',
+  LOCAL: 'Local Chain'
 }
 
 const parsedQuery = new URLSearchParams(window.location.search)
@@ -29,6 +34,7 @@ const initialState = {
   apiError: null,
   apiState: null,
   currentAccount: null,
+  chain: CHAIN.LOCAL
 }
 
 const registry = new TypeRegistry()
@@ -41,7 +47,7 @@ const reducer = (state, action) => {
   console.log("state: ", state)
   switch (action.type) {
     case 'SWITCH_PROVIDER':
-      return { ...initialState, apiState: 'SWITCH_PROVIDER', socket: action.payload }
+      return { ...initialState, apiState: 'SWITCH_PROVIDER', socket: action.payload.socket, chain: action.payload.chain }
     case 'CONNECT_INIT':
       return { ...state, apiState: 'CONNECT_INIT' }
     case 'CONNECT':
@@ -168,15 +174,15 @@ const SubstrateContextProvider = props => {
   }
 
   function setRelaychainProvider() {
-    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.RELAY_DEV })
+    dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.RELAY_DEV, chain: CHAIN.RELAY_DEV } })
   }
 
   function setCyborgProvider() {
-    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.CYBORG })
+    dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.CYBORG, chain: CHAIN.CYBORG } })
   }
 
   function setLocalProvider() {
-    dispatch({ type: 'SWITCH_PROVIDER', payload: SOCKETS.LOCAL })
+    dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.LOCAL, chain: CHAIN.LOCAL } }) 
   }
 
   return (

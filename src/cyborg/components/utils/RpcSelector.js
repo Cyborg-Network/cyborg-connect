@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { MenuItem, Menu, Segment } from 'semantic-ui-react'
-import { useSubstrate } from '../../../substrate-lib/SubstrateContext'
+import { useSubstrate, useSubstrateState } from '../../../substrate-lib/SubstrateContext'
 
 function RpcSelector() {
     const { setRelaychainProvider, setCyborgProvider, setLocalProvider } = useSubstrate()
-    const [rpc, setRPC] = useState('Local Chain')
+    const { chain } = useSubstrateState()
+
     function handleItemClick(e, { name }) {
-        if (name === rpc) return
-        setRPC(name)
+        if (name === chain) return
+
         switch (name) {
             case 'Cyborg Hosted':
                 setCyborgProvider()
@@ -24,19 +25,17 @@ function RpcSelector() {
         <Menu inverted secondary>
         <MenuItem
             name='Roccoco'
-            disabled
-            active={rpc === 'Roccoco'}
+            active={chain === 'Roccoco'}
             onClick={handleItemClick}
         />
         <MenuItem
             name='Cyborg Hosted'
-            disabled
-            active={rpc === 'Cyborg Hosted'}
+            active={chain === 'Cyborg Hosted'}
             onClick={handleItemClick}
         />
         <MenuItem
             name='Local Chain'
-            active={rpc === 'Local Chain'}
+            active={chain === 'Local Chain'}
             onClick={handleItemClick}
         />
         </Menu>

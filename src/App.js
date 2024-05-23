@@ -27,6 +27,8 @@ import CyborgDapp from './cyborg'
 import { CyborgContextProvider } from './cyborg/CyborgContext'
 import RpcSelector from './cyborg/components/utils/RpcSelector'
 
+import { Toaster } from 'react-hot-toast';
+
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
 
@@ -114,6 +116,10 @@ export default function App() {
           <Button className='fixed bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ !devMode? 'Test Substrate Chain': 'Test Cyborg Dapp'}</Button>
           <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
         </div>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+        />
         </CyborgContextProvider>
     </SubstrateContextProvider>
   )

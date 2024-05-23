@@ -7,7 +7,7 @@ import { useSubstrateState } from '../../../substrate-lib';
 import { useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
-// import axios from 'axios'
+import axios from 'axios'
 
 function AddNodeButton({addNode}) {
     return (
@@ -29,23 +29,26 @@ function NoNodes({addNode}) {
         </div>
     )
 }
-function GetLogs({url}) {
-    // const [data, setData] = useState(null);
+function GetLogs({link}) {
+    const [data, setData] = useState(null);
+    link = "65.108.229.2:3000"
+    console.log("data: ", link,  data)
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`https://${link}/logs/0`);
+          setData(response.data);
+        } catch (error) {
+          console.log(error);
+          
+          setData("hello from docker!")
+        } 
+      };
   
-    // useEffect(() => {
-    //   const fetchData = async () => {
-    //     try {
-    //       const response = await axios.get(`${url}/logs/`);
-    //       setData(response.data);
-    //     } catch (error) {
-    //       console.error(error);
-    //     } 
-    //   };
-  
-    //   fetchData();
-    // }, []);
+      fetchData();
+    }, []);
     return (
-        <code className='bg-cb-gray-700 w-full rounded-md p-2'>{`Logs: ${""}`}:</code>
+        <code className='bg-cb-gray-700 w-full rounded-md p-2'>{`Logs: ${data}`}</code>
     )
 }
 function NodeList({nodes}) {
@@ -103,7 +106,7 @@ function NodeList({nodes}) {
                                 </ul>
                             </span>
                             <div className='p-1 flex w-full'>
-                                <GetLogs url={`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}/>
+                                <GetLogs link={`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}/>
                             </div>
                         </div>
                     ))}

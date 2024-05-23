@@ -4,11 +4,11 @@ import Dashboard from './components/provideCompute/Dashboard'
 import SideBar from './layouts/SideBar'
 import ChooseServices from './components/accessCompute/ChooseServices'
 import ChoosePath from './ChoosePath'
-import { SERVICES, useCyborgState } from './CyborgContext'
+import { SERVICES, DEPLOY_STATUS, useCyborgState } from './CyborgContext'
 import LoadDeployCyberDock from './components/accessCompute/modals/LoadDeployCyberDock'
 
 function CyborgDapp() {
-   const { selectedPath, service } = useCyborgState()
+   const { selectedPath, service, serviceStatus } = useCyborgState()
   return (
     <div className='max-h-screen flex flex-col '>
         { !selectedPath? (
@@ -23,7 +23,7 @@ function CyborgDapp() {
                         <Dashboard />
                     </div>
                     {
-                        service === SERVICES.CYBER_DOCK? (
+                        service === SERVICES.CYBER_DOCK && serviceStatus.deployTask === DEPLOY_STATUS.PENDING? (
                             <div className='h-full w-full absolute z-10'>
                                 <LoadDeployCyberDock />
                             </div>

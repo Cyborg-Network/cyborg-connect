@@ -4,6 +4,12 @@ export const SERVICES = {
   CYBER_DOCK: 'CYBER_DOCK'
 }
 
+export const DEPLOY_STATUS = {
+  PENDING: 'PENDING',
+  READY: 'READY',
+  FAILED: 'FAILED'
+}
+
 ///
 // Initial state for `useReducer`
   
@@ -12,7 +18,10 @@ const initialState = {
     selectedPath: null,
     devMode: false,
     service: null,
-    serviceStatus: null,
+    serviceStatus: {
+      deployCompute: null,
+      deployTask: null
+    },
     workerList: null
 }
 
@@ -32,7 +41,8 @@ const ACTIONS = {
 // Reducer function for `useReducer`
 
 const reducer = (state, action) => {
-  console.log("actions: ", action)
+  console.log("cyborg action: ", action)
+  console.log("cyborg state: ", state)
   switch (action.type) {
     case ACTIONS.SELECT_PROVIDER:
       return { ...state, selectedPath: 'PROVIDER' }
@@ -44,6 +54,8 @@ const reducer = (state, action) => {
     return { ...state, devMode: null }
     case ACTIONS.SELECT_SERVICE:
       return { ...state, service: action.payload }
+    case ACTIONS.DEPLOY_SERVICE:
+      return { ...state, serviceStatus: action.payload }
     case ACTIONS.LIST_WORKERS:
       return { ...state, workerList: action.payload }
     default:
@@ -78,12 +90,20 @@ const CyborgContextProvider = props => {
       dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
     }
 
+    const setTaskStatus = (deployTask) => {
+      dispatch({ type: ACTIONS.DEPLOY_SERVICE, payload: { ...state.serviceStatus, deployTask } })
+    }
+
+    const setDeployComputeStatus = (deployCompute) => {
+      dispatch({ type: ACTIONS.DEPLOY_SERVICE, payload: { ...state.serviceStatus, deployCompute } })
+    }
+
     const listWorkers = (list) => {
       dispatch({ type: ACTIONS.LIST_WORKERS, payload: list})
     }
 
   return (
-    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, provideCompute, accessCompute, selectService, listWorkers }}>
+    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, provideCompute, accessCompute, selectService, setTaskStatus, setDeployComputeStatus, listWorkers }}>
       {props.children}
     </CyborgContext.Provider>
   )
