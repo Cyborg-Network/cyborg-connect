@@ -27,6 +27,10 @@
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.18",
+    "@mui/x-charts": "^7.5.1",
     "@polkadot/api": "^10.6.1",
     "@polkadot/extension-dapp": "^0.46.2",
     "@polkadot/keyring": "^12.1.2",
