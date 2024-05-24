@@ -1,11 +1,12 @@
 import React from 'react'
 import Header from './layouts/Header'
-import Dashboard from './components/provideCompute/Dashboard'
+// import Dashboard from './components/provideCompute/Dashboard'
 import SideBar from './layouts/SideBar'
 import ChooseServices from './components/accessCompute/ChooseServices'
 import ChoosePath from './ChoosePath'
 import { SERVICES, DEPLOY_STATUS, useCyborgState } from './CyborgContext'
 import LoadDeployCyberDock from './components/accessCompute/modals/LoadDeployCyberDock'
+import ComputeProviderStatus from './components/provideCompute/ComputeProviderStatus'
 
 function CyborgDapp() {
    const { selectedPath, service, serviceStatus } = useCyborgState()
@@ -20,7 +21,8 @@ function CyborgDapp() {
                         <SideBar />
                     </div>
                     <div className='w-full ml-80'>
-                        <Dashboard />
+                        {/* <Dashboard /> */}
+                        <ComputeProviderStatus />
                     </div>
                     {
                         service === SERVICES.CYBER_DOCK && serviceStatus.deployTask === DEPLOY_STATUS.PENDING? (
