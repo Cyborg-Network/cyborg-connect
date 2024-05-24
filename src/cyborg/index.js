@@ -1,15 +1,15 @@
 import React from 'react'
 import Header from './layouts/Header'
-// import Dashboard from './components/provideCompute/Dashboard'
+import Dashboard from './components/provideCompute/Dashboard'
 import SideBar from './layouts/SideBar'
 import ChooseServices from './components/accessCompute/ChooseServices'
 import ChoosePath from './ChoosePath'
-import { SERVICES, DEPLOY_STATUS, useCyborgState } from './CyborgContext'
+import { SERVICES, DEPLOY_STATUS, useCyborgState, DASH_STATE } from './CyborgContext'
 import LoadDeployCyberDock from './components/accessCompute/modals/LoadDeployCyberDock'
 import ComputeProviderStatus from './components/provideCompute/ComputeProviderStatus'
 
 function CyborgDapp() {
-   const { selectedPath, service, serviceStatus } = useCyborgState()
+   const { selectedPath, service, serviceStatus, dashboard } = useCyborgState()
   return (
     <div className='max-h-screen flex flex-col '>
         { !selectedPath? (
@@ -21,8 +21,9 @@ function CyborgDapp() {
                         <SideBar />
                     </div>
                     <div className='w-full ml-80'>
-                        {/* <Dashboard /> */}
-                        <ComputeProviderStatus />
+                        {dashboard.section === null || dashboard.section === DASH_STATE.HOME? <Dashboard />: 
+                            <ComputeProviderStatus />
+                        }
                     </div>
                     {
                         service === SERVICES.CYBER_DOCK && serviceStatus.deployTask === DEPLOY_STATUS.PENDING? (

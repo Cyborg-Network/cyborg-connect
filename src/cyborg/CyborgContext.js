@@ -1,4 +1,5 @@
-import React, { useReducer, useContext } from 'react'
+import React, { useReducer, useContext, useEffect } from 'react'
+import { useSubstrateState } from '../substrate-lib'
 
 export const SERVICES = {
   CYBER_DOCK: 'CYBER_DOCK'
@@ -8,6 +9,11 @@ export const DEPLOY_STATUS = {
   PENDING: 'PENDING',
   READY: 'READY',
   FAILED: 'FAILED'
+}
+
+export const DASH_STATE = {
+  HOME: 'HOME',
+  SERVER: 'SERVER'
 }
 
 ///
@@ -22,6 +28,12 @@ const initialState = {
       deployCompute: null,
       deployTask: null
     },
+    //determines dashboard sections
+    dashboard: {
+      section: null,
+      //provides information on nodes
+      metadata: null
+    },
     workerList: null
 }
 
@@ -34,7 +46,8 @@ const ACTIONS = {
     TOGGLE_DEV_MODE: 'TOGGLE_DEV_MODE',
     SELECT_SERVICE: 'SELECT_SERVICE',
     DEPLOY_SERVICE: 'DEPLOY_SERVICE',
-    LIST_WORKERS: 'LIST_WORKERS'
+    LIST_WORKERS: 'LIST_WORKERS',
+    TOGGLE_DASHBOARD: 'TOGGLE_DASHBOARD'
 }
 
 ///
@@ -58,6 +71,8 @@ const reducer = (state, action) => {
       return { ...state, serviceStatus: action.payload }
     case ACTIONS.LIST_WORKERS:
       return { ...state, workerList: action.payload }
+    case ACTIONS.TOGGLE_DASHBOARD:
+      return { ...state, dashboard: action.payload }
     default:
       throw new Error(`Unknown type: ${action.type}`)
   }
@@ -68,7 +83,22 @@ const CyborgContext = React.createContext()
 
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
+  const { api } = useSubstrateState()
+
     const { devMode } = state
+
+    useEffect(() => {
+      const getRegisteredWorkers = async () => {
+          let workers = []
+          const count = await api.query.workerRegistration.nextClusterId()
+          for (let i = 0; i < count.toNumber(); i++) {
+              const worker = await api.query.workerRegistration.workerClusters(i)
+              workers.push(worker.toHuman()) 
+          }
+          listWorkers(workers)
+      }
+      getRegisteredWorkers()
+    },[])
 
     const toggleDevMode = () => {
         dispatch({ type: ACTIONS.TOGGLE_DEV_MODE, payload: !devMode })
@@ -102,8 +132,17 @@ const CyborgContextProvider = props => {
       dispatch({ type: ACTIONS.LIST_WORKERS, payload: list})
     }
 
+    const toggleDashboard = ({section = null, metadata = "hi"}) => {
+      const dashInfo = {
+        ...state.dashboard,
+        ...(section && { section }), 
+        ...(metadata && { metadata }), 
+      };
+      dispatch({ type: ACTIONS.TOGGLE_DASHBOARD, payload: dashInfo})
+    }
+
   return (
-    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, provideCompute, accessCompute, selectService, setTaskStatus, setDeployComputeStatus, listWorkers }}>
+    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, toggleDashboard, provideCompute, accessCompute, selectService, setTaskStatus, setDeployComputeStatus, listWorkers }}>
       {props.children}
     </CyborgContext.Provider>
   )

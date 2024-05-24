@@ -81,13 +81,9 @@ export default function ComputeProviderStatus() {
         <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-16 text-white'>
             <ServerSpecs />
             <Terminal />
-            {/* <ServerSpecs /> */}
             <GaugeDisplay percentage={80} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/>
             <GaugeDisplay percentage={30} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
             <GaugeDisplay percentage={40} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
-            {/* <ServerSpecs />
-            <ServerSpecs />
-            <ServerSpecs /> */}
         </div>
         <div className='flex items-center'>
 

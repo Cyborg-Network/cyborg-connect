@@ -3,10 +3,10 @@ import logo from '../../../public/assets/Logo.png'
 import profile from '../../../public/assets/icons/profile.png' 
 import { IoMenu } from "react-icons/io5";
 import { BsThreeDots } from "react-icons/bs";
-
-function NavigationTab({name}) {
+import { DASH_STATE, useCyborg } from '../CyborgContext'
+function NavigationTab({name, trigger}) {
     return (
-        <button className='flex items-center text-black py-3 px-24 rounded-md bg-cb-green focus:bg-cb-gray-400'>
+        <button onClick={()=>trigger({ section: DASH_STATE.HOME })} className='flex items-center text-black py-3 px-24 rounded-md bg-cb-green focus:bg-cb-gray-400'>
             {name}</button>
     )
 }
@@ -17,6 +17,7 @@ function ServiceTab({name}) {
     )
 }
 function SideBar() {
+const { toggleDashboard } = useCyborg()
   return (
     <div className='flex flex-col bg-cb-gray-600 h-screen justify-between'>
         <div>
@@ -32,7 +33,7 @@ function SideBar() {
                 </div>
             </span>
             <span className='flex flex-col items-center my-6'>
-                <NavigationTab name={'Dashboard'} />
+                <NavigationTab name={'Dashboard'} trigger={toggleDashboard}/>
             </span>
         </div>
         <div>

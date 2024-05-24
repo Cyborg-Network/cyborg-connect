@@ -4,7 +4,7 @@ import deploymentsTab from '../../../../public/assets/icons/deployment-logo.png'
 import cyberdock from '../../../../public/assets/icons/cyberdockDash.png' 
 import { FiPlusCircle } from "react-icons/fi";
 import { useSubstrateState } from '../../../substrate-lib';
-import { useCyborg, useCyborgState } from '../../CyborgContext';
+import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
 import axios from 'axios'
@@ -52,6 +52,9 @@ function GetLogs({link}) {
     )
 }
 function NodeList({nodes}) {
+    const { toggleDashboard } = useCyborg()
+    // const handleRedirect = () => {
+    // }
     return (
         <div className='flex flex-col w-full text-white text-opacity-70 '>
             <span className='flex w-5/6 py-2 px-5'>
@@ -68,10 +71,11 @@ function NodeList({nodes}) {
                             <a>
                                 <img src={cyberdock} />
                             </a>
-                            <div>
+                            <button className='flex flex-col items-start'
+                                            onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: null })}>
                                 <h3 className='mb-0'>Cyber Dock</h3>
                                 <p className='mt-0 text-lg'>Zigbee</p>
-                            </div>
+                            </button>
                         </li>
                         <li>Master</li>
                         <li>Austin, Texas</li>
@@ -87,18 +91,19 @@ function NodeList({nodes}) {
                 </ul>
             </span>
                 <div className='bg-white bg-opacity-10 m-4 rounded-lg'>
-                    {nodes.length > 0 && nodes.map((item, index) => (
+                    {nodes.length > 0 && nodes.map((item, key) => (
                         <div>
-                            <span key={index} className='flex justify-between w-full items-center py-4 px-5'>
+                            <span key={key} className='flex justify-between w-full items-center py-4 px-5'>
                                 <ul className='grid grid-cols-4 w-full items-center'>
                                     <li className='flex items-center gap-3]'>
                                         <a>
                                             <img src={cyberdock} />
                                         </a>
-                                        <div>
+                                        <button className='pl-3 flex flex-col items-start'
+                                            onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: item })}>
                                             <h3 className='mb-0'>{item.name}</h3>
                                             <p className='mt-0 text-sm'>{item.account.slice(0,16)}</p>
-                                        </div>
+                                        </button>
                                     </li>
                                     <li>Providers</li>
                                     <li>{`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}</li>
