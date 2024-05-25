@@ -20,7 +20,7 @@ const CHAIN = {
 }
 
 const parsedQuery = new URLSearchParams(window.location.search)
-const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.LOCAL
+const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER 
 ///
 // Initial state for `useReducer`
 
@@ -34,7 +34,7 @@ const initialState = {
   apiError: null,
   apiState: null,
   currentAccount: null,
-  chain: CHAIN.LOCAL
+  chain: null
 }
 
 const registry = new TypeRegistry()
@@ -77,13 +77,13 @@ const connect = (state, dispatch) => {
   // We only want this function to be performed once
   if (!(apiState == null || apiState === 'SWITCH_PROVIDER')) return
 
-  // if (apiState) return
-
   dispatch({ type: 'CONNECT_INIT' })
 
   console.log(`Connected socket: ${socket}`)
   const provider = new WsProvider(socket)
   const _api = new ApiPromise({ provider, rpc: jsonrpc })
+  console.log('api: ', _api)
+  console.log('jsonrpc: ', jsonrpc)
 
   // Set listeners for disconnection and reconnection event.
   _api.on('connected', () => {
@@ -93,6 +93,7 @@ const connect = (state, dispatch) => {
   })
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }))
   _api.on('error', err => dispatch({ type: 'CONNECT_ERROR', payload: err }))
+  
 }
 
 const retrieveChainInfo = async api => {
@@ -156,7 +157,24 @@ const SubstrateContextProvider = props => {
   })
 
   const [state, dispatch] = useReducer(reducer, initialState)
-  connect(state, dispatch)
+
+  // if (apiState) return
+  const SelectedChain = sessionStorage.getItem('CHAIN')
+  // check if existing session
+  if (SelectedChain && SelectedChain !== state.chain) {
+    switch(SelectedChain) {
+      case CHAIN.RELAY_DEV:
+        dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.RELAY_DEV, chain: CHAIN.RELAY_DEV } })
+      break;
+      case CHAIN.CYBORG:
+        dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.CYBORG, chain: CHAIN.CYBORG } })
+      break;
+      case CHAIN.LOCAL:
+        dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.LOCAL, chain: CHAIN.LOCAL } })
+      break;
+      default:
+      }
+  }
 
   useEffect(() => {
     const { apiState, keyringState, api } = state
@@ -175,14 +193,20 @@ const SubstrateContextProvider = props => {
 
   function setRelaychainProvider() {
     dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.RELAY_DEV, chain: CHAIN.RELAY_DEV } })
+    sessionStorage.setItem('CHAIN', CHAIN.RELAY_DEV);
+    window.location.reload(true)
   }
 
   function setCyborgProvider() {
     dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.CYBORG, chain: CHAIN.CYBORG } })
+    sessionStorage.setItem('CHAIN', CHAIN.CYBORG);
+    window.location.reload(true)
   }
 
   function setLocalProvider() {
     dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.LOCAL, chain: CHAIN.LOCAL } }) 
+    sessionStorage.setItem('CHAIN', CHAIN.LOCAL);
+    window.location.reload(true)
   }
 
   return (
