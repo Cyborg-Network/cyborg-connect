@@ -86,6 +86,10 @@ function UploadDockerImgURL({setService}) {
             setTaskStatus(DEPLOY_STATUS.READY)
           }
       }
+    }).catch((error) => {
+      console.error("Other Errors", error);
+      toast.error(error.toString());
+      setTaskStatus(DEPLOY_STATUS.FAILED)
     });
   }
   return (

@@ -20,7 +20,7 @@ const CHAIN = {
 }
 
 const parsedQuery = new URLSearchParams(window.location.search)
-const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER 
+const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.LOCAL
 ///
 // Initial state for `useReducer`
 
@@ -34,7 +34,7 @@ const initialState = {
   apiError: null,
   apiState: null,
   currentAccount: null,
-  chain: null
+  chain: CHAIN.LOCAL
 }
 
 const registry = new TypeRegistry()
@@ -174,7 +174,7 @@ const SubstrateContextProvider = props => {
       break;
       default:
       }
-  }
+  } 
 
   useEffect(() => {
     const { apiState, keyringState, api } = state

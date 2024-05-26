@@ -31,7 +31,7 @@ function NoNodes({addNode}) {
 }
 function GetLogs({link}) {
     const [data, setData] = useState(null);
-    link = "65.108.229.2:3000"
+    // link = "65.108.229.2:3000"
     console.log("data: ", link,  data)
     useEffect(() => {
       const fetchData = async () => {
@@ -41,11 +41,11 @@ function GetLogs({link}) {
         } catch (error) {
           console.log(error);
           
-          setData("hello from docker!")
+          setData("error")
         } 
       };
   
-      fetchData();
+      if (link) fetchData();
     }, []);
     return (
         <code className='bg-cb-gray-700 w-full rounded-md p-2'>{`Logs: ${data}`}</code>
@@ -160,9 +160,9 @@ function Dashboard() {
                 <AddNodeButton addNode={addNode} />
             </div>
         </div>
-        {   !node?
-            <NoNodes addNode={addNode} /> :
-            <NodeList nodes={workerList} />
+        {   node || (workerList && workerList.length > 0)?
+            <NodeList nodes={workerList} /> :
+            <NoNodes addNode={addNode} />
         }
     </div>
   )
