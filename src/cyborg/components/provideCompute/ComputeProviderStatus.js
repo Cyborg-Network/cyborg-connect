@@ -105,14 +105,18 @@ export default function ComputeProviderStatus() {
   const { metadata } = useCyborgState().dashboard
   const { taskMetadata } = useCyborgState()
   const [taskId, setTaskId] = useState(null);
+  const [link, setLink] = useState(`${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`);
   // let taskId = taskMetadata? taskMetadata.taskId : null;
   useEffect(()=>{
-    if (taskMetadata) setTaskId(taskMetadata.taskId)
+    const route = `${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`
+    if (taskMetadata) {
+      setTaskId(taskMetadata.taskId)
+      setLink(route)
+    }
   },[taskMetadata])
   // const taskId = 19;
   console.log("metadata: ", metadata)
   console.log("task state: ", taskId)
-  const link = `${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col overflow-scroll'>
         <div className='flex items-center justify-between mx-2 text-white p-4 px-14'>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Dimmer, Loader } from 'semantic-ui-react'
-import dockdeploy from '../../../../../public/assets/icons/dockdeploy.png'
+import dockdeploy from '../../../../../public/assets/icons/dockdeploy.gif'
 import { useCyborg } from '../../../CyborgContext'
 function LoadDeployCyberDock() {
   const {selectService, provideCompute} = useCyborg()
