@@ -8,6 +8,7 @@ export function GetLogs({link, taskId}) {
   const [data, setData] = useState(null);
   // console.log("data: ", data)
   // console.log("link: ", link)
+  // console.log("taskId: ", taskId)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +26,7 @@ export function GetLogs({link, taskId}) {
     };
 
     if (link) fetchData();
-  }, []);
+  }, [taskId, link]);
   return (
       <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>{`[${link}][TaskID: ${taskId}] Logs: ${taskId? data: 'Task Pending.......'}`}</code>
   )
