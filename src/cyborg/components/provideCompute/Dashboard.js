@@ -7,8 +7,7 @@ import { useSubstrateState } from '../../../substrate-lib';
 import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
-import axios from 'axios'
-
+import { GetLogs } from './ComputeProviderStatus';
 function AddNodeButton({addNode}) {
     return (
         <button onClick={()=>addNode(true)}
@@ -29,32 +28,9 @@ function NoNodes({addNode}) {
         </div>
     )
 }
-function GetLogs({link}) {
-    const [data, setData] = useState(null);
-    // link = "65.108.229.2:3000"
-    console.log("data: ", link,  data)
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(`https://${link}/logs/0`);
-          setData(response.data);
-        } catch (error) {
-          console.log(error);
-          
-          setData("error")
-        } 
-      };
-  
-      if (link) fetchData();
-    }, []);
-    return (
-        <code className='bg-cb-gray-700 w-full rounded-md p-2'>{`Logs: ${data}`}</code>
-    )
-}
+
 function NodeList({nodes}) {
     const { toggleDashboard } = useCyborg()
-    // const handleRedirect = () => {
-    // }
     return (
         <div className='flex flex-col w-full text-white text-opacity-70 '>
             <span className='flex w-5/6 py-2 px-5'>
@@ -71,7 +47,7 @@ function NodeList({nodes}) {
                             <a>
                                 <img src={cyberdock} />
                             </a>
-                            <button className='flex flex-col items-start'
+                            <button className='flex flex-col items-start hover:text-cb-green'
                                             onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: null })}>
                                 <h3 className='mb-0'>Cyber Dock</h3>
                                 <p className='mt-0 text-lg'>Zigbee</p>
@@ -99,7 +75,7 @@ function NodeList({nodes}) {
                                         <a>
                                             <img src={cyberdock} />
                                         </a>
-                                        <button className='pl-3 flex flex-col items-start'
+                                        <button className='pl-3 flex flex-col items-start hover:text-cb-green'
                                             onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: item })}>
                                             <h3 className='mb-0'>{item.name}</h3>
                                             <p className='mt-0 text-sm'>{item.account.slice(0,16)}</p>

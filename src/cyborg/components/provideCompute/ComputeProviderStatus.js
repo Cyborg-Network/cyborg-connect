@@ -1,6 +1,35 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import widget from '../../../../public/assets/icons/widget.png' 
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
+import { useCyborgState } from '../../CyborgContext';
+import axios from 'axios';
+
+export function GetLogs({link, taskId}) {
+  const [data, setData] = useState(null);
+  // console.log("data: ", data)
+  // console.log("link: ", link)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://${link}/deployment-status/${taskId}`, {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          }});
+        setData(response.data);
+      } catch (error) {
+        console.log("ERROR:: ", error);
+        
+        setData("error")
+      } 
+    };
+
+    if (link) fetchData();
+  }, []);
+  return (
+      <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>{`[${link}][TaskID: ${taskId}] Logs: ${taskId? data: 'Task Pending.......'}`}</code>
+  )
+}
 
 function ServerSpecs() {
   return (
@@ -11,19 +40,19 @@ function ServerSpecs() {
         
         <ul className='px-6 py-3 h-auto'>
             <li className='flex justify-between'><p>OS:</p><p>Windows</p></li>
-            <li className='flex justify-between'><p>CPU:</p><p>Windows</p></li>
-            <li className='flex justify-between'><p>Memory:</p><p>Windows</p></li>
-            <li className='flex justify-between'><p>Network:</p><p>Windows</p></li>
-            <li className='flex justify-between'><p>Storage:</p><p>Windows</p></li>
-            <li className='flex justify-between'><p>Location:</p><p>Windows</p></li>
+            <li className='flex justify-between'><p>CPU:</p><p>{}</p></li>
+            <li className='flex justify-between'><p>Memory:</p><p>{}</p></li>
+            <li className='flex justify-between'><p>Network:</p><p>{}</p></li>
+            <li className='flex justify-between'><p>Storage:</p><p>{}</p></li>
+            <li className='flex justify-between'><p>Location:</p><p>{}</p></li>
         </ul>
     </div>
   )
 }
 
-function Terminal() {
+function Terminal({link, taskId}) {
     return (
-      <div className='lg:col-span-2 bg-white bg-opacity-10 relative rounded-lg h-auto'>
+      <div className='lg:col-span-2 bg-white bg-opacity-15 relative rounded-lg h-auto'>
         <div className='absolute top-5 left-5'>
           <a>
             <img src={widget} />
@@ -32,11 +61,11 @@ function Terminal() {
         <div className='bg-gradient-to-b from-cb-gray-400 to-cb-gray-600 p-6 rounded-t-lg'>
           <h4 className='flex justify-center font-thin'>Terminal</h4>
         </div>
-          <ul className='px-6 py-3 h-fit'>
-              <li className='flex justify-between'><p>Last Login:</p><p>Fri June 04, 01:34:00</p></li>
-             
-       
-          </ul>
+        <ul className='h-full'>
+            {/* <li className='flex justify-between'><p>Last Login:</p><p>Fri June 04, 01:34:00</p></li> */}
+            <GetLogs link={link} taskId={taskId}/>
+      
+        </ul>
       </div>
     )
   }
@@ -73,14 +102,32 @@ function Terminal() {
   }
 
 export default function ComputeProviderStatus() {
+  const { metadata } = useCyborgState().dashboard
+  const { taskMetadata } = useCyborgState()
+  const [taskId, setTaskId] = useState(null);
+  // let taskId = taskMetadata? taskMetadata.taskId : null;
+  useEffect(()=>{
+    if (taskMetadata) setTaskId(taskMetadata.taskId)
+  },[taskMetadata])
+  // const taskId = 19;
+  console.log("metadata: ", metadata)
+  console.log("task state: ", taskId)
+  const link = `${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col overflow-scroll'>
-        <div className='flex items-center justify-between mx-2 text-white'>
-            <h3>Node Name</h3> <div><p>IP Address:</p></div>
+        <div className='flex items-center justify-between mx-2 text-white p-4 px-14'>
+            <div className='flex items-end gap-2 text-xl'>
+              <div>Node Name: </div>
+              <div className='text-cb-green'>{metadata.name}</div>
+            </div> 
+            <div className='flex items-end gap-2 text-md'>
+              <div className='text-opacity-50 text-white'>IP Address: </div>
+              <div>{link}</div>
+            </div> 
         </div> 
-        <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-16 text-white'>
+        <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white'>
             <ServerSpecs />
-            <Terminal />
+            <Terminal link={link} taskId={taskId} />
             <GaugeDisplay percentage={80} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/>
             <GaugeDisplay percentage={30} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
             <GaugeDisplay percentage={40} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>

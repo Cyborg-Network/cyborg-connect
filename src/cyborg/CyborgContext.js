@@ -34,7 +34,8 @@ const initialState = {
       //provides information on nodes
       metadata: null
     },
-    workerList: null
+    workerList: null,
+    taskMetadata: null
 }
 
 ///
@@ -47,7 +48,8 @@ const ACTIONS = {
     SELECT_SERVICE: 'SELECT_SERVICE',
     DEPLOY_SERVICE: 'DEPLOY_SERVICE',
     LIST_WORKERS: 'LIST_WORKERS',
-    TOGGLE_DASHBOARD: 'TOGGLE_DASHBOARD'
+    TOGGLE_DASHBOARD: 'TOGGLE_DASHBOARD',
+    SET_TASK_METADATA: 'SET_TASK_METADATA'
 }
 
 ///
@@ -73,6 +75,8 @@ const reducer = (state, action) => {
       return { ...state, workerList: action.payload }
     case ACTIONS.TOGGLE_DASHBOARD:
       return { ...state, dashboard: action.payload }
+    case ACTIONS.SET_TASK_METADATA:
+      return { ...state, taskMetadata: action.payload }
     default:
       throw new Error(`Unknown type: ${action.type}`)
   }
@@ -124,6 +128,19 @@ const CyborgContextProvider = props => {
       dispatch({ type: ACTIONS.DEPLOY_SERVICE, payload: { ...state.serviceStatus, deployTask } })
     }
 
+    const setTaskMetadata = (taskEvent) => {
+      console.log("set task metadata: ", taskEvent)
+      const taskMetadata = {
+        taskExecutor: taskEvent[0],
+        taskOwner: taskEvent[1],
+        taskId: taskEvent[2],
+        taskInstruction: taskEvent[3],
+        executorIp: taskEvent[4]
+      }
+      console.log("task metadata: ", taskMetadata)
+      dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskMetadata })
+    }
+
     const setDeployComputeStatus = (deployCompute) => {
       dispatch({ type: ACTIONS.DEPLOY_SERVICE, payload: { ...state.serviceStatus, deployCompute } })
     }
@@ -132,7 +149,7 @@ const CyborgContextProvider = props => {
       dispatch({ type: ACTIONS.LIST_WORKERS, payload: list})
     }
 
-    const toggleDashboard = ({section = null, metadata = "hi"}) => {
+    const toggleDashboard = ({section = null, metadata = null}) => {
       const dashInfo = {
         ...state.dashboard,
         ...(section && { section }), 
@@ -142,7 +159,7 @@ const CyborgContextProvider = props => {
     }
 
   return (
-    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, toggleDashboard, provideCompute, accessCompute, selectService, setTaskStatus, setDeployComputeStatus, listWorkers }}>
+    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, toggleDashboard, provideCompute, accessCompute, selectService, setTaskStatus, setTaskMetadata, setDeployComputeStatus, listWorkers }}>
       {props.children}
     </CyborgContext.Provider>
   )

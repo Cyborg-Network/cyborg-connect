@@ -6,7 +6,7 @@ import { web3FromSource } from '@polkadot/extension-dapp'
 import toast from 'react-hot-toast';
 
 function UploadDockerImgURL({setService}) {
-  const { selectService, setTaskStatus } = useCyborg()
+  const { selectService, setTaskStatus, setTaskMetadata } = useCyborg()
   const { api, currentAccount } = useSubstrateState()
   const [url,setUrl] = useState('')
 
@@ -84,6 +84,9 @@ function UploadDockerImgURL({setService}) {
           if ( success.length > 0 ) {
             toast.success(`Task Scheduled`)
             setTaskStatus(DEPLOY_STATUS.READY)
+            const taskEvent = success[0].toJSON().event
+            console.log("Extrinsic Success: ", taskEvent)
+            setTaskMetadata(taskEvent.data)
           }
       }
     }).catch((error) => {
