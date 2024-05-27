@@ -48,7 +48,7 @@ function NodeList({nodes}) {
                                 <img src={cyberdock} />
                             </a>
                             <button className='flex flex-col items-start hover:text-cb-green'
-                                            onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: null })}>
+                                            onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: { ip: { ipv4: ['0','0','0','0']}, port: '0' } })}>
                                 <h3 className='mb-0'>Cyber Dock</h3>
                                 <p className='mt-0 text-lg'>Zigbee</p>
                             </button>

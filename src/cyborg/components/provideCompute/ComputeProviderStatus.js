@@ -8,7 +8,7 @@ export function GetLogs({link, taskId}) {
   const [data, setData] = useState(null);
   // console.log("data: ", data)
   // console.log("link: ", link)
-  // console.log("taskId: ", taskId)
+  console.log("GetLogs: taskId: ", taskId)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,9 +115,9 @@ export default function ComputeProviderStatus() {
       setLink(route)
     }
   },[taskMetadata])
-  // const taskId = 19;
   console.log("metadata: ", metadata)
-  console.log("task state: ", taskId)
+  // console.log("task state: ", taskId)
+  // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col overflow-scroll'>
         <div className='flex items-center justify-between mx-2 text-white p-4 px-14'>
@@ -133,9 +133,9 @@ export default function ComputeProviderStatus() {
         <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white'>
             <ServerSpecs />
             <Terminal link={link} taskId={taskId} />
-            <GaugeDisplay percentage={80} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/>
-            <GaugeDisplay percentage={30} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
-            <GaugeDisplay percentage={40} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
+            <GaugeDisplay percentage={metadata.account?80:5} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/>
+            <GaugeDisplay percentage={metadata.account?30:5} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
+            <GaugeDisplay percentage={metadata.account?40:5} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
         </div>
         <div className='flex items-center'>
 
