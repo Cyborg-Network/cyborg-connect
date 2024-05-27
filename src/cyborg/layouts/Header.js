@@ -6,7 +6,7 @@ function Header() {
     <div className='flex gap-10 lg:gap-20 justify-between bg-cb-gray-700 border-b border-cb-gray-400 py-4'>
         <div className='flex gap-4 items-center flex-shrink-0'>
             <button></button>
-            <a href='/'>
+            <a href='/cyborg-connect'>
                 <img src={logo} className='h-10S'/>
             </a>
         </div>

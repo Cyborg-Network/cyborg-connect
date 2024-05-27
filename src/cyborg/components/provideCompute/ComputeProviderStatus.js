@@ -4,11 +4,13 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { useCyborgState } from '../../CyborgContext';
 import axios from 'axios';
 
-export function GetLogs({link, taskId}) {
+export function GetLogs({link, taskId, loading }) {
   const [data, setData] = useState(null);
-  // console.log("data: ", data)
-  // console.log("link: ", link)
-  console.log("GetLogs: taskId: ", taskId)
+  const [display, setDisplay] = useState(`[${link}][TaskID: ${taskId}] Logs: Pending.....`);
+
+  useEffect(()=>{
+    if (data && !loading)setDisplay(`[${link}][TaskID: ${taskId}] Logs: ${ data }`)
+  }, [data])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +30,7 @@ export function GetLogs({link, taskId}) {
     if (link) fetchData();
   }, [taskId, link]);
   return (
-      <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>{`[${link}][TaskID: ${taskId}] Logs: ${taskId? data: 'Task Pending.......'}`}</code>
+      <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>{display}</code>
   )
 }
 
@@ -52,6 +54,7 @@ function ServerSpecs() {
 }
 
 function Terminal({link, taskId}) {
+  console.log("terminal task: ", taskId)
     return (
       <div className='lg:col-span-2 bg-white bg-opacity-15 relative rounded-lg h-auto'>
         <div className='absolute top-5 left-5'>
@@ -105,7 +108,7 @@ function Terminal({link, taskId}) {
 export default function ComputeProviderStatus() {
   const { metadata } = useCyborgState().dashboard
   const { taskMetadata } = useCyborgState()
-  const [taskId, setTaskId] = useState(null);
+  const [taskId, setTaskId] = useState(taskMetadata.taskId? taskMetadata.taskId : null);
   const [link, setLink] = useState(`${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`);
   // let taskId = taskMetadata? taskMetadata.taskId : null;
   useEffect(()=>{

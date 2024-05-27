@@ -87,7 +87,7 @@ function NodeList({nodes}) {
                                 </ul>
                             </span>
                             <div className='p-1 flex w-full'>
-                                <GetLogs link={`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}/>
+                                <GetLogs link={`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`} loading/>
                             </div>
                         </div>
                     ))}
