@@ -6,6 +6,7 @@ import axios from 'axios';
 
 export function GetLogs({link, taskId, loading }) {
   const [data, setData] = useState(null);
+  const [status, setStatus] = useState(null);
   const [display, setDisplay] = useState(`[${link}][TaskID: ${taskId}] Logs: Pending.....`);
 
   useEffect(()=>{
@@ -15,13 +16,13 @@ export function GetLogs({link, taskId, loading }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://${link}/deployment-status/${taskId}`, {
+        const response = await axios.get(`http${link.includes('127.0.0.1')?'':'s'}://${link}/logs/${taskId}`, {
           headers: {
             'Access-Control-Allow-Origin': '*',
           }});
         setData(response.data);
       } catch (error) {
-        console.log("ERROR:: ", error);
+        console.log("DATA ERROR:: ", error);
         
         setData("error")
       } 
@@ -29,8 +30,38 @@ export function GetLogs({link, taskId, loading }) {
 
     if (link) fetchData();
   }, [taskId, link]);
+
+  useEffect(() => {
+    const fetchStatusInfo = async () => {
+      try {
+        const response = await axios.get(`http${link.includes('127.0.0.1')?'':'s'}://${link}/deployment-status/${taskId}`, {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          }});
+          setStatus(response.data);
+      } catch (error) {
+        console.log("STATUS ERROR:: ", error);
+        
+        setStatus("error")
+      } 
+    };
+    console.log("deploy status: ", status)
+    if (link) fetchStatusInfo();
+  }, [taskId, link]);
+
   return (
-      <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>{display}</code>
+      <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>
+        <div className='flex flex-col'>
+          {!loading && status && status.conditions && status.conditions.length > 0? <div className={`${status && status.conditions.length > 0? '': 'hidden'}`}>
+              <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].lastUpdateTime}</div>
+              <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].message}</div>
+              <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].reason}</div>
+              <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].status}</div>
+              <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].type}</div>
+          </div>: ''}
+          <div>{display}</div>
+          </div>
+        </code>
   )
 }
 
