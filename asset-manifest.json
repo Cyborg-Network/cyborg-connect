@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/cyborg-connect/static/css/main.b0168615.css",
-    "main.js": "/cyborg-connect/static/js/main.7f70239a.js",
+    "main.js": "/cyborg-connect/static/js/main.7bda0c31.js",
     "static/media/brand-icons.svg": "/cyborg-connect/static/media/brand-icons.6729d29753e000c17489.svg",
     "static/media/icons.svg": "/cyborg-connect/static/media/icons.62d9dae4e0040e81c980.svg",
     "static/media/dockdeploy.gif": "/cyborg-connect/static/media/dockdeploy.3402b6a92d6cbcc5c4f8.gif",
@@ -22,10 +22,10 @@
     "static/media/outline-icons.woff2": "/cyborg-connect/static/media/outline-icons.687a4990ea22bb1a49d4.woff2",
     "index.html": "/cyborg-connect/index.html",
     "main.b0168615.css.map": "/cyborg-connect/static/css/main.b0168615.css.map",
-    "main.7f70239a.js.map": "/cyborg-connect/static/js/main.7f70239a.js.map"
+    "main.7bda0c31.js.map": "/cyborg-connect/static/js/main.7bda0c31.js.map"
   },
   "entrypoints": [
     "static/css/main.b0168615.css",
-    "static/js/main.7f70239a.js"
+    "static/js/main.7bda0c31.js"
   ]
 }
