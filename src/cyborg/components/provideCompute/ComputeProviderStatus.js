@@ -16,7 +16,7 @@ export function GetLogs({link, taskId, loading }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http${link.includes('127.0.0.1')?'':'s'}://${link}/logs/${taskId}`, {
+        const response = await axios.get(`http://${link}/logs/${taskId}`, {
           headers: {
             'Access-Control-Allow-Origin': '*',
           }});
@@ -27,14 +27,14 @@ export function GetLogs({link, taskId, loading }) {
         setData("error")
       } 
     };
-
+    console.log("deploy data: ", data)
     if (link) fetchData();
   }, [taskId, link]);
 
   useEffect(() => {
     const fetchStatusInfo = async () => {
       try {
-        const response = await axios.get(`http${link.includes('127.0.0.1')?'':'s'}://${link}/deployment-status/${taskId}`, {
+        const response = await axios.get(`http://${link}/deployment-status/${taskId}`, {
           headers: {
             'Access-Control-Allow-Origin': '*',
           }});

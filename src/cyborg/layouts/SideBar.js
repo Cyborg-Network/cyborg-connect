@@ -24,7 +24,7 @@ const { toggleDashboard } = useCyborg()
             <span className='flex items-center justify-between p-4 pr-6'>
                 <div className='flex gap-4 items-center flex-shrink-0'>
                     <button></button>
-                    <a href='/'>
+                    <a href='/cyborg-connect/'>
                         <img src={logo} className='h-10S'/>
                     </a>
                 </div>
