@@ -139,7 +139,7 @@ function Terminal({link, taskId}) {
 export default function ComputeProviderStatus() {
   const { metadata } = useCyborgState().dashboard
   const { taskMetadata } = useCyborgState()
-  const [taskId, setTaskId] = useState(taskMetadata.taskId? taskMetadata.taskId : null);
+  const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
   const [link, setLink] = useState(`${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`);
   // let taskId = taskMetadata? taskMetadata.taskId : null;
   useEffect(()=>{

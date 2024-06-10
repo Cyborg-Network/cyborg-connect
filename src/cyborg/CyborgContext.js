@@ -35,6 +35,7 @@ const initialState = {
       metadata: null
     },
     workerList: null,
+    taskList: null,
     taskMetadata: null
 }
 
@@ -48,6 +49,7 @@ const ACTIONS = {
     SELECT_SERVICE: 'SELECT_SERVICE',
     DEPLOY_SERVICE: 'DEPLOY_SERVICE',
     LIST_WORKERS: 'LIST_WORKERS',
+    LIST_TASKS: 'LIST_TASKS',
     TOGGLE_DASHBOARD: 'TOGGLE_DASHBOARD',
     SET_TASK_METADATA: 'SET_TASK_METADATA'
 }
@@ -73,6 +75,8 @@ const reducer = (state, action) => {
       return { ...state, serviceStatus: action.payload }
     case ACTIONS.LIST_WORKERS:
       return { ...state, workerList: action.payload }
+    case ACTIONS.LIST_TASKS:
+        return { ...state, taskList: action.payload }
     case ACTIONS.TOGGLE_DASHBOARD:
       return { ...state, dashboard: action.payload }
     case ACTIONS.SET_TASK_METADATA:
@@ -87,22 +91,46 @@ const CyborgContext = React.createContext()
 
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const { api } = useSubstrateState()
+  const sState = useSubstrateState()
+  const { taskMetadata, taskList } = state
 
     const { devMode } = state
 
     useEffect(() => {
       const getRegisteredWorkers = async () => {
+        const { api } = sState
           let workers = []
           const count = await api.query.workerRegistration.nextClusterId()
           for (let i = 0; i < count.toNumber(); i++) {
-              const worker = await api.query.workerRegistration.workerClusters(i)
-              workers.push(worker.toHuman()) 
+              const worker = (await api.query.workerRegistration.workerClusters(i)).toHuman()
+              
+              workers.push({...worker, link: `${worker.ip.ipv4.join('.')}:${worker.port.replace(",", "")}`}) 
           }
           listWorkers(workers)
       }
-      getRegisteredWorkers()
-    },[])
+      const taskUniqueAllocations = async () => {
+        const { api } = sState
+        let tasks = []
+        const count = await api.query.workerRegistration.nextTaskId()
+        for (let i = count-1; i >= 0; i--) {
+            const allocated = (await api.query.workerRegistration.taskAllocations(i)).toHuman()
+            if (!tasks.some(task => task.taskExecutor === allocated)) {
+              tasks.push({ taskExecutor: allocated, taskId: i })
+            }
+        }
+        listTasks(tasks)
+    }
+      if (sState) {
+        getRegisteredWorkers()
+        taskUniqueAllocations()
+      }
+    },[sState])
+
+    useEffect(() => {
+      if (!taskMetadata && taskList) {
+        dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskList[0] }) 
+      }
+    },[taskMetadata, taskList])
 
     const toggleDevMode = () => {
         dispatch({ type: ACTIONS.TOGGLE_DEV_MODE, payload: !devMode })
@@ -147,6 +175,10 @@ const CyborgContextProvider = props => {
 
     const listWorkers = (list) => {
       dispatch({ type: ACTIONS.LIST_WORKERS, payload: list})
+    }
+
+    const listTasks = (list) => {
+      dispatch({ type: ACTIONS.LIST_TASKS, payload: list})
     }
 
     const toggleDashboard = ({section = null, metadata = null}) => {
