@@ -103,9 +103,11 @@ const CyborgContextProvider = props => {
           const count = await api.query.workerRegistration.nextClusterId()
           for (let i = 0; i < count.toNumber(); i++) {
               const worker = (await api.query.workerRegistration.workerClusters(i)).toHuman()
-              
-              workers.push({...worker, link: `${worker.ip.ipv4.join('.')}:${worker.port.replace(",", "")}`}) 
+              console.log("WOKRER:: ", worker)
+              if (worker) workers.push({...worker, link: `${worker.ip.ipv4.join('.')}:${worker.port.replace(",", "")}`}) 
+
           }
+          console.log("WOEOKEKKFKF:: ", workers)
           listWorkers(workers)
       }
       const taskUniqueAllocations = async () => {
@@ -120,7 +122,7 @@ const CyborgContextProvider = props => {
         }
         listTasks(tasks)
     }
-      if (sState) {
+      if (sState && sState.api) {
         getRegisteredWorkers()
         taskUniqueAllocations()
       }

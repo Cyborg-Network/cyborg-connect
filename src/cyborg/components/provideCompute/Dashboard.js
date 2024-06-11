@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import nondeployed from '../../../../public/assets/icons/nondeployed.png' 
 import deploymentsTab from '../../../../public/assets/icons/deployment-logo.png' 
 import cyberdock from '../../../../public/assets/icons/cyberdockDash.png' 
 import { FiPlusCircle } from "react-icons/fi";
-import { useSubstrateState } from '../../../substrate-lib';
+// import { useSubstrateState } from '../../../substrate-lib';
 import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
@@ -98,29 +98,29 @@ function NodeList({nodes}) {
 
 function Dashboard() {
     const [node, addNode]=useState(false)
-    const { api } = useSubstrateState()
+    // const { api } = useSubstrateState()
     const [refresh, setRefresh] = useState(false)
-    const [nodeCount, setNodeCount] = useState(0)
-    const { listWorkers } = useCyborg()
+    // const [nodeCount, setNodeCount] = useState(0)
+    // const { listWorkers } = useCyborg()
     const { workerList } = useCyborgState()
     console.log("workerList: ", workerList)
 
-    useEffect(() => {
-        const workerCount = async () => {
-            const count = await api.query.workerRegistration.nextClusterId()
-            setNodeCount(count.toNumber())
-        }
-        const getRegisteredWorkers = async () => {
-            let workers = []
-            for (let i = 0; i < nodeCount; i++) {
-                const worker = await api.query.workerRegistration.workerClusters(i)
-                workers.push(worker.toHuman()) 
-            }
-            listWorkers(workers)
-        }
-        workerCount()
-        getRegisteredWorkers()
-    },[nodeCount, refresh])
+    // useEffect(() => {
+    //     const workerCount = async () => {
+    //         const count = await api.query.workerRegistration.nextClusterId()
+    //         setNodeCount(count.toNumber())
+    //     }
+    //     const getRegisteredWorkers = async () => {
+    //         let workers = []
+    //         for (let i = 0; i < nodeCount; i++) {
+    //             const worker = await api.query.workerRegistration.workerClusters(i)
+    //             workers.push(worker.toHuman()) 
+    //         }
+    //         listWorkers(workers)
+    //     }
+    //     workerCount()
+    //     getRegisteredWorkers()
+    // },[nodeCount, refresh])
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col '>
         <div className='flex items-center justify-between mx-2 text-white'>

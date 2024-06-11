@@ -65,7 +65,7 @@ export function GetLogs({link, taskId, loading }) {
   )
 }
 
-function ServerSpecs() {
+function ServerSpecs({spec, metric}) {
   return (
     <div className='bg-cb-gray-600 rounded-lg col-span-1 lg:col-span-2 xl:col-span-1'>
         <div className='bg-gradient-to-b from-cb-gray-400 p-6 rounded-lg'>
@@ -73,12 +73,12 @@ function ServerSpecs() {
         </div>
         
         <ul className='px-6 py-3 h-auto'>
-            <li className='flex justify-between'><p>OS:</p><p>Windows</p></li>
-            <li className='flex justify-between'><p>CPU:</p><p>{}</p></li>
-            <li className='flex justify-between'><p>Memory:</p><p>{}</p></li>
+            <li className='flex justify-between'><p>OS:</p><p>{spec? spec.operatingSystem.Description: null}</p></li>
+            <li className='flex justify-between'><p>CPU:</p><p>{metric? spec.cpuInformation.ModelName: null}</p></li>
+            <li className='flex justify-between'><p>Memory:</p><p>{metric && metric.memoryUsage? metric.memoryUsage.total: null}</p></li>
             <li className='flex justify-between'><p>Network:</p><p>{}</p></li>
-            <li className='flex justify-between'><p>Storage:</p><p>{}</p></li>
-            <li className='flex justify-between'><p>Location:</p><p>{}</p></li>
+            <li className='flex justify-between'><p>Storage:</p><p>{metric && metric.diskUsage?metric.diskUsage[0]["size"]: null}</p></li>
+            <li className='flex justify-between'><p>Location:</p><p>{spec? `${spec.localeInformation.city}, ${spec.localeInformation.country}`: null}</p></li>
         </ul>
     </div>
   )
@@ -140,7 +140,35 @@ export default function ComputeProviderStatus() {
   const { metadata } = useCyborgState().dashboard
   const { taskMetadata } = useCyborgState()
   const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
-  const [link, setLink] = useState(`${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`);
+  const [link, setLink] = useState(metadata && metadata.link? metadata.link : "");
+
+  const [specs, setSpecs] = useState();
+  const [metrics, setMetrics] = useState();
+
+  useEffect(()=>{
+    const fetchSpecs = async () => {
+      try {
+        const specRes = await axios.get(`http://${link}/system-specs`);
+          setSpecs(specRes.data);
+      } catch (error) {
+        console.error("SPECS ERROR:: ", error);
+      } 
+    };
+    if (link) fetchSpecs();
+  },[link])
+  useEffect(()=>{
+    const fetchMetrics = async () => {
+      try {
+        const metricRes = await axios.get(`http://${link}/consumption-metrics`);
+          setMetrics(metricRes.data);
+      } catch (error) {
+        console.error("METRICS ERROR:: ", error);
+      } 
+    };
+    if (link) fetchMetrics();
+  },[link])
+  // console.log("specs: ", specs);
+  // console.log("metrics: ", metrics);
   // let taskId = taskMetadata? taskMetadata.taskId : null;
   useEffect(()=>{
     const route = `${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`
@@ -165,11 +193,11 @@ export default function ComputeProviderStatus() {
             </div> 
         </div> 
         <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white'>
-            <ServerSpecs />
+            <ServerSpecs spec={specs} metric={metrics} />
             <Terminal link={link} taskId={taskId} />
-            <GaugeDisplay percentage={metadata.account?80:5} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/>
-            <GaugeDisplay percentage={metadata.account?30:5} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
-            <GaugeDisplay percentage={metadata.account?40:5} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
+            <GaugeDisplay percentage={metadata.account && metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/>
+            <GaugeDisplay percentage={metadata.account && metrics && metrics.memoryUsage? Number(metrics.memoryUsage.usage.slice(0, -1)):1} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
+            <GaugeDisplay percentage={metadata.account && metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
         </div>
         <div className='flex items-center'>
 
