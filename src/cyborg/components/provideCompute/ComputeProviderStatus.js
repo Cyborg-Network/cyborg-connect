@@ -21,7 +21,7 @@ export function GetLogs({link, taskId, loading }) {
             'Access-Control-Allow-Origin': '*',
           }});
           // console.log("logs response: ", response)
-        setData(response.data);
+        if (data != response.data) setData(response.data);
       } catch (error) {
         console.log("DATA ERROR:: ", error);
         
@@ -30,7 +30,7 @@ export function GetLogs({link, taskId, loading }) {
     };
     console.log("deploy data: ", data)
     if (link) fetchData();
-  }, [taskId, link]);
+  }, [taskId, link, data]);
 
   useEffect(() => {
     const fetchStatusInfo = async () => {
@@ -49,8 +49,8 @@ export function GetLogs({link, taskId, loading }) {
    
     if (link) fetchStatusInfo();
   }, [taskId, link]);
-  // console.log("deploy status: ", status)
-  // console.log("logs data: ", data)
+  console.log("deploy status: ", status)
+  console.log("logs data: ", data)
   return (
       <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>
         <div className='flex flex-col'>

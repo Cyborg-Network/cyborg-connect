@@ -7,7 +7,7 @@ import { FiPlusCircle } from "react-icons/fi";
 import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
-import { GetLogs } from './ComputeProviderStatus';
+// import { GetLogs } from './ComputeProviderStatus';
 function AddNodeButton({addNode}) {
     return (
         <button onClick={()=>addNode(true)}
@@ -33,7 +33,7 @@ function NodeList({nodes}) {
     const { toggleDashboard } = useCyborg()
     return (
         <div className='flex flex-col w-full text-white text-opacity-70 '>
-            <span className='flex w-5/6 py-2 px-5'>
+            {/* <span className='flex w-5/6 py-2 px-5'>
                 <ul className='grid grid-cols-3 w-full'>
                     <li>Name</li>
                     <li>Type</li>
@@ -57,7 +57,7 @@ function NodeList({nodes}) {
                         <li>Austin, Texas</li>
                     </ul>
                 </span>
-            </div>
+            </div> */}
             <span className={`${nodes.length < 1? 'hidden' : ''} flex w-full py-2 px-5`}>
                 <ul className='grid grid-cols-4 w-full'>
                     <li>Name / Address</li>
@@ -86,9 +86,9 @@ function NodeList({nodes}) {
                                     <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li>
                                 </ul>
                             </span>
-                            <div className='p-1 flex w-full'>
+                            {/* <div className='p-1 flex w-full'>
                                 <GetLogs link={`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`} loading/>
-                            </div>
+                            </div> */}
                         </div>
                     ))}
                 </div>
