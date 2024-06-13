@@ -20,6 +20,7 @@ export function GetLogs({link, taskId, loading }) {
           headers: {
             'Access-Control-Allow-Origin': '*',
           }});
+          // console.log("logs response: ", response)
         setData(response.data);
       } catch (error) {
         console.log("DATA ERROR:: ", error);
@@ -45,10 +46,11 @@ export function GetLogs({link, taskId, loading }) {
         setStatus("error")
       } 
     };
-    console.log("deploy status: ", status)
+   
     if (link) fetchStatusInfo();
   }, [taskId, link]);
-
+  // console.log("deploy status: ", status)
+  // console.log("logs data: ", data)
   return (
       <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>
         <div className='flex flex-col'>
@@ -69,14 +71,13 @@ function ServerSpecs({spec, metric}) {
   return (
     <div className='bg-cb-gray-600 rounded-lg col-span-1 lg:col-span-2 xl:col-span-1'>
         <div className='bg-gradient-to-b from-cb-gray-400 p-6 rounded-lg'>
-          <h4 className='font-thin'>Server Specifications</h4>
+          <h4 className='font-thin'>Server Specifications</h4> 
         </div>
         
         <ul className='px-6 py-3 h-auto'>
             <li className='flex justify-between'><p>OS:</p><p>{spec? spec.operatingSystem.Description: null}</p></li>
-            <li className='flex justify-between'><p>CPU:</p><p>{metric? spec.cpuInformation.ModelName: null}</p></li>
+            <li className='flex justify-between'><p>CPU:</p><p>{spec? spec.cpuInformation.ModelName: null}</p></li>
             <li className='flex justify-between'><p>Memory:</p><p>{metric && metric.memoryUsage? metric.memoryUsage.total: null}</p></li>
-            <li className='flex justify-between'><p>Network:</p><p>{}</p></li>
             <li className='flex justify-between'><p>Storage:</p><p>{metric && metric.diskUsage?metric.diskUsage[0]["size"]: null}</p></li>
             <li className='flex justify-between'><p>Location:</p><p>{spec? `${spec.localeInformation.city}, ${spec.localeInformation.country}`: null}</p></li>
         </ul>
@@ -177,7 +178,7 @@ export default function ComputeProviderStatus() {
       setLink(route)
     }
   },[taskMetadata])
-  console.log("metadata: ", metadata)
+  // console.log("metadata: ", metadata)
   // console.log("task state: ", taskId)
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
