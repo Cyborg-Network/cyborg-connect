@@ -77,12 +77,12 @@ function NodeList({nodes}) {
                                         </a>
                                         <button className='pl-3 flex flex-col items-start hover:text-cb-green'
                                             onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: item })}>
-                                            <h3 className='mb-0'>{item.name}</h3>
-                                            <p className='mt-0 text-sm'>{item.account.slice(0,16)}</p>
+                                            <h3 className='mb-0'>ID:{item.id}</h3>
+                                            <p className='mt-0 text-sm'>{item.owner.slice(0,16)}</p>
                                         </button>
                                     </li>
                                     <li>Providers</li>
-                                    <li>{`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}</li>
+                                    <li>{`${item.api.domain}`}</li>
                                     <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li>
                                 </ul>
                             </span>

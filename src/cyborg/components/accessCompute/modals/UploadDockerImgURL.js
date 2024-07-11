@@ -35,7 +35,7 @@ function UploadDockerImgURL({setService}) {
     console.log("url: ". url)
     
     const fromAcct = await getFromAcct()
-    const containerTask = api.tx.workerRegistration.taskScheduler(url)
+    const containerTask = api.tx.taskManagement.taskScheduler(url)
     await containerTask.signAndSend(...fromAcct,({ status, events, dispatchError }) => {
       // status would still be set, but in the case of error we can shortcut
       // to just check it (so an error would indicate InBlock or Finalized)
@@ -79,7 +79,7 @@ function UploadDockerImgURL({setService}) {
           });
           const success = events
           .filter(({ event }) =>
-            api.events.workerRegistration.TaskScheduled.is(event)
+            api.events.taskManagement.TaskScheduled.is(event)
           )
           if ( success.length > 0 ) {
             toast.success(`Task Scheduled`)

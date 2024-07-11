@@ -141,7 +141,7 @@ export default function ComputeProviderStatus() {
   const { metadata } = useCyborgState().dashboard
   const { taskMetadata } = useCyborgState()
   const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
-  const [link, setLink] = useState(metadata && metadata.link? metadata.link : "");
+  const [link, setLink] = useState(metadata && metadata.api? metadata.api.domain : "");
 
   const [specs, setSpecs] = useState();
   const [metrics, setMetrics] = useState();
@@ -172,7 +172,7 @@ export default function ComputeProviderStatus() {
   // console.log("metrics: ", metrics);
   // let taskId = taskMetadata? taskMetadata.taskId : null;
   useEffect(()=>{
-    const route = `${metadata.ip.ipv4.join('.')}:${metadata.port.replace(",", "")}`
+    const route = `${metadata.api.domain}`
     if (taskMetadata) {
       setTaskId(taskMetadata.taskId)
       setLink(route)
@@ -186,7 +186,7 @@ export default function ComputeProviderStatus() {
         <div className='flex items-center justify-between mx-2 text-white p-4 px-14'>
             <div className='flex items-end gap-2 text-xl'>
               <div>Node Name: </div>
-              <div className='text-cb-green'>{metadata.name}</div>
+              <div className='text-cb-green'>{metadata.owner}:{metadata.id}</div>
             </div> 
             <div className='flex items-end gap-2 text-md'>
               <div className='text-opacity-50 text-white'>IP Address: </div>
