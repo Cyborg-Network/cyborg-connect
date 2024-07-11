@@ -83,7 +83,7 @@ function NodeList({nodes}) {
                                     </li>
                                     <li>Providers</li>
                                     <li>{`${item.api.domain}`}</li>
-                                    <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li>
+                                    {/* <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li> */}
                                 </ul>
                             </span>
                             {/* <div className='p-1 flex w-full'>
