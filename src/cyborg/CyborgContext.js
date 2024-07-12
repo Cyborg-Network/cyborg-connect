@@ -102,20 +102,8 @@ const CyborgContextProvider = props => {
           const entries = await api.query.workerClusters.workerClusters.entries();
           // Extract and process the worker clusters
           const workerClusters = entries.map(([key, value]) => {
-            // return {
-            //   key: key.toHuman(),
-            //   value: value.toHuman(),
-            // };
             return value.toHuman()
           });
-
-          // const count = await api.query.workerRegistration.nextClusterId()
-          // for (let i = 0; i < count.toNumber(); i++) {
-          //     const worker = (await api.query.workerRegistration.workerClusters(i)).toHuman()
-          //     console.log("WOKRER:: ", worker)
-          //     if (worker) workers.push({...worker, link: `${worker.ip.ipv4.join('.')}:${worker.port.replace(",", "")}`}) 
-
-          // }
           console.log("WORKERS RETREIVED:: ", workerClusters, entries)
           listWorkers(workerClusters)
       }

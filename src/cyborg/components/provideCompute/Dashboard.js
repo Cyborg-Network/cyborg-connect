@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import nondeployed from '../../../../public/assets/icons/nondeployed.png' 
 import deploymentsTab from '../../../../public/assets/icons/deployment-logo.png' 
 import cyberdock from '../../../../public/assets/icons/cyberdockDash.png' 
 import { FiPlusCircle } from "react-icons/fi";
-// import { useSubstrateState } from '../../../substrate-lib';
+import { useSubstrateState } from '../../../substrate-lib';
 import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
@@ -77,8 +77,8 @@ function NodeList({nodes}) {
                                         </a>
                                         <button className='pl-3 flex flex-col items-start hover:text-cb-green'
                                             onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: item })}>
-                                            <h3 className='mb-0'>ID:{item.id}</h3>
-                                            <p className='mt-0 text-sm'>{item.owner.slice(0,16)}</p>
+                                            {/* <h3 className='mb-0'>ID:{item.id}</h3> */}
+                                            <p className='mt-0 text-sm'>ID:{item.owner.slice(0,16)}:{item.id}</p>
                                         </button>
                                     </li>
                                     <li>Providers</li>
@@ -98,29 +98,24 @@ function NodeList({nodes}) {
 
 function Dashboard() {
     const [node, addNode]=useState(false)
-    // const { api } = useSubstrateState()
+    const { api } = useSubstrateState()
     const [refresh, setRefresh] = useState(false)
-    // const [nodeCount, setNodeCount] = useState(0)
-    // const { listWorkers } = useCyborg()
+    const { listWorkers } = useCyborg()
     const { workerList } = useCyborgState()
     console.log("workerList: ", workerList)
 
-    // useEffect(() => {
-    //     const workerCount = async () => {
-    //         const count = await api.query.workerRegistration.nextClusterId()
-    //         setNodeCount(count.toNumber())
-    //     }
-    //     const getRegisteredWorkers = async () => {
-    //         let workers = []
-    //         for (let i = 0; i < nodeCount; i++) {
-    //             const worker = await api.query.workerRegistration.workerClusters(i)
-    //             workers.push(worker.toHuman()) 
-    //         }
-    //         listWorkers(workers)
-    //     }
-    //     workerCount()
-    //     getRegisteredWorkers()
-    // },[nodeCount, refresh])
+    useEffect(() => {
+      const getRegisteredWorkers = async () => {
+          const entries = await api.query.workerClusters.workerClusters.entries();
+          // Extract and process the worker clusters
+          const workerClusters = entries.map(([key, value]) => {
+            return value.toHuman()
+          });
+          console.log("WORKERS RETREIVED:: ", workerClusters, entries)
+          listWorkers(workerClusters)
+      }
+        getRegisteredWorkers()
+    },[refresh])
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col '>
         <div className='flex items-center justify-between mx-2 text-white'>
