@@ -32,7 +32,6 @@ function UploadDockerImgURL({setService}) {
     event.preventDefault();
     selectService(SERVICES.CYBER_DOCK)
     setTaskStatus(DEPLOY_STATUS.PENDING)
-    console.log("url: ". url)
     
     const fromAcct = await getFromAcct()
     const containerTask = api.tx.taskManagement.taskScheduler(url)

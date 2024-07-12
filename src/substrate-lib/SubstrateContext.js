@@ -82,6 +82,7 @@ const connect = (state, dispatch) => {
   console.log(`Connected socket: ${socket}`)
   const provider = new WsProvider(socket)
   const _api = new ApiPromise({ provider, rpc: jsonrpc })
+
   console.log('api: ', _api)
   console.log('jsonrpc: ', jsonrpc)
 

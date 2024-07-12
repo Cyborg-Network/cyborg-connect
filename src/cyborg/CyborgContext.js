@@ -100,9 +100,6 @@ const CyborgContextProvider = props => {
       const getRegisteredWorkers = async () => {
         const { api } = sState
           const entries = await api.query.workerClusters.workerClusters.entries();
-
-          const test = (await api.query.workerClusters.workerClusters(('5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY',0)));
-          console.log("TESWTING:: ", test)
           // Extract and process the worker clusters
           const workerClusters = entries.map(([key, value]) => {
             // return {
@@ -133,8 +130,8 @@ const CyborgContextProvider = props => {
             }
         }
         listTasks(tasks)
-    }
-      if (sState && sState.api) {
+      }
+      if (sState && sState.api && sState.apiState === "READY") {
         getRegisteredWorkers()
         taskUniqueAllocations()
       }
