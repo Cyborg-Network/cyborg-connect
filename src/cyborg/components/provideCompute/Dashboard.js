@@ -106,7 +106,7 @@ function Dashboard() {
 
     useEffect(() => {
       const getRegisteredWorkers = async () => {
-          const entries = await api.query.workerClusters.workerClusters.entries();
+          const entries = await api.query.edgeConnect.workerClusters.entries();
           // Extract and process the worker clusters
           const workerClusters = entries.map(([key, value]) => {
             return value.toHuman()

@@ -11,7 +11,7 @@ import config from '../config'
 const SOCKETS = {
   RELAY_DEV: 'wss://rococo-rpc.polkadot.io',
   CYBORG: 'wss://fraa-flashbox-3239-rpc.a.stagenet.tanssi.network',
-  LOCAL: 'ws://127.0.0.1:9988'
+  LOCAL: 'ws://127.0.0.1:9944'
 }
 const CHAIN = {
   RELAY_DEV: 'Roccoco',
