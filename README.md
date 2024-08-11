@@ -15,7 +15,7 @@ npm install
 
 ### Usage
 
-You can start e in development mode to connect to a locally running node
+You can start in development mode to connect to a locally running node
 
 ```bash
 npm run start
