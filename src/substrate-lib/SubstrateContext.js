@@ -20,7 +20,7 @@ const CHAIN = {
 }
 
 const parsedQuery = new URLSearchParams(window.location.search)
-const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.LOCAL
+const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.CYBORG
 ///
 // Initial state for `useReducer`
 
@@ -34,7 +34,7 @@ const initialState = {
   apiError: null,
   apiState: null,
   currentAccount: null,
-  chain: CHAIN.LOCAL
+  chain: CHAIN.CYBORG
 }
 
 const registry = new TypeRegistry()
