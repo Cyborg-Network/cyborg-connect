@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import nondeployed from '../../../../public/assets/icons/nondeployed.png' 
 import deploymentsTab from '../../../../public/assets/icons/deployment-logo.png' 
 import cyberdock from '../../../../public/assets/icons/cyberdockDash.png' 
 import { FiPlusCircle } from "react-icons/fi";
-// import { useSubstrateState } from '../../../substrate-lib';
+import { useSubstrateState } from '../../../substrate-lib';
 import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
@@ -68,8 +68,8 @@ function NodeList({nodes}) {
             </span>
                 <div className='bg-white bg-opacity-10 m-4 rounded-lg'>
                     {nodes.length > 0 && nodes.map((item, key) => (
-                        <div>
-                            <span key={key} className='flex justify-between w-full items-center py-4 px-5'>
+                        <div key={key}>
+                            <span className='flex justify-between w-full items-center py-4 px-5'>
                                 <ul className='grid grid-cols-4 w-full items-center'>
                                     <li className='flex items-center gap-3]'>
                                         <a>
@@ -77,12 +77,12 @@ function NodeList({nodes}) {
                                         </a>
                                         <button className='pl-3 flex flex-col items-start hover:text-cb-green'
                                             onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: item })}>
-                                            <h3 className='mb-0'>{item.name}</h3>
-                                            <p className='mt-0 text-sm'>{item.account.slice(0,16)}</p>
+                                            {/* <h3 className='mb-0'>ID:{item.id}</h3> */}
+                                            <p className='mt-0 text-sm'>ID:{item.owner.slice(0,16)}:{item.id}</p>
                                         </button>
                                     </li>
                                     <li>Providers</li>
-                                    <li>{`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`}</li>
+                                    <li>{`${item.api.domain}`}</li>
                                     {/* <li className={`${item.status ?'text-cb-green': 'text-red-600'}`}>{item.status?'verified': 'unverified'}</li> */}
                                 </ul>
                             </span>
@@ -98,29 +98,24 @@ function NodeList({nodes}) {
 
 function Dashboard() {
     const [node, addNode]=useState(false)
-    // const { api } = useSubstrateState()
+    const { api } = useSubstrateState()
     const [refresh, setRefresh] = useState(false)
-    // const [nodeCount, setNodeCount] = useState(0)
-    // const { listWorkers } = useCyborg()
+    const { listWorkers } = useCyborg()
     const { workerList } = useCyborgState()
     console.log("workerList: ", workerList)
 
-    // useEffect(() => {
-    //     const workerCount = async () => {
-    //         const count = await api.query.workerRegistration.nextClusterId()
-    //         setNodeCount(count.toNumber())
-    //     }
-    //     const getRegisteredWorkers = async () => {
-    //         let workers = []
-    //         for (let i = 0; i < nodeCount; i++) {
-    //             const worker = await api.query.workerRegistration.workerClusters(i)
-    //             workers.push(worker.toHuman()) 
-    //         }
-    //         listWorkers(workers)
-    //     }
-    //     workerCount()
-    //     getRegisteredWorkers()
-    // },[nodeCount, refresh])
+    useEffect(() => {
+      const getRegisteredWorkers = async () => {
+          const entries = await api.query.edgeConnect.workerClusters.entries();
+          // Extract and process the worker clusters
+          const workerClusters = entries.map(([key, value]) => {
+            return value.toHuman()
+          });
+          console.log("WORKERS RETREIVED:: ", workerClusters, entries)
+          listWorkers(workerClusters)
+      }
+        getRegisteredWorkers()
+    },[refresh])
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col '>
         <div className='flex items-center justify-between mx-2 text-white'>

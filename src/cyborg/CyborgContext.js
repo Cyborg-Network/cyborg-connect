@@ -99,30 +99,27 @@ const CyborgContextProvider = props => {
     useEffect(() => {
       const getRegisteredWorkers = async () => {
         const { api } = sState
-          let workers = []
-          const count = await api.query.workerRegistration.nextClusterId()
-          for (let i = 0; i < count.toNumber(); i++) {
-              const worker = (await api.query.workerRegistration.workerClusters(i)).toHuman()
-              console.log("WOKRER:: ", worker)
-              if (worker) workers.push({...worker, link: `${worker.ip.ipv4.join('.')}:${worker.port.replace(",", "")}`}) 
-
-          }
-          console.log("WOEOKEKKFKF:: ", workers)
-          listWorkers(workers)
+          const entries = await api.query.edgeConnect.workerClusters.entries();
+          // Extract and process the worker clusters
+          const workerClusters = entries.map(([key, value]) => {
+            return value.toHuman()
+          });
+          console.log("WORKERS RETREIVED:: ", workerClusters, entries)
+          listWorkers(workerClusters)
       }
       const taskUniqueAllocations = async () => {
         const { api } = sState
         let tasks = []
-        const count = await api.query.workerRegistration.nextTaskId()
+        const count = await api.query.taskManagement.nextTaskId()
         for (let i = count-1; i >= 0; i--) {
-            const allocated = (await api.query.workerRegistration.taskAllocations(i)).toHuman()
+            const allocated = (await api.query.taskManagement.taskAllocations(i)).toHuman()
             if (!tasks.some(task => task.taskExecutor === allocated)) {
               tasks.push({ taskExecutor: allocated, taskId: i })
             }
         }
         listTasks(tasks)
-    }
-      if (sState && sState.api) {
+      }
+      if (sState && sState.api && sState.apiState === "READY") {
         getRegisteredWorkers()
         taskUniqueAllocations()
       }
