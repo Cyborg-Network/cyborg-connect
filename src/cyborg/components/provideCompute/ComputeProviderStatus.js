@@ -4,14 +4,15 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { useCyborgState } from '../../CyborgContext';
 import axios from 'axios';
 
-export function GetLogs({link, taskId, loading }) {
+export function GetLogs({link, taskId }) {
   const [data, setData] = useState(null);
   const [status, setStatus] = useState(null);
-  const [display, setDisplay] = useState(`[${link}][TaskID: ${taskId}] Logs: Pending.....`);
 
-  useEffect(()=>{
-    if (data && !loading)setDisplay(`[${link}][TaskID: ${taskId}] Logs: ${ data }`)
-  }, [data])
+  // useEffect(()=>{
+  //   const stored = sessionStorage.getItem(taskId)
+  //   console.log("stored: ", stored)
+  //   if (stored) setData(stored)
+  // }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,17 +21,25 @@ export function GetLogs({link, taskId, loading }) {
           headers: {
             'Access-Control-Allow-Origin': '*',
           }});
-          // console.log("logs response: ", response)
-        if (data != response.data) setData(response.data);
+          console.log("logs response: ", response)
+        // if (data != response.data) setData(response.data);
+        // if (data != response.data) {
+          sessionStorage.setItem(taskId, response.data)
+          setData(response.data)
+        // }
+      
       } catch (error) {
         console.log("DATA ERROR:: ", error);
-        
         setData("error")
       } 
     };
-    console.log("deploy data: ", data)
-    if (link) fetchData();
-  }, [taskId, link, data]);
+    console.log("deploy data: ", data, `http://${link}/logs/${taskId}`)
+    const stored = sessionStorage.getItem(taskId)
+    console.log("stored: ", stored)
+    if (stored) {
+      setData(stored)
+    } else if (link && data === null) fetchData();
+  }, [taskId, link]);
 
   useEffect(() => {
     const fetchStatusInfo = async () => {
@@ -42,26 +51,27 @@ export function GetLogs({link, taskId, loading }) {
           setStatus(response.data);
       } catch (error) {
         console.log("STATUS ERROR:: ", error);
-        
         setStatus("error")
       } 
     };
    
     if (link) fetchStatusInfo();
   }, [taskId, link]);
-  console.log("deploy status: ", status)
+
+  // console.log("deploy status: ", status)
   console.log("logs data: ", data)
+  // console.log("display data: ", display)
   return (
       <code className='flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2'>
         <div className='flex flex-col'>
-          {!loading && status && status.conditions && status.conditions.length > 0? <div className={`${status && status.conditions.length > 0? '': 'hidden'}`}>
+          {status && status.conditions && status.conditions.length > 0? <div className={`${status && status.conditions.length > 0? '': 'hidden'}`}>
               <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].lastUpdateTime}</div>
               <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].message}</div>
               <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].reason}</div>
               <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].status}</div>
               <div>{`[${link}][TaskID: ${taskId}] Status: ` + status.conditions[0].type}</div>
           </div>: ''}
-          <div>{display}</div>
+          <div>{`[${link}][TaskID: ${taskId}] Logs: ${data? data :'Pending.....'}`}</div>
           </div>
         </code>
   )
