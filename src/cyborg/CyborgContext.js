@@ -102,11 +102,26 @@ const CyborgContextProvider = props => {
           const entries = await api.query.edgeConnect.workerClusters.entries();
           // Extract and process the worker clusters
           const workerClusters = entries.map(([key, value]) => {
-            return value.toHuman()
+            let worker = value.toHuman()
+              console.log("taskList: ", taskList)
+              let lastTask = taskList.find(task => {
+                const [address, workerId] = task.taskExecutor
+                return worker.owner === address && worker.id === workerId
+              })
+              return {
+                ...worker,
+                lastTask: lastTask? lastTask.taskId : null
+              }
           });
           console.log("WORKERS RETREIVED:: ", workerClusters, entries)
           listWorkers(workerClusters)
       }
+      if (sState && sState.api && sState.apiState === "READY" && taskList) {
+        getRegisteredWorkers()
+      }
+    },[sState,taskList])
+
+    useEffect(()=> {
       const taskUniqueAllocations = async () => {
         const { api } = sState
         let tasks = []
@@ -120,7 +135,6 @@ const CyborgContextProvider = props => {
         listTasks(tasks)
       }
       if (sState && sState.api && sState.apiState === "READY") {
-        getRegisteredWorkers()
         taskUniqueAllocations()
       }
     },[sState])
@@ -130,6 +144,24 @@ const CyborgContextProvider = props => {
         dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskList[0] }) 
       }
     },[taskMetadata, taskList])
+
+    // // update workers with the last tasks they've executed incase missed by first update
+    // useEffect(() => {
+    //   if (workerList && taskList) {
+    //     let updatedWorkerInfo = workerList.map(worker => {
+    //       let lastTask = taskList.find(task => {
+    //         const [address, workerId] = task.taskExecutor
+    //         return worker.owner === address && worker.id === workerId
+    //       })
+    //       return {
+    //         ...worker,
+    //         lastTask: lastTask? lastTask.taskId : null
+    //       }
+    //     });
+    //     console.log("update workerInfo: ", updatedWorkerInfo)
+    //     listWorkers(updatedWorkerInfo)
+    //   }
+    // },[taskMetadata, taskList, sState])
 
     const toggleDevMode = () => {
         dispatch({ type: ACTIONS.TOGGLE_DEV_MODE, payload: !devMode })

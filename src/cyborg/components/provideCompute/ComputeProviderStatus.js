@@ -140,9 +140,11 @@ function Terminal({link, taskId}) {
 
 export default function ComputeProviderStatus() {
   const { metadata } = useCyborgState().dashboard
-  const { taskMetadata } = useCyborgState()
-  const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
-  const [link, setLink] = useState(metadata && metadata.api? metadata.api.domain : "");
+  // const { taskMetadata } = useCyborgState()
+  // const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
+  // const [link, setLink] = useState(metadata && metadata.api? metadata.api.domain : "");
+  const taskId = metadata.lastTask
+  const link = metadata.api.domain
 
   const [specs, setSpecs] = useState();
   const [metrics, setMetrics] = useState();
@@ -172,15 +174,15 @@ export default function ComputeProviderStatus() {
   console.log("specs: ", specs);
   console.log("metrics: ", metrics);
   // let taskId = taskMetadata? taskMetadata.taskId : null;
-  useEffect(()=>{
-    const route = `${metadata.api.domain}`
-    if (taskMetadata) {
-      setTaskId(taskMetadata.taskId)
-      setLink(route)
-    }
-  },[taskMetadata])
-  // console.log("metadata: ", metadata)
-  // console.log("task state: ", taskId)
+  // useEffect(()=>{
+  //   const route = `${metadata.api.domain}`
+  //   if (taskMetadata) {
+  //     setTaskId(taskMetadata.taskId)
+  //     setLink(route)
+  //   }
+  // },[taskMetadata])
+  console.log("metadata: ", metadata)
+  console.log("task state: ", taskId)
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col overflow-scroll'>
@@ -201,7 +203,6 @@ export default function ComputeProviderStatus() {
             <GaugeDisplay percentage={metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/> }
             <GaugeDisplay percentage={metrics && metrics.memoryUsage? Number(metrics.memoryUsage.usage.slice(0, -1)):1} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
             <GaugeDisplay percentage={metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
-           
           </div>
         <div className='flex items-center'>
 
