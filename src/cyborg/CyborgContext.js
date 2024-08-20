@@ -140,9 +140,9 @@ const CyborgContextProvider = props => {
     },[sState])
 
     useEffect(() => {
-      if (!taskMetadata && taskList) {
+      if ((!taskMetadata && taskList) || (taskMetadata && taskMetadata.taskId < taskList[0].taskId)) {
         dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskList[0] }) 
-      }
+      } 
     },[taskMetadata, taskList])
 
     // // update workers with the last tasks they've executed incase missed by first update

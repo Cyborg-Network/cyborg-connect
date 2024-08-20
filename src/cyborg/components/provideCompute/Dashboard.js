@@ -6,7 +6,6 @@ import { FiPlusCircle } from "react-icons/fi";
 import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
-// import { GetLogs } from './ComputeProviderStatus';
 function AddNodeButton({addNode}) {
     return (
         <button onClick={()=>addNode(true)}
@@ -35,31 +34,6 @@ function NodeList({nodes, taskMetadata}) {
     console.log("lastTask: ", lastTask)
     return (
         <div className='flex flex-col w-full text-white text-opacity-70 '>
-            {/* <span className='flex w-5/6 py-2 px-5'>
-                <ul className='grid grid-cols-3 w-full'>
-                    <li>Name</li>
-                    <li>Type</li>
-                    <li>Location</li>
-                </ul>
-            </span>
-            <div className='bg-white bg-opacity-10 m-4 rounded-lg'>
-                <span className='flex justify-between w-5/6 items-center py-4 px-5'>
-                    <ul className='grid grid-cols-3 w-full items-center'>
-                        <li className='flex items-center gap-3'>
-                            <a>
-                                <img src={cyberdock} />
-                            </a>
-                            <button className='flex flex-col items-start hover:text-cb-green'
-                                            onClick={()=>toggleDashboard({ section: DASH_STATE.SERVER, metadata: { ip: { ipv4: ['0','0','0','0']}, port: '0' } })}>
-                                <h3 className='mb-0'>Cyber Dock</h3>
-                                <p className='mt-0 text-lg'>Zigbee</p>
-                            </button>
-                        </li>
-                        <li>Master</li>
-                        <li>Austin, Texas</li>
-                    </ul>
-                </span>
-            </div> */}
             <span className={`${nodes.length < 1? 'hidden' : ''} flex w-full py-2 px-5`}>
                 <ul className='grid grid-cols-4 w-full'>
                     <li>Name / Address</li>
@@ -90,9 +64,6 @@ function NodeList({nodes, taskMetadata}) {
                                     </li>
                                 </ul>
                             </span>
-                            {/* <div className='p-1 flex w-full'>
-                                <GetLogs link={`${item.ip.ipv4.join('.')}:${item.port.replace(",", "")}`} loading/>
-                            </div> */}
                         </div>
                     ))}
                 </div>
