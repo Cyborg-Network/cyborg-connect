@@ -32,6 +32,7 @@ function NodeList({nodes, taskMetadata}) {
     const { toggleDashboard } = useCyborg()
     const lastTask = taskMetadata.taskId
     console.log("nodes: in list: ", nodes)
+    console.log("lastTask: ", lastTask)
     return (
         <div className='flex flex-col w-full text-white text-opacity-70 '>
             {/* <span className='flex w-5/6 py-2 px-5'>

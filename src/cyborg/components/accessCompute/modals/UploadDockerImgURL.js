@@ -1,12 +1,13 @@
 import React, {useState} from 'react'
 import { Dimmer } from 'semantic-ui-react'
-import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
+import { SERVICES, DEPLOY_STATUS, useCyborg, useCyborgState } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
 import { web3FromSource } from '@polkadot/extension-dapp'
 import toast from 'react-hot-toast';
 
 function UploadDockerImgURL({setService}) {
-  const { selectService, setTaskStatus, setTaskMetadata } = useCyborg()
+  const { selectService, setTaskStatus, setTaskMetadata, listWorkers } = useCyborg()
+  const { workerList } = useCyborgState()
   const { api, currentAccount } = useSubstrateState()
   const [url,setUrl] = useState('')
 
@@ -83,9 +84,27 @@ function UploadDockerImgURL({setService}) {
           if ( success.length > 0 ) {
             toast.success(`Task Scheduled`)
             setTaskStatus(DEPLOY_STATUS.READY)
-            const taskEvent = success[0].toJSON().event
+            const taskEvent = success[0].toJSON().event.data
             console.log("Extrinsic Success: ", taskEvent)
-            setTaskMetadata(taskEvent.data)
+            setTaskMetadata(taskEvent)
+            const [taskExecutor, , taskId] = taskEvent
+            const [workerAddress, workerId] = taskExecutor
+            let updatedWorkerInfo = workerList 
+            ? workerList.map((worker) => {
+                if (Number(worker.id) === workerId && worker.owner === workerAddress) {
+                  return {
+                    ...worker,
+                    lastTask: taskId,
+                  };
+                } else {
+                  console.log("not found");
+                  return worker;
+                }
+              })
+            : null;
+            if (updatedWorkerInfo) {
+              listWorkers(updatedWorkerInfo)
+            }
           }
       }
     }).catch((error) => {
