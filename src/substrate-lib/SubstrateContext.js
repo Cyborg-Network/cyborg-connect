@@ -11,7 +11,7 @@ import config from '../config'
 const SOCKETS = {
   RELAY_DEV: 'wss://rococo-rpc.polkadot.io',
   CYBORG: 'wss://fraa-flashbox-3239-rpc.a.stagenet.tanssi.network',
-  LOCAL: 'ws://127.0.0.1:9944'
+  LOCAL: 'ws://127.0.0.1:9988' //change to 'ws://127.0.0.1:9944' if using solochain
 }
 const CHAIN = {
   RELAY_DEV: 'Roccoco',
@@ -94,7 +94,6 @@ const connect = (state, dispatch) => {
   })
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }))
   _api.on('error', err => dispatch({ type: 'CONNECT_ERROR', payload: err }))
-  
 }
 
 const retrieveChainInfo = async api => {
