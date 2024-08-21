@@ -89,8 +89,15 @@ function UploadDockerImgURL({setService}) {
             setTaskMetadata(taskEvent)
             const [taskExecutor, , taskId] = taskEvent
             const [workerAddress, workerId] = taskExecutor
-            let updatedWorkerInfo = workerList 
-            ? workerList.map((worker) => {
+
+            const storedListInfo = sessionStorage.getItem('WORKERLIST')
+            console.log("storedListInfo found",JSON.parse(storedListInfo));
+            const storedList = storedListInfo? JSON.parse(storedListInfo).workers : null
+            const availableList = workerList || storedList
+            console.log("workerList after task: ", availableList);
+            console.log("storedList found",storedList);
+            let updatedWorkerInfo = availableList 
+            ? availableList.map((worker) => {
                 if (Number(worker.id) === workerId && worker.owner === workerAddress) {
                   return {
                     ...worker,
@@ -103,6 +110,7 @@ function UploadDockerImgURL({setService}) {
               })
             : null;
             if (updatedWorkerInfo) {
+              console.log("update workers after task submit")
               listWorkers(updatedWorkerInfo)
             }
           }
