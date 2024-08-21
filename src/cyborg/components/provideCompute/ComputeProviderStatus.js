@@ -24,7 +24,7 @@ export function GetLogs({link, taskId }) {
           console.log("logs response: ", response)
         // if (data != response.data) setData(response.data);
         // if (data != response.data) {
-          sessionStorage.setItem(taskId, response.data)
+          sessionStorage.setItem(`TASKID:${taskId}`, response.data)
           setData(response.data)
         // }
       
@@ -34,9 +34,9 @@ export function GetLogs({link, taskId }) {
       } 
     };
     console.log("deploy data: ", data, `http://${link}/logs/${taskId}`)
-    const stored = sessionStorage.getItem(taskId)
-    console.log("stored: ", stored)
-    if (stored) {
+    const stored = sessionStorage.getItem(`TASKID:${taskId}`)
+    console.log("stored: ", taskId, stored)
+    if (stored && stored.length > 0) {
       setData(stored)
     } else if (link && data === null) fetchData();
   }, [taskId, link]);

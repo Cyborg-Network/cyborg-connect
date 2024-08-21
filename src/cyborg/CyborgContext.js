@@ -114,11 +114,25 @@ const CyborgContextProvider = props => {
               }
           });
           console.log("WORKERS RETREIVED:: ", workerClusters, entries)
+          sessionStorage.setItem('WORKERLIST', JSON.stringify({ time: new Date() , workers:workerClusters}))
           listWorkers(workerClusters)
       }
+      // TODO: Update workerList in session storage via time intervals and reduce api calls by setting listWorkers to sessionStorage value if not need to be updated
+      // const storedList = sessionStorage.getItem('WORKERLIST')
+      // if (storedList) {
+      //   const currentTime = new Date()
+      //   const timePassed = (currentTime - storedList.time)/1000;
+      //   if (timePassed > 90) {
+      //     getRegisteredWorkers()
+      //   } else {
+      //     listWorkers(storedList.workers)
+      //   }
+      // }
       if (sState && sState.api && sState.apiState === "READY" && taskList) {
-        getRegisteredWorkers()
+          getRegisteredWorkers()
       }
+      // const storedListInfo = sessionStorage.getItem('WORKERLIST')
+      // console.log("storedListInfo: ", JSON.parse(storedListInfo))
     },[sState,taskList])
 
     useEffect(()=> {
