@@ -1,11 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import nondeployed from '../../../../public/assets/icons/nondeployed.png' 
 import deploymentsTab from '../../../../public/assets/icons/deployment-logo.png' 
 import cyberdock from '../../../../public/assets/icons/cyberdockDash.png' 
 import { FiPlusCircle } from "react-icons/fi";
+import { IoClose } from "react-icons/io5";
+import { IoMdCopy } from "react-icons/io";
+import { FaCheck } from "react-icons/fa6";
 import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext';
 import { Button } from 'semantic-ui-react';
 import { TbRefresh } from "react-icons/tb";
+import CopyToClipboard from 'react-copy-to-clipboard';
+import dockdeploy from '../../../../public/assets/icons/dockdeploy.gif'
 function AddNodeButton({addNode}) {
     return (
         <button onClick={()=>addNode(true)}
@@ -24,6 +29,75 @@ function NoNodes({addNode}) {
                 <button onClick={()=>addNode(true)} className='hover:text-cb-green'><u>Add your first node</u></button>
             </div>
         </div>
+    )
+}
+
+//alignment should be either 'items-center' or undefined, this will be better with ts
+function Modal({children, alignment}) {
+    return(
+        <div className='fixed bg-cb-gray-400 backdrop-blur-lg bg-opacity-30 h-full w-full left-0 top-0 z-50 grid justify-center items-center'>
+            <div className={`${alignment} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 text-white bg-cb-gray-700 2xl:w-1/5 xl:w-2/5 lg:w-3/5 sm:w-1/2 w-5/6 rounded-lg p-16`}>
+                {children}
+            </div>
+        </div>
+    )
+}
+
+function AddNodeModal({addNode}) {
+
+    const [deployCommand, setDeployCommand] = useState("");
+
+    return(
+        <Modal alignment={undefined}>
+            <div className='flex justify-between items-top'>
+                <h3>Deploy Master Node</h3>
+                <button onClick={()=>addNode(false)} className='bg-cb-gray-400 rounded-full h-fit p-1.5 aspect-square hover:text-cb-green'><IoClose size={20}/></button>
+            </div>
+            <div className='h-1 border-t border-cb-gray-500 w-full'/>
+            <div className='relative h-fit'>
+                <input 
+                    type='text'
+                    placeholder='Insert command to deploy node...'
+                    onChange={(e) => {setDeployCommand(e.target.value)}}
+                    className='w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none' 
+                    required
+                />
+                <CopyToClipboard text={deployCommand}>
+                    <button className='absolute rounded-lg bg-cb-gray-400 focus:text-cb-green right-2 top-1/2 -translate-y-1/2'><IoMdCopy size={25}/></button>
+                </CopyToClipboard>
+            </div>
+            <div className='h-1 border-t border-cb-gray-500 w-full'/>
+            <button onClick={()=>{alert("Not yet implemented")}} 
+                className='flex w-1/2 items-center text-cb-gray-500 self-center justify-center gap-1 size-30 py-3 px-6 rounded-md bg-cb-green focus:bg-cb-gray-500 focus:text-cb-green'
+            >
+                Deploy
+            </button>
+        </Modal>
+    )
+}
+
+function WaitingForNodeModal() {
+
+    return(
+        <Modal alignment={'items-center'}>
+            <img className='w-32 aspect-square' src={dockdeploy} alt="deploying..." />
+            <h3>Waiting for your node's response...</h3>
+        </Modal>
+    )
+}
+
+function SuccessfulDeployModal() {
+
+    return(
+        <Modal alignment={'items-center'}>
+            <div className='grid justify-center items-center rounded-full w-32 aspect-square bg-cb-gray-600'>
+                <div className='grid justify-center items-center rounded-full w-24 aspect-square bg-cb-gray-400 text-cb-green'>
+                    <FaCheck size={50}/>
+                </div>
+            </div>
+            <div className='text-cb-green text-4xl'>Success!</div>
+            <div className='text-3xl'>Your master node is connected.</div>
+        </Modal>
     )
 }
 
@@ -77,6 +151,13 @@ function Dashboard() {
     const { workerList, taskMetadata } = useCyborgState()
     console.log("workerList: ", workerList)
 
+    const isWaitingForNode = false;
+    const deploySuccessful = false;
+
+  useEffect(() => {
+    console.log(node);
+  }, [node])
+
   return (
     <div className='h-screen bg-cb-gray-700 flex flex-col '>
         <div className='flex items-center justify-between mx-2 text-white'>
@@ -95,6 +176,18 @@ function Dashboard() {
         {   node || (workerList && workerList.length > 0)?
             <NodeList nodes={workerList} taskMetadata={taskMetadata}/> :
             <NoNodes addNode={addNode} />
+        }
+        {   node?
+            <AddNodeModal addNode={addNode} /> :
+            <></>
+        }
+        {   isWaitingForNode?
+            <WaitingForNodeModal/> :
+            <></>
+        }
+        {   deploySuccessful?
+            <SuccessfulDeployModal/> :
+            <></>
         }
     </div>
   )

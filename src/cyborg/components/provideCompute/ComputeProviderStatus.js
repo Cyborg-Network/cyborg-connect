@@ -98,7 +98,7 @@ function ServerSpecs({spec, metric}) {
 function Terminal({link, taskId}) {
   console.log("terminal task: ", taskId)
     return (
-      <div className='lg:col-span-2 bg-white bg-opacity-15 relative rounded-lg h-auto'>
+      <div className='lg:col-span-2 bg-white bg-opacity-15 relative rounded-lg h-auto overflow-scroll'>
         <div className='absolute top-5 left-5'>
           <a>
             <img src={widget} />
