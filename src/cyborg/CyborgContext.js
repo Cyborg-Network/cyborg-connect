@@ -154,7 +154,7 @@ const CyborgContextProvider = props => {
     },[sState])
 
     useEffect(() => {
-      if ((!taskMetadata && taskList) || (taskMetadata && taskMetadata.taskId && taskList < taskList[0].taskId)) {
+      if ((!taskMetadata && taskList) || (taskMetadata && taskList && taskMetadata.taskId < taskList[0].taskId)) {
         dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskList[0] }) 
       } 
     },[taskMetadata, taskList])
