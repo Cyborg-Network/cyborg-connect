@@ -6,14 +6,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'cb-green': '#01DA63',
-        'cb-gray-400': '#343735',
-        'cb-gray-500': '#2C3631',
-        'cb-gray-600': '#1E211F',
-        'cb-gray-700': '#151715',
-        'gauge-red': '#FF5858',
-        'gauge-green': '#28E92F',
-        'gauge-yellow': '#F8A832',
+        'cb-green': 'var(--cb-green)',
+        'cb-gray-400': 'var(--cb-gray-400)',
+        'cb-gray-500': 'var(--cb-gray-500)',
+        'cb-gray-600': 'var(--cb-gray-600)',
+        'cb-gray-700': 'var(--cb-gray-700)',
+        'gauge-red': 'var(--gauge-red)',
+        'gauge-green': 'var(--gauge-green)',
+        'gauge-yellow': 'var(--gauge-yellow)',
       },
     },
   },
