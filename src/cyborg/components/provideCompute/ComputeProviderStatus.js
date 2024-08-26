@@ -4,7 +4,7 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { useCyborgState } from '../../CyborgContext';
 import Chart from '../utils/Chart';
 import axios from 'axios';
-import { data1 } from '../../data/MockData';
+import { data1, data2, data3 } from '../../data/MockData';
 import deployment from '../../../../public/assets/icons/deployment-type.png' 
 import id from '../../../../public/assets/icons/id.png' 
 import earnings from '../../../../public/assets/icons/earnings.png' 
@@ -150,12 +150,17 @@ function Terminal({link, taskId}) {
     )
   }
 
-  function GaugeDisplay({percentage, fill, name, styleAdditions }) {
+  function GaugeDisplay({percentage, fill, name, styleAdditions, selectedGauge, setAsSelectedGauge }) {
+
+    const onMouseDownHandler = () => {
+        setAsSelectedGauge(name, fill)
+    }
+    
     console.log(percentage, fill, name)
     return (
-      <div className='bg-cb-gray-600 rounded-lg p-4'>
-        <div className='flex items-center p-2 gap-2'>
-          <div className={`w-3 h-3 ring-4 ring-opacity-15 rounded-full ${styleAdditions}`}></div>
+      //Using mousedown events instead of onclick events on "unimportant" clicks, as feedback is immediate => better UX
+      <div onMouseDown={() => onMouseDownHandler()} className={`${name === selectedGauge.name ? "bg-cb-gray-400 border border-cb-green" : ""} bg-cb-gray-600 rounded-lg relative`}>
+        <div className='flex items-center p-2 gap-4 absolute top-4 left-4'>          <div className={`w-3 h-3 ring-4 ring-opacity-15 rounded-full ${styleAdditions}`}></div>
           <div><h5>{name + " Usage"}</h5></div>
         </div>
         <div className='h-80 p-2 text-white'>
@@ -177,6 +182,10 @@ function Terminal({link, taskId}) {
               ({ value }) => `${value} %`
             }
           />
+        </div> 
+        <div className={`${name === selectedGauge.name? "bg-cb-green" : "bg-cb-gray-400"} w-full flex gap-2 text-lg justify-center items-center h-12 rounded-b-lg`}>
+            <div>View Details</div>
+            <img src={name === selectedGauge.name ? arrowUp : arrowDown}/>
         </div> 
       </div>
     )
@@ -207,6 +216,18 @@ export default function ComputeProviderStatus({perspective}) {
 
   const [specs, setSpecs] = useState();
   const [metrics, setMetrics] = useState();
+  const [selectedGauge, setSelectedGauge] = useState({name: "CPU", color: "var(--gauge-red)", data: data1}); //"CPU || "RAM" || "DISK"
+
+  const handleSetSelectedGauge = (name, color) => {
+    let data;
+    switch (name){
+        case "CPU": data = data1; break;
+        case "DISK": data = data2; break;
+        case "RAM": data = data3; break;
+    }
+
+    setSelectedGauge({name: name, color: color, data: data});
+  }
 
   useEffect(()=>{
     const fetchSpecs = async () => {
@@ -268,7 +289,7 @@ export default function ComputeProviderStatus({perspective}) {
                 <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'var(--gauge-yellow)'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
                 </>
             }
-            <RenderChart metric={"CPU"} data={data1} color={"var(--gauge-red)"}/>
+            <RenderChart metric={selectedGauge.name} data={selectedGauge.data} color={selectedGauge.color}/>
           </div>
     </div>
   )
