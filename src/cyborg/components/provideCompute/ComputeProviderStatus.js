@@ -165,7 +165,7 @@ function RenderChart({metric, data, color}) {
     )
 }
 
-export default function ComputeProviderStatus() {
+export default function ComputeProviderStatus({perspective}) {
   const { metadata } = useCyborgState().dashboard
   // const { taskMetadata } = useCyborgState()
   // const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
@@ -225,7 +225,9 @@ export default function ComputeProviderStatus() {
         </div> 
         <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white'>
             <ServerSpecs spec={specs} metric={metrics} />
-            <Terminal link={link} taskId={taskId} />
+            <div className={`${perspective !== "provider" ? "col-span-2" : ""}`}>
+                <Terminal link={link} taskId={taskId} />
+            </div>
             { metrics &&
                 <>
                 <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'var(--gauge-red)'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/> 
