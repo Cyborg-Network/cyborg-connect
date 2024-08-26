@@ -2,7 +2,9 @@ import React, {useEffect, useState} from 'react'
 import widget from '../../../../public/assets/icons/widget.png' 
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { useCyborgState } from '../../CyborgContext';
+import Chart from '../utils/Chart';
 import axios from 'axios';
+import { data1 } from '../../data/MockData';
 
 export function GetLogs({link, taskId }) {
   const [data, setData] = useState(null);
@@ -148,6 +150,21 @@ function Terminal({link, taskId}) {
     )
   }
 
+function RenderChart({metric, data, color}) {
+
+    return(
+        <div className='bg-cb-gray-600 rounded-lg p-10 col-span-1 lg:col-span-2 xl:col-span-3'>
+            <div className='flex justify-between'>
+                <div className='text-2xl font-bold'>{metric} Usage</div>
+                <div>1 Hour</div>
+            </div>
+            <div className='p-6 overflow-visible'>
+                <Chart data={data} color={color} />
+            </div>
+        </div>
+    )
+}
+
 export default function ComputeProviderStatus() {
   const { metadata } = useCyborgState().dashboard
   // const { taskMetadata } = useCyborgState()
@@ -213,10 +230,8 @@ export default function ComputeProviderStatus() {
             <GaugeDisplay percentage={metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/> }
             <GaugeDisplay percentage={metrics && metrics.memoryUsage? Number(metrics.memoryUsage.usage.slice(0, -1)):1} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
             <GaugeDisplay percentage={metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
+            <RenderChart metric={"CPU"} data={data1} color={"var(--gauge-red)"}/>
           </div>
-        <div className='flex items-center'>
-
-        </div>
     </div>
   )
 }
