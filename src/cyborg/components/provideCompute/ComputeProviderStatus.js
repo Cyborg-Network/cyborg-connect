@@ -227,9 +227,12 @@ export default function ComputeProviderStatus() {
             <ServerSpecs spec={specs} metric={metrics} />
             <Terminal link={link} taskId={taskId} />
             { metrics &&
-            <GaugeDisplay percentage={metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/> }
-            <GaugeDisplay percentage={metrics && metrics.memoryUsage? Number(metrics.memoryUsage.usage.slice(0, -1)):1} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
-            <GaugeDisplay percentage={metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
+                <>
+                <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'var(--gauge-red)'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/> 
+                <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.memoryUsage? Number(metrics.memoryUsage.usage.slice(0, -1)):1} fill={'var(--gauge-green)'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
+                <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'var(--gauge-yellow)'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
+                </>
+            }
             <RenderChart metric={"CPU"} data={data1} color={"var(--gauge-red)"}/>
           </div>
     </div>
