@@ -79,6 +79,33 @@ export function GetLogs({link, taskId }) {
   )
 }
 
+function NodeInformation() {
+
+    const itemData = [
+        {name: "Total Earnings", value: "$3000", icon: earnings},
+        {name: "Provider ID", value: "#CN12001", icon: id},
+        {name: "Deployment Type", value: "K3S Worker", icon: deployment},
+    ]
+
+    function InformationItem({name, value, icon}) {
+        return(
+            <div className='bg-cb-gray-600 rounded-lg flex justify-between p-6'>
+                <div className='flex flex-col gap-4'>
+                    <div className='text-2xl'>{name}</div>
+                    <div className='text-3xl'>{value}</div>
+                </div>
+                <img className='h-full aspect-square' src={icon}/>
+            </div>
+        )
+    }
+
+    return(
+        <div className='col-span-1 lg:col-span-2 xl:col-span-1 flex flex-col justify-evenly gap-10'>
+            { itemData.map(({name, value, icon}, index) => <InformationItem key={index} name={name} value={value} icon={icon} />)}
+        </div> 
+    ) 
+}
+
 function ServerSpecs({spec, metric}) {
   return (
     <div className='bg-cb-gray-600 rounded-lg col-span-1 lg:col-span-2 xl:col-span-1'>
@@ -224,6 +251,7 @@ export default function ComputeProviderStatus({perspective}) {
             </div> 
         </div> 
         <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white'>
+            {perspective === "provider" ? <NodeInformation/> : <></>}
             <ServerSpecs spec={specs} metric={metrics} />
             <div className={`${perspective !== "provider" ? "col-span-2" : ""}`}>
                 <Terminal link={link} taskId={taskId} />
