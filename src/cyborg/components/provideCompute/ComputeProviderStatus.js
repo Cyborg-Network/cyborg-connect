@@ -5,6 +5,11 @@ import { useCyborgState } from '../../CyborgContext';
 import Chart from '../utils/Chart';
 import axios from 'axios';
 import { data1 } from '../../data/MockData';
+import deployment from '../../../../public/assets/icons/deployment-type.png' 
+import id from '../../../../public/assets/icons/id.png' 
+import earnings from '../../../../public/assets/icons/earnings.png' 
+import arrowDown from '../../../../public/assets/icons/arrow-circled-down.png'
+import arrowUp from '../../../../public/assets/icons/arrow-circled-up.png'
 
 export function GetLogs({link, taskId }) {
   const [data, setData] = useState(null);
