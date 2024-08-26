@@ -52,7 +52,8 @@
     "react-scripts": "^5.0.0",
     "semantic-ui-css": "Semantic-Org/Semantic-UI-CSS#master",
     "semantic-ui-react": "^2.1.2",
-    "stream-browserify": "^3.0.0"
+    "stream-browserify": "^3.0.0",
+    "victory": "^37.0.2"
   },
   "devDependencies": {
     "eslint": "^8.10.0",
