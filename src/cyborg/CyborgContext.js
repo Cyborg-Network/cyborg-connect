@@ -91,34 +91,40 @@ const CyborgContext = React.createContext()
 
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const sState = useSubstrateState()
+  const {api, apiState} = useSubstrateState()
   const [tasks, setTasks] = useState(undefined)
   const [workers, setWorkers] = useState(undefined)
   const { taskMetadata } = state
 
     const { devMode } = state
 
+    // Get tasks and workers from the chain
     useEffect(() => {
-      const taskUniqueAllocations = async () => {
-        const { api } = sState
+      const getTaskAllocations = async () => {
         const entries = await api.query.taskManagement.taskAllocations.entries();
-        const assignees = entries.map(([key, value]) => {return value.toHuman()})
+        const assignees = entries.map(([key, value]) => {
+          const [taskExecutor, workerId] = value.toHuman()
+          return {
+            taskExecutor,
+            workerId,
+            taskId: Number(key.toHuman()[0]),
+          }
+        }).sort((a, b) => a.taskId - b.taskId)
         console.log("assignees: ", assignees)
         setTasks(assignees)
       }
       const getRegisteredWorkers = async () => {
-        const { api } = sState
           const entries = await api.query.edgeConnect.workerClusters.entries();
           // Extract and process the worker clusters
           const workerClusters = entries.map(([key, value]) => {return {...value.toHuman(), lastTask: null}})
           console.log("WORKERS RETREIVED:: ", workerClusters)
           setWorkers(workerClusters)
       }
-      if (sState && sState.api && sState.apiState === "READY") {
+      if (api && apiState === "READY") {
           getRegisteredWorkers()
-          taskUniqueAllocations()
+          getTaskAllocations()
       }
-    },[sState])
+    },[api, apiState])
 
     const workersWithLastTasks = useMemo(() => {
       if ((workers && tasks)) {
@@ -126,9 +132,9 @@ const CyborgContextProvider = props => {
       return workers.map((worker) => {
         // tasks are iterated through reverse order to find the most recent task for a worker
         for (let i = tasks.length - 1; i >= 0; i--) {
-          const [address, workerId] = tasks[i]
+          const {taskExecutor, workerId} = tasks[i]
           // find a match from registered worker's address and id to the task assignee's address and id
-          if (worker.owner === address && worker.id === workerId) {
+          if (worker.owner === taskExecutor && worker.id === workerId) {
             return {
               ...worker,
               lastTask: i
@@ -138,17 +144,50 @@ const CyborgContextProvider = props => {
         return worker // no tasks assigned to this worker
       });
     }
-    }, [ workers, tasks]);
-    console.log("task with workers: ", workersWithLastTasks)
+    }, [workers, tasks]);
+    console.log("Workers with tasks: ", workersWithLastTasks)
 
+    // keep last executed task info in storage if not present
     useEffect(() => {
       if ((!taskMetadata && tasks) || (taskMetadata && tasks && taskMetadata.taskId < tasks.length -1)) {
         dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: {
-          taskId: tasks.length -1,
-          taskExecutor: tasks[tasks.length -1]
+          ...tasks[tasks.length -1]
         } }) 
       } 
     },[taskMetadata, tasks])
+
+    useEffect(() => {   
+      if (api && api.query.system) {
+        const subscribeToEvents = async () => {
+          const unsubscribe = await api.query.system.events((events) => {
+            events.forEach(({event}) => {
+              if (event.section === "taskManagement" &&
+                event.method === "TaskScheduled") {
+                  console.log("Task Scheduled event: ", event.data.toHuman())
+                  const {assignedWorker, taskId} = event.data.toHuman()
+                  const [taskExecutor,workerId] = assignedWorker
+                  setTaskMetadata(taskExecutor,workerId.toString(),taskId)
+                }
+
+              if (event.section === "edgeConnect" &&
+                event.method === "WorkerRegistered") {
+                  console.log("Worker Registered Event: ", event.data.toHuman())
+                }
+            });
+          });
+    
+          return () => {
+            unsubscribe();
+          };
+        };
+    
+        const unsubscribePromise = subscribeToEvents();
+    
+        return () => {
+          unsubscribePromise.then((unsubscribe) => unsubscribe && unsubscribe());
+        };
+      }
+    }, [api]);
 
 
     const toggleDevMode = () => {
@@ -175,17 +214,27 @@ const CyborgContextProvider = props => {
       dispatch({ type: ACTIONS.DEPLOY_SERVICE, payload: { ...state.serviceStatus, deployTask } })
     }
 
-    const setTaskMetadata = (taskEvent) => {
-      console.log("set task metadata: ", taskEvent)
-      const taskMetadata = {
-        taskExecutor: taskEvent[0],
-        taskOwner: taskEvent[1],
-        taskId: taskEvent[2],
-        taskInstruction: taskEvent[3],
-        executorIp: taskEvent[4]
-      }
-      console.log("task metadata: ", taskMetadata)
-      dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskMetadata })
+    const setTaskMetadata = (
+      taskExecutor,
+      workerId,
+      taskId
+    ) => {
+      setTasks([...tasks, {
+        taskExecutor,
+        workerId,
+        taskId,
+      }])
+      console.log("new Tasks: ", tasks)
+      console.log("task metadata: ", {
+        taskExecutor,
+        workerId,
+        taskId
+      })
+      dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: {
+        taskExecutor,
+        workerId,
+        taskId
+      } })
     }
 
     const setDeployComputeStatus = (deployCompute) => {
