@@ -1,4 +1,4 @@
-import React, { useReducer, useContext, useEffect } from 'react'
+import React, { useReducer, useState, useContext, useEffect, useMemo } from 'react'
 import { useSubstrateState } from '../substrate-lib'
 
 export const SERVICES = {
@@ -92,90 +92,64 @@ const CyborgContext = React.createContext()
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const sState = useSubstrateState()
-  const { taskMetadata, taskList } = state
+  const [tasks, setTasks] = useState(undefined)
+  const [workers, setWorkers] = useState(undefined)
+  const { taskMetadata } = state
 
     const { devMode } = state
 
     useEffect(() => {
+      const taskUniqueAllocations = async () => {
+        const { api } = sState
+        const entries = await api.query.taskManagement.taskAllocations.entries();
+        const assignees = entries.map(([key, value]) => {return value.toHuman()})
+        console.log("assignees: ", assignees)
+        setTasks(assignees)
+      }
       const getRegisteredWorkers = async () => {
         const { api } = sState
           const entries = await api.query.edgeConnect.workerClusters.entries();
           // Extract and process the worker clusters
-          const workerClusters = entries.map(([key, value]) => {
-            let worker = value.toHuman()
-              console.log("taskList: ", taskList)
-              let lastTask = taskList.find(task => {
-                const [address, workerId] = task.taskExecutor
-                return worker.owner === address && worker.id === workerId
-              })
-              return {
-                ...worker,
-                lastTask: lastTask? lastTask.taskId : null
-              }
-          });
-          console.log("WORKERS RETREIVED:: ", workerClusters, entries)
-          sessionStorage.setItem('WORKERLIST', JSON.stringify({ time: new Date() , workers:workerClusters}))
-          listWorkers(workerClusters)
-      }
-      // TODO: Update workerList in session storage via time intervals and reduce api calls by setting listWorkers to sessionStorage value if not need to be updated
-      // const storedList = sessionStorage.getItem('WORKERLIST')
-      // if (storedList) {
-      //   const currentTime = new Date()
-      //   const timePassed = (currentTime - storedList.time)/1000;
-      //   if (timePassed > 90) {
-      //     getRegisteredWorkers()
-      //   } else {
-      //     listWorkers(storedList.workers)
-      //   }
-      // }
-      if (sState && sState.api && sState.apiState === "READY" && taskList) {
-          getRegisteredWorkers()
-      }
-      // const storedListInfo = sessionStorage.getItem('WORKERLIST')
-      // console.log("storedListInfo: ", JSON.parse(storedListInfo))
-    },[sState,taskList])
-
-    useEffect(()=> {
-      const taskUniqueAllocations = async () => {
-        const { api } = sState
-        let tasks = []
-        const count = await api.query.taskManagement.nextTaskId()
-        for (let i = count-1; i >= 0; i--) {
-            const allocated = (await api.query.taskManagement.taskAllocations(i)).toHuman()
-            if (!tasks.some(task => task.taskExecutor === allocated)) {
-              tasks.push({ taskExecutor: allocated, taskId: i })
-            }
-        }
-        listTasks(tasks)
+          const workerClusters = entries.map(([key, value]) => {return {...value.toHuman(), lastTask: null}})
+          console.log("WORKERS RETREIVED:: ", workerClusters)
+          setWorkers(workerClusters)
       }
       if (sState && sState.api && sState.apiState === "READY") {
-        taskUniqueAllocations()
+          getRegisteredWorkers()
+          taskUniqueAllocations()
       }
     },[sState])
 
-    useEffect(() => {
-      if ((!taskMetadata && taskList) || (taskMetadata && taskList && taskMetadata.taskId < taskList[0].taskId)) {
-        dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskList[0] }) 
-      } 
-    },[taskMetadata, taskList])
+    const workersWithLastTasks = useMemo(() => {
+      if ((workers && tasks)) {
+      // console.log("task with workers: ", workers,tasks)
+      return workers.map((worker) => {
+        // tasks are iterated through reverse order to find the most recent task for a worker
+        for (let i = tasks.length - 1; i >= 0; i--) {
+          const [address, workerId] = tasks[i]
+          // find a match from registered worker's address and id to the task assignee's address and id
+          if (worker.owner === address && worker.id === workerId) {
+            return {
+              ...worker,
+              lastTask: i
+            }
+          } 
+        }
+        return worker // no tasks assigned to this worker
+      });
+    }
+    }, [ workers, tasks]);
+    console.log("task with workers: ", workersWithLastTasks)
 
-    // // update workers with the last tasks they've executed incase missed by first update
-    // useEffect(() => {
-    //   if (workerList && taskList) {
-    //     let updatedWorkerInfo = workerList.map(worker => {
-    //       let lastTask = taskList.find(task => {
-    //         const [address, workerId] = task.taskExecutor
-    //         return worker.owner === address && worker.id === workerId
-    //       })
-    //       return {
-    //         ...worker,
-    //         lastTask: lastTask? lastTask.taskId : null
-    //       }
-    //     });
-    //     console.log("update workerInfo: ", updatedWorkerInfo)
-    //     listWorkers(updatedWorkerInfo)
-    //   }
-    // },[taskMetadata, taskList, sState])
+    useEffect(() => {
+      if ((!taskMetadata && tasks) || (taskMetadata && tasks && taskMetadata.taskId < tasks.length -1)) {
+        dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: {
+          taskId: tasks.length -1,
+          taskExecutor: tasks[tasks.length -1]
+        } }) 
+      } 
+    },[taskMetadata, tasks])
+
 
     const toggleDevMode = () => {
         dispatch({ type: ACTIONS.TOGGLE_DEV_MODE, payload: !devMode })
@@ -222,10 +196,6 @@ const CyborgContextProvider = props => {
       dispatch({ type: ACTIONS.LIST_WORKERS, payload: list})
     }
 
-    const listTasks = (list) => {
-      dispatch({ type: ACTIONS.LIST_TASKS, payload: list})
-    }
-
     const toggleDashboard = ({section = null, metadata = null}) => {
       const dashInfo = {
         ...state.dashboard,
@@ -236,7 +206,7 @@ const CyborgContextProvider = props => {
     }
 
   return (
-    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, toggleDashboard, provideCompute, accessCompute, selectService, setTaskStatus, setTaskMetadata, setDeployComputeStatus, listWorkers }}>
+    <CyborgContext.Provider value={{ state, resetPath, toggleDevMode, toggleDashboard, provideCompute, accessCompute, selectService, setTaskStatus, setTaskMetadata, setDeployComputeStatus, listWorkers, workersWithLastTasks }}>
       {props.children}
     </CyborgContext.Provider>
   )

@@ -148,8 +148,9 @@ function NodeList({nodes, taskMetadata}) {
 function Dashboard() {
     const [node, addNode]=useState(false)
     const [refresh, setRefresh] = useState(false)
-    const { workerList, taskMetadata } = useCyborgState()
-    console.log("workerList: ", workerList)
+    const { taskMetadata } = useCyborgState()
+    const { workersWithLastTasks } = useCyborg()
+    console.log("workerList: ", workersWithLastTasks)
 
     const isWaitingForNode = false;
     const deploySuccessful = false;
@@ -173,8 +174,8 @@ function Dashboard() {
                 <AddNodeButton addNode={addNode} />
             </div>
         </div>
-        {   node || (workerList && workerList.length > 0)?
-            <NodeList nodes={workerList} taskMetadata={taskMetadata}/> :
+        {   node || (workersWithLastTasks && workersWithLastTasks.length > 0)?
+            <NodeList nodes={workersWithLastTasks} taskMetadata={taskMetadata}/> :
             <NoNodes addNode={addNode} />
         }
         {   node?
