@@ -94,12 +94,14 @@ const CyborgContextProvider = props => {
   const {api, apiState} = useSubstrateState()
   const [tasks, setTasks] = useState(undefined)
   const [workers, setWorkers] = useState(undefined)
+  const [reloadWorkers, setReloadWorkers] = useState(false)
   const { taskMetadata } = state
 
     const { devMode } = state
 
     // Get tasks and workers from the chain
     useEffect(() => {
+      console.log("reload workers: ", reloadWorkers)
       const getTaskAllocations = async () => {
         const entries = await api.query.taskManagement.taskAllocations.entries();
         const assignees = entries.map(([key, value]) => {
@@ -113,6 +115,11 @@ const CyborgContextProvider = props => {
         console.log("assignees: ", assignees)
         setTasks(assignees)
       }
+      if (api && apiState === "READY") {
+        getTaskAllocations()
+    }
+  },[api, apiState])
+    useEffect(() => {
       const getRegisteredWorkers = async () => {
           const entries = await api.query.edgeConnect.workerClusters.entries();
           // Extract and process the worker clusters
@@ -120,11 +127,11 @@ const CyborgContextProvider = props => {
           console.log("WORKERS RETREIVED:: ", workerClusters)
           setWorkers(workerClusters)
       }
-      if (api && apiState === "READY") {
+      if (api && apiState === "READY" || reloadWorkers) {
           getRegisteredWorkers()
-          getTaskAllocations()
+          setReloadWorkers(false)
       }
-    },[api, apiState])
+    },[api, apiState, reloadWorkers])
 
     const workersWithLastTasks = useMemo(() => {
       if ((workers && tasks)) {
@@ -169,9 +176,12 @@ const CyborgContextProvider = props => {
                   setTaskMetadata(taskExecutor,workerId.toString(),taskId)
                 }
 
+              if (event.section === "edgeConnect") { console.log("Edge Connect Worker Event")}
               if (event.section === "edgeConnect" &&
-                event.method === "WorkerRegistered") {
-                  console.log("Worker Registered Event: ", event.data.toHuman())
+                (event.method === "WorkerRegistered" || event.method === "WorkerRemoved")) {
+                  const normalizedEvent = event.data.toHuman()
+                  console.log("Worker Registered Event: ", normalizedEvent)
+                  setReloadWorkers(true)
                 }
             });
           });
