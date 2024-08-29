@@ -4,7 +4,12 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { useCyborgState } from '../../CyborgContext';
 import Chart from '../utils/Chart';
 import axios from 'axios';
-import { data1 } from '../../data/MockData';
+import { data1, data2, data3 } from '../../data/MockData';
+import deployment from '../../../../public/assets/icons/deployment-type.png' 
+import id from '../../../../public/assets/icons/id.png' 
+import earnings from '../../../../public/assets/icons/earnings.png' 
+import arrowDown from '../../../../public/assets/icons/arrow-circled-down.png'
+import arrowUp from '../../../../public/assets/icons/arrow-circled-up.png'
 
 export function GetLogs({link, taskId }) {
   const [data, setData] = useState(null);
@@ -79,6 +84,33 @@ export function GetLogs({link, taskId }) {
   )
 }
 
+function NodeInformation() {
+
+    const itemData = [
+        {name: "Total Earnings", value: "$3000", icon: earnings},
+        {name: "Provider ID", value: "#CN12001", icon: id},
+        {name: "Deployment Type", value: "K3S Worker", icon: deployment},
+    ]
+
+    function InformationItem({name, value, icon}) {
+        return(
+            <div className='bg-cb-gray-600 rounded-lg flex justify-between p-6'>
+                <div className='flex flex-col gap-4'>
+                    <div className='text-2xl'>{name}</div>
+                    <div className='text-3xl'>{value}</div>
+                </div>
+                <img className='h-full aspect-square' src={icon}/>
+            </div>
+        )
+    }
+
+    return(
+        <div className='col-span-1 lg:col-span-2 xl:col-span-1 flex flex-col justify-evenly gap-10'>
+            { itemData.map(({name, value, icon}, index) => <InformationItem key={index} name={name} value={value} icon={icon} />)}
+        </div> 
+    ) 
+}
+
 function ServerSpecs({spec, metric}) {
   return (
     <div className='bg-cb-gray-600 rounded-lg col-span-1 lg:col-span-2 xl:col-span-1'>
@@ -100,7 +132,7 @@ function ServerSpecs({spec, metric}) {
 function Terminal({link, taskId}) {
   console.log("terminal task: ", taskId)
     return (
-      <div className='lg:col-span-2 bg-white bg-opacity-15 relative rounded-lg h-auto overflow-scroll'>
+      <div className='bg-white bg-opacity-15 relative rounded-lg flex flex-col'>
         <div className='absolute top-5 left-5'>
           <a>
             <img src={widget} />
@@ -118,12 +150,17 @@ function Terminal({link, taskId}) {
     )
   }
 
-  function GaugeDisplay({percentage, fill, name, styleAdditions }) {
+  function GaugeDisplay({percentage, fill, name, styleAdditions, selectedGauge, setAsSelectedGauge }) {
+
+    const onMouseDownHandler = () => {
+        setAsSelectedGauge(name, fill)
+    }
+    
     console.log(percentage, fill, name)
     return (
-      <div className='bg-cb-gray-600 rounded-lg p-4'>
-        <div className='flex items-center p-2 gap-2'>
-          <div className={`w-3 h-3 ring-4 ring-opacity-15 rounded-full ${styleAdditions}`}></div>
+      //Using mousedown events instead of onclick events on "unimportant" clicks, as feedback is immediate => better UX
+      <div onMouseDown={() => onMouseDownHandler()} className={`${name === selectedGauge.name ? "bg-cb-gray-400 border border-cb-green" : ""} bg-cb-gray-600 rounded-lg relative`}>
+        <div className='flex items-center p-2 gap-4 absolute top-4 left-4'>          <div className={`w-3 h-3 ring-4 ring-opacity-15 rounded-full ${styleAdditions}`}></div>
           <div><h5>{name + " Usage"}</h5></div>
         </div>
         <div className='h-80 p-2 text-white'>
@@ -146,6 +183,10 @@ function Terminal({link, taskId}) {
             }
           />
         </div> 
+        <div className={`${name === selectedGauge.name? "bg-cb-green" : "bg-cb-gray-400"} w-full flex gap-2 text-lg justify-center items-center h-12 rounded-b-lg`}>
+            <div>View Details</div>
+            <img src={name === selectedGauge.name ? arrowUp : arrowDown}/>
+        </div> 
       </div>
     )
   }
@@ -165,7 +206,7 @@ function RenderChart({metric, data, color}) {
     )
 }
 
-export default function ComputeProviderStatus() {
+export default function ComputeProviderStatus({perspective}) {
   const { metadata } = useCyborgState().dashboard
   // const { taskMetadata } = useCyborgState()
   // const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
@@ -175,6 +216,18 @@ export default function ComputeProviderStatus() {
 
   const [specs, setSpecs] = useState();
   const [metrics, setMetrics] = useState();
+  const [selectedGauge, setSelectedGauge] = useState({name: "CPU", color: "var(--gauge-red)", data: data1}); //"CPU || "RAM" || "DISK"
+
+  const handleSetSelectedGauge = (name, color) => {
+    let data;
+    switch (name){
+        case "CPU": data = data1; break;
+        case "DISK": data = data2; break;
+        case "RAM": data = data3; break;
+    }
+
+    setSelectedGauge({name: name, color: color, data: data});
+  }
 
   useEffect(()=>{
     const fetchSpecs = async () => {
@@ -224,13 +277,19 @@ export default function ComputeProviderStatus() {
             </div> 
         </div> 
         <div className='grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white'>
+            {perspective === "provider" ? <NodeInformation/> : <></>}
             <ServerSpecs spec={specs} metric={metrics} />
-            <Terminal link={link} taskId={taskId} />
+            <div className={`${perspective !== "provider" ? "col-span-2" : ""}`}>
+                <Terminal link={link} taskId={taskId} />
+            </div>
             { metrics &&
-            <GaugeDisplay percentage={metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'#FF5858'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/> }
-            <GaugeDisplay percentage={metrics && metrics.memoryUsage? Number(metrics.memoryUsage.usage.slice(0, -1)):1} fill={'#28E92F'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
-            <GaugeDisplay percentage={metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'#F8A832'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
-            <RenderChart metric={"CPU"} data={data1} color={"var(--gauge-red)"}/>
+                <>
+                <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.cpuUsage?Number(metrics.cpuUsage.usage.slice(0, -1)):1} fill={'var(--gauge-red)'} name={'CPU'} styleAdditions={"ring-gauge-red bg-gauge-red"}/> 
+                <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.memoryUsage? Number(metrics.memoryUsage.usage.slice(0, -1)):1} fill={'var(--gauge-green)'} name={'RAM'} styleAdditions={"ring-gauge-green bg-gauge-green"}/>
+                <GaugeDisplay setAsSelectedGauge={handleSetSelectedGauge} selectedGauge={selectedGauge} percentage={metrics && metrics.diskUsage?Number(metrics.diskUsage[0]["use%"].slice(0, -1)) :1} fill={'var(--gauge-yellow)'} name={'DISK'} styleAdditions={"ring-gauge-yellow bg-gauge-yellow"}/>
+                </>
+            }
+            <RenderChart metric={selectedGauge.name} data={selectedGauge.data} color={selectedGauge.color}/>
           </div>
     </div>
   )
