@@ -1,13 +1,12 @@
 import React, {useState} from 'react'
 import { Dimmer } from 'semantic-ui-react'
-import { SERVICES, DEPLOY_STATUS, useCyborg, useCyborgState } from '../../../CyborgContext'
+import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
 import { web3FromSource } from '@polkadot/extension-dapp'
 import toast from 'react-hot-toast';
 
 function UploadDockerImgURL({setService}) {
-  const { selectService, setTaskStatus, setTaskMetadata, listWorkers } = useCyborg()
-  const { workerList } = useCyborgState()
+  const { selectService, setTaskStatus, setTaskMetadata } = useCyborg()
   const { api, currentAccount } = useSubstrateState()
   const [url,setUrl] = useState('')
 
@@ -86,33 +85,10 @@ function UploadDockerImgURL({setService}) {
             setTaskStatus(DEPLOY_STATUS.READY)
             const taskEvent = success[0].toJSON().event.data
             console.log("Extrinsic Success: ", taskEvent)
-            setTaskMetadata(taskEvent)
+
             const [taskExecutor, , taskId] = taskEvent
             const [workerAddress, workerId] = taskExecutor
-
-            const storedListInfo = sessionStorage.getItem('WORKERLIST')
-            console.log("storedListInfo found",JSON.parse(storedListInfo));
-            const storedList = storedListInfo? JSON.parse(storedListInfo).workers : null
-            const availableList = workerList || storedList
-            console.log("workerList after task: ", availableList);
-            console.log("storedList found",storedList);
-            let updatedWorkerInfo = availableList 
-            ? availableList.map((worker) => {
-                if (Number(worker.id) === workerId && worker.owner === workerAddress) {
-                  return {
-                    ...worker,
-                    lastTask: taskId,
-                  };
-                } else {
-                  console.log("not found");
-                  return worker;
-                }
-              })
-            : null;
-            if (updatedWorkerInfo) {
-              console.log("update workers after task submit")
-              listWorkers(updatedWorkerInfo)
-            }
+            setTaskMetadata(workerAddress,workerId.toString(),taskId)
           }
       }
     }).catch((error) => {
