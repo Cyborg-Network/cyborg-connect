@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Dimmer } from 'semantic-ui-react'
 import {
   SERVICES,
   DEPLOY_STATUS,
@@ -9,10 +8,21 @@ import {
 import { useSubstrateState } from '../../../../substrate-lib'
 import { web3FromSource } from '@polkadot/extension-dapp'
 import toast from 'react-hot-toast'
+import Modal from '../../general/Modal'
+import Button from '../../general/Button'
+import { useNavigate } from 'react-router-dom'
 
 function UploadDockerImgURL({ setService }) {
-  const { selectService, setTaskStatus, setTaskMetadata, listWorkers } =
-    useCyborg()
+
+  const navigate = useNavigate();
+
+  const { 
+    selectService, 
+    setTaskStatus, 
+    setTaskMetadata, 
+    listWorkers 
+  } = useCyborg()
+
   const { workerList } = useCyborgState()
   const { api, currentAccount } = useSubstrateState()
   const [url, setUrl] = useState('')
@@ -32,9 +42,11 @@ function UploadDockerImgURL({ setService }) {
     const injector = await web3FromSource(source)
     return [address, { signer: injector.signer }]
   }
+
   const handleUrlChange = e => {
     setUrl(e.target.value)
   }
+
   const handleSubmit = async event => {
     event.preventDefault()
     selectService(SERVICES.CYBER_DOCK)
@@ -132,6 +144,7 @@ function UploadDockerImgURL({ setService }) {
               console.log('update workers after task submit')
               listWorkers(updatedWorkerInfo)
             }
+            navigate('dashboard')
           }
         }
       })
@@ -141,9 +154,11 @@ function UploadDockerImgURL({ setService }) {
         setTaskStatus(DEPLOY_STATUS.FAILED)
       })
   }
+
   return (
-    <Dimmer active>
-      <form onSubmit={handleSubmit} className="bg-cb-gray-700 rounded-lg p-20">
+    <Modal onOutsideClick={() => setService(null)} >
+      <Button variation="cancel" onClick={() => setService(null)} additionalClasses="absolute top-6 right-6"/>
+      <form onSubmit={handleSubmit}>
         <h5 className="flex">Upload Docker Image</h5>
         <div className="mb-4">
           <label
@@ -179,7 +194,7 @@ function UploadDockerImgURL({ setService }) {
           </div>
         </div>
       </form>
-    </Dimmer>
+    </Modal>
   )
 }
 

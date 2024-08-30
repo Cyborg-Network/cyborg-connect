@@ -21,8 +21,6 @@ export const DASH_STATE = {
 
 const initialState = {
   // These are the states
-  selectedPath: null,
-  devMode: false,
   service: null,
   serviceStatus: {
     deployCompute: null,
@@ -42,10 +40,6 @@ const initialState = {
 ///
 // Actions types for 'useReducer`
 const ACTIONS = {
-  RESET_PATH: 'RESET_PATH',
-  SELECT_PROVIDER: 'SELECT_PROVIDER',
-  SELECT_ACCESSOR: 'SELECT_ACCESSOR',
-  TOGGLE_DEV_MODE: 'TOGGLE_DEV_MODE',
   SELECT_SERVICE: 'SELECT_SERVICE',
   DEPLOY_SERVICE: 'DEPLOY_SERVICE',
   LIST_WORKERS: 'LIST_WORKERS',
@@ -61,14 +55,6 @@ const reducer = (state, action) => {
   console.log('cyborg action: ', action)
   console.log('cyborg state: ', state)
   switch (action.type) {
-    case ACTIONS.SELECT_PROVIDER:
-      return { ...state, selectedPath: 'PROVIDER' }
-    case ACTIONS.SELECT_ACCESSOR:
-      return { ...state, selectedPath: 'ACCESSOR' }
-    case ACTIONS.TOGGLE_DEV_MODE:
-      return { ...state, devMode: action.payload }
-    case ACTIONS.RESET_PATH:
-      return { ...state, devMode: null }
     case ACTIONS.SELECT_SERVICE:
       return { ...state, service: action.payload }
     case ACTIONS.DEPLOY_SERVICE:
@@ -92,8 +78,6 @@ const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const sState = useSubstrateState()
   const { taskMetadata, taskList } = state
-
-  const { devMode } = state
 
   useEffect(() => {
     const getRegisteredWorkers = async () => {
@@ -184,21 +168,6 @@ const CyborgContextProvider = props => {
   //   }
   // },[taskMetadata, taskList, sState])
 
-  const toggleDevMode = () => {
-    dispatch({ type: ACTIONS.TOGGLE_DEV_MODE, payload: !devMode })
-  }
-
-  const provideCompute = () => {
-    dispatch({ type: ACTIONS.SELECT_PROVIDER })
-  }
-
-  const accessCompute = () => {
-    dispatch({ type: ACTIONS.SELECT_ACCESSOR })
-  }
-
-  const resetPath = () => {
-    dispatch({ type: ACTIONS.RESET_PATH })
-  }
 
   const selectService = service => {
     dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
@@ -252,11 +221,7 @@ const CyborgContextProvider = props => {
     <CyborgContext.Provider
       value={{
         state,
-        resetPath,
-        toggleDevMode,
         toggleDashboard,
-        provideCompute,
-        accessCompute,
         selectService,
         setTaskStatus,
         setTaskMetadata,

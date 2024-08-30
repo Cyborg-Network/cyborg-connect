@@ -3,7 +3,7 @@ import Header from './layouts/Header'
 import Dashboard from './components/provideCompute/Dashboard'
 import SideBar from './layouts/SideBar'
 import ChooseServices from './components/accessCompute/ChooseServices'
-import ChoosePath from './ChoosePath'
+import ChoosePath from './components/general/ChoosePath'
 import {
   SERVICES,
   DEPLOY_STATUS,
@@ -12,6 +12,8 @@ import {
 } from './CyborgContext'
 import LoadDeployCyberDock from './components/accessCompute/modals/LoadDeployCyberDock'
 import ComputeProviderStatus from './components/provideCompute/ComputeProviderStatus'
+import { Link } from 'react-router-dom'
+import { Button } from 'semantic-ui-react'
 
 function CyborgDapp() {
   const { selectedPath, service, serviceStatus, dashboard } = useCyborgState()
@@ -21,6 +23,11 @@ function CyborgDapp() {
         <>
           <Header />
           <ChoosePath />
+          <Link to={'/cyborg-connect/dev-mode'}>
+            <Button className="fixed bottom-2 right-2 z-40">
+              Test Substrate Chain
+            </Button>
+          </Link>
         </>
       ) : selectedPath === 'PROVIDER' || service === SERVICES.CYBER_DOCK ? (
         <div className="flex relative">

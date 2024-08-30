@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import widget from '../../../../public/assets/icons/widget.png'
-import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge'
-import { useCyborgState } from '../../CyborgContext'
-import Chart from '../general/Chart'
+import widget from '../../../../../public/assets/icons/widget.png'
+import RenderChart from './RenderChart'
+//import { useCyborgState } from '../../../CyborgContext'
+import GaugeDisplay from './GaugeDisplay'
 import axios from 'axios'
-import { data1, data2, data3 } from '../../data/MockData'
-import deployment from '../../../../public/assets/icons/deployment-type.png'
-import id from '../../../../public/assets/icons/id.png'
-import earnings from '../../../../public/assets/icons/earnings.png'
-import arrowDown from '../../../../public/assets/icons/arrow-circled-down.png'
-import arrowUp from '../../../../public/assets/icons/arrow-circled-up.png'
+import { data1, data2, data3 } from '../../../data/MockData'
+import deployment from '../../../../../public/assets/icons/deployment-type.png'
+import id from '../../../../../public/assets/icons/id.png'
+import earnings from '../../../../../public/assets/icons/earnings.png'
+import { useLocation } from 'react-router-dom'
 
 export function GetLogs({ link, taskId }) {
   const [data, setData] = useState(null)
@@ -202,84 +201,12 @@ function Terminal({ link, taskId }) {
   )
 }
 
-function GaugeDisplay({
-  percentage,
-  fill,
-  name,
-  styleAdditions,
-  selectedGauge,
-  setAsSelectedGauge,
-}) {
-  const onMouseDownHandler = () => {
-    setAsSelectedGauge(name, fill)
-  }
 
-  console.log(percentage, fill, name)
-  return (
-    //Using mousedown events instead of onclick events on "unimportant" clicks, as feedback is immediate => better UX
-    <div
-      onMouseDown={() => onMouseDownHandler()}
-      className={`${
-        name === selectedGauge.name
-          ? 'bg-cb-gray-400 border border-cb-green'
-          : ''
-      } bg-cb-gray-600 rounded-lg relative`}
-    >
-      <div className="flex items-center p-2 gap-4 absolute top-4 left-4">
-        {' '}
-        <div
-          className={`w-3 h-3 ring-4 ring-opacity-15 rounded-full ${styleAdditions}`}
-        ></div>
-        <div>
-          <h5>{name + ' Usage'}</h5>
-        </div>
-      </div>
-      <div className="h-80 p-2 text-white">
-        <Gauge
-          value={percentage}
-          startAngle={-110}
-          endAngle={110}
-          sx={{
-            [`& .${gaugeClasses.valueText}`]: {
-              fontSize: 40,
-              transform: 'translate(0px, 0px)',
-              fill: 'white',
-            },
-            [`& .${gaugeClasses.valueArc}`]: {
-              fill: `${fill}`,
-            },
-          }}
-          text={({ value }) => `${value} %`}
-        />
-      </div>
-      <div
-        className={`${
-          name === selectedGauge.name ? 'bg-cb-green' : 'bg-cb-gray-400'
-        } w-full flex gap-2 text-lg justify-center items-center h-12 rounded-b-lg`}
-      >
-        <div>View Details</div>
-        <img src={name === selectedGauge.name ? arrowUp : arrowDown} />
-      </div>
-    </div>
-  )
-}
 
-function RenderChart({ metric, data, color }) {
-  return (
-    <div className="bg-cb-gray-600 rounded-lg p-10 col-span-1 lg:col-span-2 xl:col-span-3">
-      <div className="flex justify-between">
-        <div className="text-2xl font-bold">{metric} Usage</div>
-        <div>1 Hour</div>
-      </div>
-      <div className="p-6 overflow-visible">
-        <Chart data={data} color={color} />
-      </div>
-    </div>
-  )
-}
-
-export default function ComputeProviderStatus({ perspective }) {
-  const { metadata } = useCyborgState().dashboard
+export default function ComputeStatus({ perspective }) {
+  //const { metadata } = useCyborgState().dashboard
+  const location = useLocation();
+  const { state: metadata } = location;
   // const { taskMetadata } = useCyborgState()
   // const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
   // const [link, setLink] = useState(metadata && metadata.api? metadata.api.domain : "");

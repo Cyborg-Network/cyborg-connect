@@ -1,4 +1,4 @@
-import React, { createRef, useState } from 'react'
+import React, { createRef } from 'react'
 import {
   Container,
   Dimmer,
@@ -10,7 +10,7 @@ import {
 } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 
-import { SubstrateContextProvider, useSubstrateState } from './substrate-lib'
+import { useSubstrateState } from './substrate-lib'
 import { DeveloperConsole } from './substrate-lib/components'
 
 import AccountSelector from './AccountSelector'
@@ -23,13 +23,10 @@ import NodeInfo from './NodeInfo'
 import TemplateModule from './TemplateModule'
 import Transfer from './Transfer'
 import Upgrade from './Upgrade'
-import CyborgDapp from './cyborg'
-import { CyborgContextProvider } from './cyborg/CyborgContext'
-import RpcSelector from './cyborg/components/utils/RpcSelector'
 
-import { Toaster } from 'react-hot-toast';
+import { Link } from 'react-router-dom'
 
-function Main() {
+export function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
 
   const loader = text => (
@@ -94,33 +91,9 @@ function Main() {
         </Grid>
       </Container>
       <DeveloperConsole />
+      <Link to={"/cyborg-connect"}>
+        <Button className='fixed bottom-2 right-2 z-40'>Test Cyborg DApp</Button>
+      </Link>
     </div>
-  )
-}
-
-export default function App() {
-  const [ devMode, setDevMode ] = useState(false)
-
-  return (
-    <SubstrateContextProvider>
-      <CyborgContextProvider>
-        <div className='relative w-screen h-screen'>
-          <div className={`${devMode?'hidden':''}`}>
-            <CyborgDapp />
-          </div>
-          
-          <div className={`${!devMode?'hidden':''}`}>
-            <Main/>
-          </div> 
-
-          <Button className='fixed bottom-2 right-2 z-40' onClick={()=>{setDevMode(!devMode)}}>{ !devMode? 'Test Substrate Chain': 'Test Cyborg Dapp'}</Button>
-          <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
-        </div>
-        <Toaster
-          position="top-center"
-          reverseOrder={false}
-        />
-        </CyborgContextProvider>
-    </SubstrateContextProvider>
   )
 }
