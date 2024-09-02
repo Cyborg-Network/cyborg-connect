@@ -20,7 +20,7 @@ function ChoosePath() {
     <div className='h-screen bg-cb-gray-700 flex flex-col items-center justify-center'>
     <h1 className='text-white'>Choose Your Path</h1>
     <div className='flex'>
-        <ServiceButton name={'Provide Compute'} setPath={/*provideCompute*/null} />
+        <button className='bg-cb-gray-400 size-30 text-gray-500 py-6 px-10 rounded-md m-2 border border-gray-500'>Coming Soon</button>
         <ServiceButton name={'Access Compute'} setPath={accessCompute} />
     </div>
     
