@@ -18,7 +18,7 @@ export const handleDispatchError = (api, dispatchError) => {
 
 export const handleStatusEvents = (api, events) => {
   let hasErrored = false
-  let successEvents = null
+  let successfulEvents = null
 
   events
     // find/filter for failed events
@@ -46,15 +46,15 @@ export const handleStatusEvents = (api, events) => {
       }
     )
 
-  const successEventArray = events.filter(({ event }) =>
+  const successfulEventArray = events.filter(({ event }) =>
     api.events.taskManagement.TaskScheduled.is(event)
   )
 
-  if (successEventArray.length > 0) {
-    successEvents = successEventArray
+  if (successfulEventArray.length > 0) {
+    successfulEvents = successfulEventArray
   }
 
-  return { hasErrored, successEvents }
+  return { hasErrored, successfulEvents }
 }
 
 export const handleTaskSuccess = (successEvents, workerList) => {

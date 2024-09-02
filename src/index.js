@@ -14,13 +14,13 @@ import ChoosePath from './cyborg/components/general/ChoosePath'
 import { AccountContextProvider } from './cyborg/context/AccountContext';
 import ComputeStatus from './cyborg/components/general/compute-status/ComputeStatus';
 
-const COMPONENT_ROUTES = {
-  CHOOSE_PATH: "cyborg-connect",
-  PROVIDE_COMPUTE: "cyborg-connect/provide-compute",
-  CHOOSE_SERVICES: "cyborg-connect/access-compute",
-  DASHBOARD: "cyborg-connect/access-compute/dashboard",
-  COMPUTE_STATUS: "cyborg-connect/access-compute/dashboard/compute-status/:nodeId",
-  DEV_MODE: "cyborg-connect/dev-mode",
+export const ROUTES = {
+  CHOOSE_PATH: "/cyborg-connect",
+  PROVIDE_COMPUTE: "/cyborg-connect/provide-compute",
+  ACCESS_COMPUTE: "/cyborg-connect/access-compute",
+  DASHBOARD: "/cyborg-connect/access-compute/dashboard",
+  COMPUTE_STATUS: "/cyborg-connect/access-compute/dashboard/compute-status",
+  DEV_MODE: "/cyborg-connect/dev-mode",
 }
 
 const Layout = () => {
@@ -40,34 +40,34 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: COMPONENT_ROUTES.CHOOSE_PATH,
+        path: ROUTES.CHOOSE_PATH,
         element: <ChoosePath />,
       },
       {
         element: <SideBar />,
         children: [
           {
-            path: COMPONENT_ROUTES.PROVIDE_COMPUTE,
+            path: ROUTES.PROVIDE_COMPUTE,
             element: <Dashboard />,
           },
           {
-            path: COMPONENT_ROUTES.DASHBOARD,
+            path: ROUTES.DASHBOARD,
             element: <Dashboard />,
           },
           {
-            path: COMPONENT_ROUTES.COMPUTE_STATUS,
+            path: `${ROUTES.COMPUTE_STATUS}/:domain`,
             element: <ComputeStatus />,
           }
         ]
       },
       {
-        path: COMPONENT_ROUTES.CHOOSE_SERVICES,
+        path: ROUTES.ACCESS_COMPUTE,
         element: <ChooseServices />,
       },
     ]
   },
   {
-        path: COMPONENT_ROUTES.DEV_MODE,
+        path: ROUTES.DEV_MODE,
         element: <Main />
   }
 ]);

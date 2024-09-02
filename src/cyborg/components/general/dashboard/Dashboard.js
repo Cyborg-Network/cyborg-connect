@@ -3,10 +3,12 @@ import nondeployed from '../../../../../public/assets/icons/nondeployed.png'
 import deploymentsTab from '../../../../../public/assets/icons/deployment-logo.png'
 import cyberdock from '../../../../../public/assets/icons/cyberdockDash.png'
 import { FiPlusCircle } from 'react-icons/fi'
-import { useCyborgState } from '../../../CyborgContext'
+import { useCyborg, useCyborgState } from '../../../CyborgContext'
 import { Button } from 'semantic-ui-react'
 import { TbRefresh } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '../../../../index'
+
 function AddNodeButton({ addNode }) {
   return (
     <button
@@ -17,6 +19,7 @@ function AddNodeButton({ addNode }) {
     </button>
   )
 }
+
 function NoNodes({ addNode }) {
   return (
     <div className="flex flex-col justify-center h-2/3 items-center">
@@ -34,9 +37,10 @@ function NoNodes({ addNode }) {
 }
 
 function NodeList({ nodes, taskMetadata }) {
-  //const { toggleDashboard } = useCyborg()
   const navigate = useNavigate()
+
   const lastTask = taskMetadata.taskId
+
   console.log('nodes: in list: ', nodes)
   console.log('lastTask: ', lastTask)
 
@@ -56,9 +60,9 @@ function NodeList({ nodes, taskMetadata }) {
         {nodes.length > 0 &&
           nodes.map(item => (
             <div
-              key={item.id}
+              key={item.owner + item.id}
               onClick={() =>
-                navigate(`compute-status/${item.owner}-${item.id}`, {
+                navigate(`${ROUTES.COMPUTE_STATUS}/${item.api.domain}`, {
                   state: item,
                 })
               }
@@ -107,11 +111,13 @@ function NodeList({ nodes, taskMetadata }) {
   )
 }
 
-function Dashboard() {
+function Dashboard({ perspective }) {
   const [node, addNode] = useState(false)
-  const [refresh, setRefresh] = useState(false)
-  const { workerList, taskMetadata } = useCyborgState()
-  console.log('workerList: ', workerList)
+
+  const { taskMetadata } = useCyborgState()
+  const { workersWithLastTasks, setReloadWorkers } = useCyborg()
+
+  console.log('workerList: ', workersWithLastTasks)
 
   return (
     <div className="h-screen bg-cb-gray-700 flex flex-col ">
@@ -124,14 +130,21 @@ function Dashboard() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => setRefresh(!refresh)}>
+          <Button onClick={() => setReloadWorkers(true)}>
             <TbRefresh />
           </Button>
-          <AddNodeButton addNode={addNode} />
+          {perspective === 'provide-compute' ? (
+            <AddNodeButton addNode={addNode} />
+          ) : (
+            <></>
+          )}
         </div>
       </div>
-      {node || (workerList && workerList.length > 0) ? (
-        <NodeList nodes={workerList} taskMetadata={taskMetadata} />
+      {node ||
+      (workersWithLastTasks &&
+        workersWithLastTasks.length > 0 &&
+        taskMetadata) ? (
+        <NodeList nodes={workersWithLastTasks} taskMetadata={taskMetadata} />
       ) : (
         <NoNodes addNode={addNode} />
       )}

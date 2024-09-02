@@ -27,22 +27,25 @@ export function GetLogs({ link, taskId }) {
         const response = await axios.get(`http://${link}/logs/${taskId}`, {
           headers: {
             'Access-Control-Allow-Origin': '*',
-          }});
-          console.log("logs response: ", response)
-          sessionStorage.setItem(`TASKID:${taskId}`, response.data)
-          setData(response.data)
+          },
+        })
+        console.log('logs response: ', response)
+        sessionStorage.setItem(`TASKID:${taskId}`, response.data)
+        setData(response.data)
       } catch (error) {
         if (retryCount === 0) {
-          setData(error);
-          console.error('API call failed after 3 retries:', error);
+          setData(error)
+          console.error('API call failed after 3 retries:', error)
         } else {
-          setData("Pending.."+[".",".",".",".","."].slice(retryCount).join(","));
-          console.warn(`Retrying... ${retryCount} attempts left.`);
-          setTimeout(() => fetchData(retryCount - 1, interval), interval);
+          setData(
+            'Pending..' + ['.', '.', '.', '.', '.'].slice(retryCount).join(',')
+          )
+          console.warn(`Retrying... ${retryCount} attempts left.`)
+          setTimeout(() => fetchData(retryCount - 1, interval), interval)
         }
-      } 
-    };
-    console.log("deploy data: ", data, `http://${link}/logs/${taskId}`)
+      }
+    }
+    console.log('deploy data: ', data, `http://${link}/logs/${taskId}`)
     const stored = sessionStorage.getItem(`TASKID:${taskId}`)
     console.log('stored: ', taskId, stored)
     if (stored && stored.length > 0) {

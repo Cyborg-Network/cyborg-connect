@@ -8,7 +8,8 @@ import { data1, data2, data3 } from '../../../data/MockData'
 import deployment from '../../../../../public/assets/icons/deployment-type.png'
 import id from '../../../../../public/assets/icons/id.png'
 import earnings from '../../../../../public/assets/icons/earnings.png'
-import { useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useCyborg } from '../../../CyborgContext'
 
 export function GetLogs({ link, taskId }) {
   const [data, setData] = useState(null)
@@ -203,13 +204,15 @@ function Terminal({ link, taskId }) {
 
 export default function ComputeStatus({ perspective }) {
   //const { metadata } = useCyborgState().dashboard
-  const location = useLocation()
-  const { state: metadata } = location
+  const { workersWithLastTasks } = useCyborg()
+
+  const { domain } = useParams()
+
+  const [metadata, setMetadata] = useState(null)
+
   // const { taskMetadata } = useCyborgState()
   // const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
   // const [link, setLink] = useState(metadata && metadata.api? metadata.api.domain : "");
-  const taskId = metadata.lastTask
-  const link = metadata.api.domain
 
   const [specs, setSpecs] = useState()
   const [metrics, setMetrics] = useState()
@@ -237,27 +240,48 @@ export default function ComputeStatus({ perspective }) {
   }
 
   useEffect(() => {
+    //This is necessary because if the user tries to share a link to the current node, it will not have the data otherwise
+    const getCurrentWorker = () =>
+      workersWithLastTasks.filter(node => {
+        if (node.api.domain === domain) {
+          setMetadata(node)
+        }
+      })
+    if (workersWithLastTasks) getCurrentWorker()
+  }, [workersWithLastTasks, setMetadata])
+
+  useEffect(() => {
     const fetchSpecs = async () => {
       try {
-        const specRes = await axios.get(`http://${link}/system-specs`)
+        const specRes = await axios.get(
+          `http://${metadata.api.domain}/system-specs`
+        )
         setSpecs(specRes.data)
       } catch (error) {
         console.error('SPECS ERROR:: ', error)
       }
     }
-    if (link) fetchSpecs()
-  }, [link])
+    if (metadata) {
+      if (metadata.api.domain) fetchSpecs()
+    }
+  }, [metadata])
+
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const metricRes = await axios.get(`http://${link}/consumption-metrics`)
+        const metricRes = await axios.get(
+          `http://${metadata.api.domain}/consumption-metrics`
+        )
         setMetrics(metricRes.data)
       } catch (error) {
         console.error('METRICS ERROR:: ', error)
       }
     }
-    if (link) fetchMetrics()
-  }, [link])
+    if (metadata) {
+      if (metadata.api.domain) fetchMetrics()
+    }
+  }, [metadata])
+
   console.log('specs: ', specs)
   console.log('metrics: ', metrics)
   // let taskId = taskMetadata? taskMetadata.taskId : null;
@@ -269,74 +293,82 @@ export default function ComputeStatus({ perspective }) {
   //   }
   // },[taskMetadata])
   console.log('metadata: ', metadata)
-  console.log('task state: ', taskId)
+
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
     <div className="h-screen bg-cb-gray-700 flex flex-col overflow-scroll">
-      <div className="flex items-center justify-between mx-2 text-white p-4 px-14">
-        <div className="flex items-end gap-2 text-xl">
-          <div>Node Name: </div>
-          <div className="text-cb-green">
-            {metadata.owner}:{metadata.id}
+      {metadata ? (
+        <>
+          <div className="flex items-center justify-between mx-2 text-white p-4 px-14">
+            <div className="flex items-end gap-2 text-xl">
+              <div>Node Name: </div>
+              <div className="text-cb-green">
+                {metadata.owner}:{metadata.id}
+              </div>
+            </div>
+            <div className="flex items-end gap-2 text-md">
+              <div className="text-opacity-50 text-white">IP Address: </div>
+              <div>{metadata.api.domain}</div>
+            </div>
           </div>
-        </div>
-        <div className="flex items-end gap-2 text-md">
-          <div className="text-opacity-50 text-white">IP Address: </div>
-          <div>{link}</div>
-        </div>
-      </div>
-      <div className="grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white">
-        {perspective === 'provider' ? <NodeInformation /> : <></>}
-        <ServerSpecs spec={specs} metric={metrics} />
-        <div className={`${perspective !== 'provider' ? 'col-span-2' : ''}`}>
-          <Terminal link={link} taskId={taskId} />
-        </div>
-        {metrics && (
-          <>
-            <GaugeDisplay
-              setAsSelectedGauge={handleSetSelectedGauge}
-              selectedGauge={selectedGauge}
-              percentage={
-                metrics && metrics.cpuUsage
-                  ? Number(metrics.cpuUsage.usage.slice(0, -1))
-                  : 1
-              }
-              fill={'var(--gauge-red)'}
-              name={'CPU'}
-              styleAdditions={'ring-gauge-red bg-gauge-red'}
+          <div className="grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white">
+            {perspective === 'provider' ? <NodeInformation /> : <></>}
+            <ServerSpecs spec={specs} metric={metrics} />
+            <div
+              className={`${perspective !== 'provider' ? 'col-span-2' : ''}`}
+            >
+              <Terminal link={metadata.api.domain} taskId={metadata.lastTask} />
+            </div>
+            {metrics && (
+              <>
+                <GaugeDisplay
+                  setAsSelectedGauge={handleSetSelectedGauge}
+                  selectedGauge={selectedGauge}
+                  percentage={
+                    metrics && metrics.cpuUsage
+                      ? Number(metrics.cpuUsage.usage.slice(0, -1))
+                      : 1
+                  }
+                  fill={'var(--gauge-red)'}
+                  name={'CPU'}
+                  styleAdditions={'ring-gauge-red bg-gauge-red'}
+                />
+                <GaugeDisplay
+                  setAsSelectedGauge={handleSetSelectedGauge}
+                  selectedGauge={selectedGauge}
+                  percentage={
+                    metrics && metrics.memoryUsage
+                      ? Number(metrics.memoryUsage.usage.slice(0, -1))
+                      : 1
+                  }
+                  fill={'var(--gauge-green)'}
+                  name={'RAM'}
+                  styleAdditions={'ring-gauge-green bg-gauge-green'}
+                />
+                <GaugeDisplay
+                  setAsSelectedGauge={handleSetSelectedGauge}
+                  selectedGauge={selectedGauge}
+                  percentage={
+                    metrics && metrics.diskUsage
+                      ? Number(metrics.diskUsage[0]['use%'].slice(0, -1))
+                      : 1
+                  }
+                  fill={'var(--gauge-yellow)'}
+                  name={'DISK'}
+                  styleAdditions={'ring-gauge-yellow bg-gauge-yellow'}
+                />
+              </>
+            )}
+            <RenderChart
+              metric={selectedGauge.name}
+              data={selectedGauge.data}
+              color={selectedGauge.color}
             />
-            <GaugeDisplay
-              setAsSelectedGauge={handleSetSelectedGauge}
-              selectedGauge={selectedGauge}
-              percentage={
-                metrics && metrics.memoryUsage
-                  ? Number(metrics.memoryUsage.usage.slice(0, -1))
-                  : 1
-              }
-              fill={'var(--gauge-green)'}
-              name={'RAM'}
-              styleAdditions={'ring-gauge-green bg-gauge-green'}
-            />
-            <GaugeDisplay
-              setAsSelectedGauge={handleSetSelectedGauge}
-              selectedGauge={selectedGauge}
-              percentage={
-                metrics && metrics.diskUsage
-                  ? Number(metrics.diskUsage[0]['use%'].slice(0, -1))
-                  : 1
-              }
-              fill={'var(--gauge-yellow)'}
-              name={'DISK'}
-              styleAdditions={'ring-gauge-yellow bg-gauge-yellow'}
-            />
-          </>
-        )}
-        <RenderChart
-          metric={selectedGauge.name}
-          data={selectedGauge.data}
-          color={selectedGauge.color}
-        />
-      </div>
+          </div>
+        </>
+      ) : (
+        <div>Loading</div>
+      )}
     </div>
   )
 }

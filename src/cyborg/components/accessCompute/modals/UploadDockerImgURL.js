@@ -1,10 +1,5 @@
 import React, { useState } from 'react'
-import {
-  SERVICES,
-  DEPLOY_STATUS,
-  useCyborg,
-  useCyborgState,
-} from '../../../CyborgContext'
+import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
 import toast from 'react-hot-toast'
 import Modal from '../../general/Modal'
@@ -12,21 +7,19 @@ import Button from '../../general/Button'
 import { useNavigate } from 'react-router-dom'
 import {
   handleDispatchError,
-  handleTaskSuccess,
   handleStatusEvents,
 } from '../../../util/serviceDeployment'
 import { getAccount } from '../../../util/getAccount'
+import { ROUTES } from '../../../../index'
 
 function UploadDockerImgURL({ setService }) {
   const navigate = useNavigate()
 
-  const { selectService, setTaskStatus, setTaskMetadata, listWorkers } =
-    useCyborg()
-
-  const { workerList } = useCyborgState()
+  const { selectService, setTaskStatus, setTaskMetadata } = useCyborg()
   const { api, currentAccount } = useSubstrateState()
+
   const [url, setUrl] = useState('')
-  const [onIsInBlockWasCalled, setOnIsInBlockWasCalled] = useState(false);
+  const [onIsInBlockWasCalled, setOnIsInBlockWasCalled] = useState(false)
 
   const handleUrlChange = e => {
     setUrl(e.target.value)
@@ -35,12 +28,13 @@ function UploadDockerImgURL({ setService }) {
   const handleSubmit = async event => {
     event.preventDefault()
 
-    toast("fn called")
+    toast('fn called')
 
     selectService(SERVICES.CYBER_DOCK)
     setTaskStatus(DEPLOY_STATUS.PENDING)
 
     const fromAcct = await getAccount(currentAccount)
+
     const containerTask = api.tx.taskManagement.taskScheduler(url)
     await containerTask
       .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
@@ -52,24 +46,27 @@ function UploadDockerImgURL({ setService }) {
         }
 
         if (status.isInBlock || status.isFinalized) {
-          const { hasErrored, successEvents } = handleStatusEvents(api, events)
+          const { hasErrored, successfulEvents } = handleStatusEvents(
+            api,
+            events
+          )
 
           if (hasErrored) {
             setTaskStatus(DEPLOY_STATUS.FAILED)
-          } else if (successEvents) {
-            toast.success(`Task Scheduled`)
+          } else if (successfulEvents) {
             setTaskStatus(DEPLOY_STATUS.READY)
-            const taskEvent = success[0].toJSON().event.data
-            console.log("Extrinsic Success: ", taskEvent)
+            const taskEvent = successfulEvents[0].toJSON().event.data
+            console.log('Extrinsic Success: ', taskEvent)
 
             const [taskExecutor, , taskId] = taskEvent
             const [workerAddress, workerId] = taskExecutor
-            setTaskMetadata(workerAddress,workerId.toString(),taskId)
+            setTaskMetadata(workerAddress, workerId.toString(), taskId)
 
             //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
-            if(status.isInBlock && !onIsInBlockWasCalled){
+            if (status.isInBlock && !onIsInBlockWasCalled) {
               setOnIsInBlockWasCalled(true)
-              navigate('dashboard')
+              toast.success(`Task Scheduled`)
+              navigate(ROUTES.DASHBOARD)
             }
           }
         }
