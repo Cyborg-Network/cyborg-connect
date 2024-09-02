@@ -57,17 +57,14 @@ function UploadDockerImgURL({ setService }) {
           if (hasErrored) {
             setTaskStatus(DEPLOY_STATUS.FAILED)
           } else if (successEvents) {
-            const { taskEvent, updatedWorkerInfo } = handleTaskSuccess(
-              successEvents,
-              workerList
-            )
-            setTaskMetadata(taskEvent)
-            
-            if (updatedWorkerInfo) {
-              console.log('update workers after task submit')
-              listWorkers(updatedWorkerInfo)
-            }
+            toast.success(`Task Scheduled`)
             setTaskStatus(DEPLOY_STATUS.READY)
+            const taskEvent = success[0].toJSON().event.data
+            console.log("Extrinsic Success: ", taskEvent)
+
+            const [taskExecutor, , taskId] = taskEvent
+            const [workerAddress, workerId] = taskExecutor
+            setTaskMetadata(workerAddress,workerId.toString(),taskId)
 
             //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
             if(status.isInBlock && !onIsInBlockWasCalled){

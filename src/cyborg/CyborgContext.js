@@ -1,4 +1,4 @@
-import React, { useReducer, useContext, useEffect } from 'react'
+import React, { useReducer, useState, useContext, useEffect, useMemo } from 'react'
 import { useSubstrateState } from '../substrate-lib'
 
 export const SERVICES = {
@@ -76,97 +76,114 @@ const CyborgContext = React.createContext()
 
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const sState = useSubstrateState()
-  const { taskMetadata, taskList } = state
+  const {api, apiState} = useSubstrateState()
+  const [tasks, setTasks] = useState(undefined)
+  const [workers, setWorkers] = useState(undefined)
+  const [reloadWorkers, setReloadWorkers] = useState(false)
+  const { taskMetadata } = state
 
-  useEffect(() => {
-    const getRegisteredWorkers = async () => {
-      const { api } = sState
-      const entries = await api.query.edgeConnect.workerClusters.entries()
-      // Extract and process the worker clusters
-      const workerClusters = entries.map(([key, value]) => {
-        let worker = value.toHuman()
-        console.log('taskList: ', taskList)
-        let lastTask = taskList.find(task => {
-          const [address, workerId] = task.taskExecutor
-          return worker.owner === address && worker.id === workerId
-        })
-        return {
-          ...worker,
-          lastTask: lastTask ? lastTask.taskId : null,
-        }
-      })
-      console.log('WORKERS RETREIVED:: ', workerClusters, entries)
-      sessionStorage.setItem(
-        'WORKERLIST',
-        JSON.stringify({ time: new Date(), workers: workerClusters })
-      )
-      listWorkers(workerClusters)
-    }
-    // TODO: Update workerList in session storage via time intervals and reduce api calls by setting listWorkers to sessionStorage value if not need to be updated
-    // const storedList = sessionStorage.getItem('WORKERLIST')
-    // if (storedList) {
-    //   const currentTime = new Date()
-    //   const timePassed = (currentTime - storedList.time)/1000;
-    //   if (timePassed > 90) {
-    //     getRegisteredWorkers()
-    //   } else {
-    //     listWorkers(storedList.workers)
-    //   }
-    // }
-    if (sState && sState.api && sState.apiState === 'READY' && taskList) {
-      getRegisteredWorkers()
-    }
-    // const storedListInfo = sessionStorage.getItem('WORKERLIST')
-    // console.log("storedListInfo: ", JSON.parse(storedListInfo))
-  }, [sState, taskList])
+    const { devMode } = state
 
-  useEffect(() => {
-    const taskUniqueAllocations = async () => {
-      const { api } = sState
-      let tasks = []
-      const count = await api.query.taskManagement.nextTaskId()
-      for (let i = count - 1; i >= 0; i--) {
-        const allocated = (
-          await api.query.taskManagement.taskAllocations(i)
-        ).toHuman()
-        if (!tasks.some(task => task.taskExecutor === allocated)) {
-          tasks.push({ taskExecutor: allocated, taskId: i })
-        }
+    // Get tasks and workers from the chain
+    useEffect(() => {
+      console.log("reload workers: ", reloadWorkers)
+      const getTaskAllocations = async () => {
+        const entries = await api.query.taskManagement.taskAllocations.entries();
+        const assignees = entries.map(([key, value]) => {
+          const [taskExecutor, workerId] = value.toHuman()
+          return {
+            taskExecutor,
+            workerId,
+            taskId: Number(key.toHuman()[0]),
+          }
+        }).sort((a, b) => a.taskId - b.taskId)
+        console.log("assignees: ", assignees)
+        setTasks(assignees)
       }
-      listTasks(tasks)
+      if (api && apiState === "READY") {
+        getTaskAllocations()
     }
-    if (sState && sState.api && sState.apiState === 'READY') {
-      taskUniqueAllocations()
-    }
-  }, [sState])
+  },[api, apiState])
+    useEffect(() => {
+      const getRegisteredWorkers = async () => {
+          const entries = await api.query.edgeConnect.workerClusters.entries();
+          // Extract and process the worker clusters
+          const workerClusters = entries.map(([key, value]) => {return {...value.toHuman(), lastTask: null}})
+          console.log("WORKERS RETREIVED:: ", workerClusters)
+          setWorkers(workerClusters)
+      }
+      if (api && apiState === "READY" || reloadWorkers) {
+          getRegisteredWorkers()
+          setReloadWorkers(false)
+      }
+    },[api, apiState, reloadWorkers])
 
-  useEffect(() => {
-    if (
-      (!taskMetadata && taskList) ||
-      (taskMetadata && taskList && taskMetadata.taskId < taskList[0].taskId)
-    ) {
-      dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskList[0] })
+    const workersWithLastTasks = useMemo(() => {
+      if ((workers && tasks)) {
+      // console.log("task with workers: ", workers,tasks)
+      return workers.map((worker) => {
+        // tasks are iterated through reverse order to find the most recent task for a worker
+        for (let i = tasks.length - 1; i >= 0; i--) {
+          const {taskExecutor, workerId} = tasks[i]
+          // find a match from registered worker's address and id to the task assignee's address and id
+          if (worker.owner === taskExecutor && worker.id === workerId) {
+            return {
+              ...worker,
+              lastTask: i
+            }
+          } 
+        }
+        return worker // no tasks assigned to this worker
+      });
     }
-  }, [taskMetadata, taskList])
+    }, [workers, tasks]);
+    console.log("Workers with tasks: ", workersWithLastTasks)
 
-  // // update workers with the last tasks they've executed incase missed by first update
-  // useEffect(() => {
-  //   if (workerList && taskList) {
-  //     let updatedWorkerInfo = workerList.map(worker => {
-  //       let lastTask = taskList.find(task => {
-  //         const [address, workerId] = task.taskExecutor
-  //         return worker.owner === address && worker.id === workerId
-  //       })
-  //       return {
-  //         ...worker,
-  //         lastTask: lastTask? lastTask.taskId : null
-  //       }
-  //     });
-  //     console.log("update workerInfo: ", updatedWorkerInfo)
-  //     listWorkers(updatedWorkerInfo)
-  //   }
-  // },[taskMetadata, taskList, sState])
+    // keep last executed task info in storage if not present
+    useEffect(() => {
+      if ((!taskMetadata && tasks) || (taskMetadata && tasks && taskMetadata.taskId < tasks.length -1)) {
+        dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: {
+          ...tasks[tasks.length -1]
+        } }) 
+      } 
+    },[taskMetadata, tasks])
+
+    useEffect(() => {   
+      if (api && api.query.system) {
+        const subscribeToEvents = async () => {
+          const unsubscribe = await api.query.system.events((events) => {
+            events.forEach(({event}) => {
+              if (event.section === "taskManagement" &&
+                event.method === "TaskScheduled") {
+                  console.log("Task Scheduled event: ", event.data.toHuman())
+                  const {assignedWorker, taskId} = event.data.toHuman()
+                  const [taskExecutor,workerId] = assignedWorker
+                  setTaskMetadata(taskExecutor,workerId.toString(),taskId)
+                }
+
+              if (event.section === "edgeConnect") { console.log("Edge Connect Worker Event")}
+              if (event.section === "edgeConnect" &&
+                (event.method === "WorkerRegistered" || event.method === "WorkerRemoved")) {
+                  const normalizedEvent = event.data.toHuman()
+                  console.log("Worker Registered Event: ", normalizedEvent)
+                  setReloadWorkers(true)
+                }
+            });
+          });
+    
+          return () => {
+            unsubscribe();
+          };
+        };
+    
+        const unsubscribePromise = subscribeToEvents();
+    
+        return () => {
+          unsubscribePromise.then((unsubscribe) => unsubscribe && unsubscribe());
+        };
+      }
+    }, [api]);
+
 
   const selectService = service => {
     dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
@@ -179,18 +196,28 @@ const CyborgContextProvider = props => {
     })
   }
 
-  const setTaskMetadata = taskEvent => {
-    console.log('set task metadata: ', taskEvent)
-    const taskMetadata = {
-      taskExecutor: taskEvent[0],
-      taskOwner: taskEvent[1],
-      taskId: taskEvent[2],
-      taskInstruction: taskEvent[3],
-      executorIp: taskEvent[4],
+    const setTaskMetadata = (
+      taskExecutor,
+      workerId,
+      taskId
+    ) => {
+      setTasks([...tasks, {
+        taskExecutor,
+        workerId,
+        taskId,
+      }])
+      console.log("new Tasks: ", tasks)
+      console.log("task metadata: ", {
+        taskExecutor,
+        workerId,
+        taskId
+      })
+      dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: {
+        taskExecutor,
+        workerId,
+        taskId
+      } })
     }
-    console.log('task metadata: ', taskMetadata)
-    dispatch({ type: ACTIONS.SET_TASK_METADATA, payload: taskMetadata })
-  }
 
   const setDeployComputeStatus = deployCompute => {
     dispatch({
@@ -199,13 +226,9 @@ const CyborgContextProvider = props => {
     })
   }
 
-  const listWorkers = list => {
-    dispatch({ type: ACTIONS.LIST_WORKERS, payload: list })
-  }
-
-  const listTasks = list => {
-    dispatch({ type: ACTIONS.LIST_TASKS, payload: list })
-  }
+    const listWorkers = (list) => {
+      dispatch({ type: ACTIONS.LIST_WORKERS, payload: list})
+    }
 
   const toggleDashboard = ({ section = null, metadata = null }) => {
     const dashInfo = {
@@ -226,6 +249,7 @@ const CyborgContextProvider = props => {
         setTaskMetadata,
         setDeployComputeStatus,
         listWorkers,
+        workersWithLastTasks,
       }}
     >
       {props.children}
