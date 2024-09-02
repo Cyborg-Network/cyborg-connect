@@ -24,22 +24,18 @@ function ChoosePath() {
       <h1 className="text-white">Choose Your Path</h1>
       <div className="flex">
         <Button
-          onClick={() => {return /*setPath('provide-compute')*/}}
+          onClick={() => {
+            return /*setPath('provide-compute')*/
+          }}
           variation="inactive"
         >
-          Provide Compute
+          Coming Soon
         </Button>
-        <Button
-          onClick={() => setPath('access-compute')}
-          variation="secondary"
-        >
+        <Button onClick={() => setPath('access-compute')} variation="secondary">
           Access Compute
         </Button>
       </div>
-      <Button 
-        onClick={handleClick} 
-        variation="primary" 
-      >
+      <Button onClick={handleClick} variation="primary">
         Get Started
       </Button>
     </div>

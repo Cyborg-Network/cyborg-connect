@@ -168,7 +168,6 @@ const CyborgContextProvider = props => {
   //   }
   // },[taskMetadata, taskList, sState])
 
-
   const selectService = service => {
     dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
   }

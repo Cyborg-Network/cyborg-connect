@@ -15,4 +15,3 @@ function RenderChart({ metric, data, color }) {
 }
 
 export default RenderChart
-

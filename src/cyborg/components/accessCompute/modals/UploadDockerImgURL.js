@@ -6,42 +6,27 @@ import {
   useCyborgState,
 } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
-import { web3FromSource } from '@polkadot/extension-dapp'
 import toast from 'react-hot-toast'
 import Modal from '../../general/Modal'
 import Button from '../../general/Button'
 import { useNavigate } from 'react-router-dom'
+import {
+  handleDispatchError,
+  handleTaskSuccess,
+  handleStatusEvents,
+} from '../../../util/serviceDeployment'
+import { getAccount } from '../../../util/getAccount'
 
 function UploadDockerImgURL({ setService }) {
+  const navigate = useNavigate()
 
-  const navigate = useNavigate();
-
-  const { 
-    selectService, 
-    setTaskStatus, 
-    setTaskMetadata, 
-    listWorkers 
-  } = useCyborg()
+  const { selectService, setTaskStatus, setTaskMetadata, listWorkers } =
+    useCyborg()
 
   const { workerList } = useCyborgState()
   const { api, currentAccount } = useSubstrateState()
   const [url, setUrl] = useState('')
-
-  const getFromAcct = async () => {
-    const {
-      address,
-      meta: { source, isInjected },
-    } = currentAccount
-
-    if (!isInjected) {
-      return [currentAccount]
-    }
-
-    // currentAccount is injected from polkadot-JS extension, need to return the addr and signer object.
-    // ref: https://polkadot.js.org/docs/extension/cookbook#sign-and-send-a-transaction
-    const injector = await web3FromSource(source)
-    return [address, { signer: injector.signer }]
-  }
+  const [onIsInBlockWasCalled, setOnIsInBlockWasCalled] = useState(false);
 
   const handleUrlChange = e => {
     setUrl(e.target.value)
@@ -49,102 +34,46 @@ function UploadDockerImgURL({ setService }) {
 
   const handleSubmit = async event => {
     event.preventDefault()
+
+    toast("fn called")
+
     selectService(SERVICES.CYBER_DOCK)
     setTaskStatus(DEPLOY_STATUS.PENDING)
 
-    const fromAcct = await getFromAcct()
+    const fromAcct = await getAccount(currentAccount)
     const containerTask = api.tx.taskManagement.taskScheduler(url)
     await containerTask
       .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
         // status would still be set, but in the case of error we can shortcut
         // to just check it (so an error would indicate InBlock or Finalized)
         if (dispatchError) {
-          if (dispatchError.isModule) {
-            // for module errors, we have the section indexed, lookup
-            const decoded = api.registry.findMetaError(dispatchError.asModule)
-            const { docs, name, section } = decoded
-            toast.error(
-              `Dispatch Module Error: ${section}.${name}: ${docs.join(' ')}`
-            )
-            setTaskStatus(DEPLOY_STATUS.FAILED)
-            console.error(
-              `Dispatch Module Error: ${section}.${name}: ${docs.join(' ')}`
-            )
-          } else {
-            // Other, CannotLookup, BadOrigin, no extra info
-            toast.error(`Dispatch Module Error: ${dispatchError.toString()}`)
-            setTaskStatus(DEPLOY_STATUS.FAILED)
-            console.error(`Dispatch Module Error: ${dispatchError.toString()}`)
-          }
+          handleDispatchError(api, dispatchError)
+          setTaskStatus(DEPLOY_STATUS.FAILED)
         }
-        if (status.isInBlock || status.isFinalized) {
-          events
-            // find/filter for failed events
-            .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
-            // we know that data for system.ExtrinsicFailed is
-            // (DispatchError, DispatchInfo)
-            .forEach(
-              ({
-                event: {
-                  data: [error, info],
-                },
-              }) => {
-                if (error.isModule) {
-                  // for module errors, we have the section indexed, lookup
-                  const decoded = api.registry.findMetaError(error.asModule)
-                  const { docs, method, section } = decoded
-                  toast.error(`${section}.${method}: ${docs.join(' ')}`)
-                  console.error(`${section}.${method}: ${docs.join(' ')}`)
-                  setTaskStatus(DEPLOY_STATUS.FAILED)
-                } else {
-                  // Other, CannotLookup, BadOrigin, no extra info
-                  toast.error(error.toString())
-                  console.error(error.toString())
-                  setTaskStatus(DEPLOY_STATUS.FAILED)
-                }
-              }
-            )
-          const success = events.filter(({ event }) =>
-            api.events.taskManagement.TaskScheduled.is(event)
-          )
-          if (success.length > 0) {
-            toast.success(`Task Scheduled`)
-            setTaskStatus(DEPLOY_STATUS.READY)
-            const taskEvent = success[0].toJSON().event.data
-            console.log('Extrinsic Success: ', taskEvent)
-            setTaskMetadata(taskEvent)
-            const [taskExecutor, , taskId] = taskEvent
-            const [workerAddress, workerId] = taskExecutor
 
-            const storedListInfo = sessionStorage.getItem('WORKERLIST')
-            console.log('storedListInfo found', JSON.parse(storedListInfo))
-            const storedList = storedListInfo
-              ? JSON.parse(storedListInfo).workers
-              : null
-            const availableList = workerList || storedList
-            console.log('workerList after task: ', availableList)
-            console.log('storedList found', storedList)
-            let updatedWorkerInfo = availableList
-              ? availableList.map(worker => {
-                  if (
-                    Number(worker.id) === workerId &&
-                    worker.owner === workerAddress
-                  ) {
-                    return {
-                      ...worker,
-                      lastTask: taskId,
-                    }
-                  } else {
-                    console.log('not found')
-                    return worker
-                  }
-                })
-              : null
+        if (status.isInBlock || status.isFinalized) {
+          const { hasErrored, successEvents } = handleStatusEvents(api, events)
+
+          if (hasErrored) {
+            setTaskStatus(DEPLOY_STATUS.FAILED)
+          } else if (successEvents) {
+            const { taskEvent, updatedWorkerInfo } = handleTaskSuccess(
+              successEvents,
+              workerList
+            )
+            setTaskMetadata(taskEvent)
+            
             if (updatedWorkerInfo) {
               console.log('update workers after task submit')
               listWorkers(updatedWorkerInfo)
             }
-            navigate('dashboard')
+            setTaskStatus(DEPLOY_STATUS.READY)
+
+            //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
+            if(status.isInBlock && !onIsInBlockWasCalled){
+              setOnIsInBlockWasCalled(true)
+              navigate('dashboard')
+            }
           }
         }
       })
@@ -156,8 +85,12 @@ function UploadDockerImgURL({ setService }) {
   }
 
   return (
-    <Modal onOutsideClick={() => setService(null)} >
-      <Button variation="cancel" onClick={() => setService(null)} additionalClasses="absolute top-6 right-6"/>
+    <Modal onOutsideClick={() => setService(null)}>
+      <Button
+        variation="cancel"
+        onClick={() => setService(null)}
+        additionalClasses="absolute top-6 right-6"
+      />
       <form onSubmit={handleSubmit}>
         <h5 className="flex">Upload Docker Image</h5>
         <div className="mb-4">
@@ -186,7 +119,7 @@ function UploadDockerImgURL({ setService }) {
           </div>
           <div className=" flex items-center justify-between">
             <button
-              type="submit"
+              onClick={handleSubmit}
               className="bg-cb-green w-full hover:ring-2 ring-white  text-black py-2 rounded"
             >
               Submit

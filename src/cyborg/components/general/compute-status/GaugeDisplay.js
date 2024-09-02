@@ -10,7 +10,6 @@ function GaugeDisplay({
   selectedGauge,
   setAsSelectedGauge,
 }) {
-
   const onMouseDownHandler = () => {
     setAsSelectedGauge(name, fill)
   }

@@ -3,13 +3,17 @@ import cyberdock from '../../../../public/assets/icons/cyberdock.png'
 import comingsoon from '../../../../public/assets/icons/comingsoon.png'
 import UploadDockerImgURL from './modals/UploadDockerImgURL.js'
 import ServiceCard from './ServiceCard'
-import { DEPLOY_STATUS, useCyborgState, useCyborg, SERVICES } from '../../CyborgContext'
+import {
+  DEPLOY_STATUS,
+  useCyborgState,
+  useCyborg,
+  SERVICES,
+} from '../../CyborgContext'
 import LoadDeployCyberDock from './modals/LoadDeployCyberDock'
 
 function ChooseServices() {
-  
-  const { serviceStatus, service } = useCyborgState();
-  const { selectService } = useCyborg();
+  const { serviceStatus, service } = useCyborgState()
+  const { selectService } = useCyborg()
 
   return (
     <div className="relative h-screen bg-cb-gray-700 flex flex-col items-center justify-center">
@@ -29,16 +33,17 @@ function ChooseServices() {
         <ServiceCard logo={comingsoon} title="Coming Soon..." />
         <ServiceCard logo={comingsoon} title="Coming Soon..." />
       </div>
-      {
-        service === SERVICES.CYBER_DOCK
-        ? <UploadDockerImgURL setService={selectService} />
-        : <></>
-      }
-      {
-        ( serviceStatus.deployTask === DEPLOY_STATUS.PENDING && service === SERVICES.CYBER_DOCK )
-        ? <LoadDeployCyberDock />
-        : <></>
-      }
+      {service === SERVICES.CYBER_DOCK ? (
+        <UploadDockerImgURL setService={selectService} />
+      ) : (
+        <></>
+      )}
+      {serviceStatus.deployTask === DEPLOY_STATUS.PENDING &&
+      service === SERVICES.CYBER_DOCK ? (
+        <LoadDeployCyberDock />
+      ) : (
+        <></>
+      )}
     </div>
   )
 }

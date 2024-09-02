@@ -201,12 +201,10 @@ function Terminal({ link, taskId }) {
   )
 }
 
-
-
 export default function ComputeStatus({ perspective }) {
   //const { metadata } = useCyborgState().dashboard
-  const location = useLocation();
-  const { state: metadata } = location;
+  const location = useLocation()
+  const { state: metadata } = location
   // const { taskMetadata } = useCyborgState()
   // const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
   // const [link, setLink] = useState(metadata && metadata.api? metadata.api.domain : "");

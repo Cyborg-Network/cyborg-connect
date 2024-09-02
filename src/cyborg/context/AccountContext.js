@@ -4,7 +4,6 @@ import { useSubstrateState, useSubstrate } from '../../substrate-lib'
 const AccountContext = React.createContext()
 
 const AccountContextProvider = props => {
-
   const { keyringState } = useSubstrateState()
 
   const {
@@ -12,12 +11,10 @@ const AccountContextProvider = props => {
     state: { keyring, currentAccount },
   } = useSubstrate()
 
-
-  
   // Set the initial address
   useEffect(() => {
     // `setCurrentAccount()` is called only when currentAccount is null (uninitialized)
-    if(keyringState === "READY"){
+    if (keyringState === 'READY') {
       // Get the list of accounts we possess the private key for
       const keyringOptions = keyring.getPairs().map(account => ({
         key: account.address,
@@ -35,14 +32,8 @@ const AccountContextProvider = props => {
     }
   }, [currentAccount, setCurrentAccount, keyring])
 
-
-  
   return (
-    <AccountContext.Provider
-      value={{
-                
-      }}
-    >
+    <AccountContext.Provider value={{}}>
       {props.children}
     </AccountContext.Provider>
   )

@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from "../../../../../public/assets/Logo.png"
+import logo from '../../../../../public/assets/Logo.png'
 import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'

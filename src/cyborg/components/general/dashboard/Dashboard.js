@@ -34,9 +34,8 @@ function NoNodes({ addNode }) {
 }
 
 function NodeList({ nodes, taskMetadata }) {
-
   //const { toggleDashboard } = useCyborg()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const lastTask = taskMetadata.taskId
   console.log('nodes: in list: ', nodes)
   console.log('lastTask: ', lastTask)
@@ -55,11 +54,13 @@ function NodeList({ nodes, taskMetadata }) {
       </span>
       <div className="bg-white bg-opacity-10 m-4 rounded-lg">
         {nodes.length > 0 &&
-          nodes.map((item) => (
+          nodes.map(item => (
             <div
               key={item.id}
               onClick={() =>
-                navigate(`compute-status/${item.owner}-${item.id}`, { state: item })
+                navigate(`compute-status/${item.owner}-${item.id}`, {
+                  state: item,
+                })
               }
               className={`hover:text-cb-green hover:font-bold hover:cursor-pointer ${
                 lastTask === item.lastTask

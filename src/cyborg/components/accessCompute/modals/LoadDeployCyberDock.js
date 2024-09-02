@@ -3,7 +3,6 @@ import dockdeploy from '../../../../../public/assets/icons/dockdeploy.gif'
 import Modal from '../../general/Modal'
 
 function LoadDeployCyberDock() {
-
   return (
     //Modal doesn't have an outside click function, user has to wait until container is deployed
     <Modal alignment={undefined}>
