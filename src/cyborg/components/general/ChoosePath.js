@@ -1,13 +1,11 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from './Button'
-import { useCyborg, DASH_STATE } from '../../CyborgContext'
 import { ROUTES } from '../../../index'
 
 function ChoosePath() {
   const [path, setPath] = useState(null)
 
-  const { toggleDashboard } = useCyborg()
   const navigate = useNavigate()
 
   const handleClick = () => {
@@ -15,7 +13,6 @@ function ChoosePath() {
     if (path === 'provide-compute') {
       navigate(ROUTES.PROVIDE_COMPUTE)
     } else if (path === 'access-compute') {
-      toggleDashboard({ section: DASH_STATE.HOME })
       navigate(ROUTES.ACCESS_COMPUTE)
     }
   }

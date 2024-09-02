@@ -3,7 +3,7 @@ import nondeployed from '../../../../public/assets/icons/nondeployed.png'
 import deploymentsTab from '../../../../public/assets/icons/deployment-logo.png'
 import cyberdock from '../../../../public/assets/icons/cyberdockDash.png'
 import { FiPlusCircle } from 'react-icons/fi'
-import { DASH_STATE, useCyborg, useCyborgState } from '../../CyborgContext'
+import { useCyborg, useCyborgState } from '../../CyborgContext'
 import { Button } from 'semantic-ui-react'
 import { TbRefresh } from 'react-icons/tb'
 function AddNodeButton({ addNode }) {
@@ -134,9 +134,9 @@ function NodeList({ nodes, taskMetadata }) {
           nodes.map((item, key) => (
             <div
               key={key}
-              onClick={() =>
-                toggleDashboard({ section: DASH_STATE.SERVER, metadata: item })
-              }
+              onClick={() => {
+                return
+              }}
               className={`hover:text-cb-green hover:font-bold hover:cursor-pointer ${
                 lastTask === item.lastTask
                   ? 'p-1 border border-transparent bg-gradient-to-r from-cb-green via-yellow-500 to-cb-green bg-clip-border animated-border'

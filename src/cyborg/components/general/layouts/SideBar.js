@@ -3,18 +3,20 @@ import logo from '../../../../../public/assets/Logo.png'
 import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'
-import { DASH_STATE, useCyborg } from '../../../CyborgContext'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { ROUTES } from '../../../..'
+
 function NavigationTab({ name, trigger }) {
   return (
     <button
-      onClick={() => trigger({ section: DASH_STATE.HOME })}
+      onClick={() => trigger()}
       className="flex items-center text-black py-3 px-24 rounded-md bg-cb-green focus:bg-cb-gray-400"
     >
       {name}
     </button>
   )
 }
+
 function ServiceTab({ name }) {
   return (
     <button className="flex justify-center text-white text-opacity-50 py-3 rounded-md focus:text-black focus:bg-cb-green bg-cb-gray-700">
@@ -22,8 +24,10 @@ function ServiceTab({ name }) {
     </button>
   )
 }
+
 function SideBar() {
-  const { toggleDashboard } = useCyborg()
+  const navigate = useNavigate()
+
   return (
     <>
       <div className="w-80 fixed left-0 top-0 flex flex-col bg-cb-gray-600 h-screen justify-between">
@@ -40,7 +44,10 @@ function SideBar() {
             </div>
           </span>
           <span className="flex flex-col items-center my-6">
-            <NavigationTab name={'Dashboard'} trigger={toggleDashboard} />
+            <NavigationTab
+              name={'Dashboard'}
+              trigger={() => navigate(ROUTES.DASHBOARD)}
+            />
           </span>
         </div>
         <div>

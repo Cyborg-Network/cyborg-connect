@@ -17,11 +17,6 @@ export const DEPLOY_STATUS = {
   FAILED: 'FAILED',
 }
 
-export const DASH_STATE = {
-  HOME: 'HOME',
-  SERVER: 'SERVER',
-}
-
 ///
 // Initial state for `useReducer`
 
@@ -31,12 +26,6 @@ const initialState = {
   serviceStatus: {
     deployCompute: null,
     deployTask: null,
-  },
-  //determines dashboard sections
-  dashboard: {
-    section: null,
-    //provides information on nodes
-    metadata: null,
   },
   workerList: null,
   taskList: null,
@@ -50,7 +39,6 @@ const ACTIONS = {
   DEPLOY_SERVICE: 'DEPLOY_SERVICE',
   LIST_WORKERS: 'LIST_WORKERS',
   LIST_TASKS: 'LIST_TASKS',
-  TOGGLE_DASHBOARD: 'TOGGLE_DASHBOARD',
   SET_TASK_METADATA: 'SET_TASK_METADATA',
 }
 
@@ -69,8 +57,6 @@ const reducer = (state, action) => {
       return { ...state, workerList: action.payload }
     case ACTIONS.LIST_TASKS:
       return { ...state, taskList: action.payload }
-    case ACTIONS.TOGGLE_DASHBOARD:
-      return { ...state, dashboard: action.payload }
     case ACTIONS.SET_TASK_METADATA:
       return { ...state, taskMetadata: action.payload }
     default:
@@ -253,20 +239,10 @@ const CyborgContextProvider = props => {
     dispatch({ type: ACTIONS.LIST_WORKERS, payload: list })
   }
 
-  const toggleDashboard = ({ section = null, metadata = null }) => {
-    const dashInfo = {
-      ...state.dashboard,
-      ...(section && { section }),
-      ...(metadata && { metadata }),
-    }
-    dispatch({ type: ACTIONS.TOGGLE_DASHBOARD, payload: dashInfo })
-  }
-
   return (
     <CyborgContext.Provider
       value={{
         state,
-        toggleDashboard,
         selectService,
         setTaskStatus,
         setTaskMetadata,

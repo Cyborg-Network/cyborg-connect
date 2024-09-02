@@ -28,8 +28,6 @@ function UploadDockerImgURL({ setService }) {
   const handleSubmit = async event => {
     event.preventDefault()
 
-    toast('fn called')
-
     selectService(SERVICES.CYBER_DOCK)
     setTaskStatus(DEPLOY_STATUS.PENDING)
 

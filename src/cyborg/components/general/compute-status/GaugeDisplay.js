@@ -23,7 +23,7 @@ function GaugeDisplay({
         name === selectedGauge.name
           ? 'bg-cb-gray-400 border border-cb-green'
           : ''
-      } bg-cb-gray-600 rounded-lg relative`}
+      } bg-cb-gray-600 rounded-lg relative hover:cursor-pointer`}
     >
       <div className="flex items-center p-2 gap-4 absolute top-4 left-4">
         {' '}
