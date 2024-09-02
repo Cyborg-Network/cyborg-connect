@@ -13,6 +13,7 @@ import ChooseServices from './cyborg/components/accessCompute/ChooseServices'
 import ChoosePath from './cyborg/components/general/ChoosePath'
 import { AccountContextProvider } from './cyborg/context/AccountContext';
 import ComputeStatus from './cyborg/components/general/compute-status/ComputeStatus';
+import PageNotFound from './cyborg/components/general/PageNotFound';
 
 export const ROUTES = {
   CHOOSE_PATH: "/cyborg-connect",
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
         path: ROUTES.ACCESS_COMPUTE,
         element: <ChooseServices />,
       },
+      {
+        path: '*',
+        element: <PageNotFound />,
+      }
     ]
   },
   {
