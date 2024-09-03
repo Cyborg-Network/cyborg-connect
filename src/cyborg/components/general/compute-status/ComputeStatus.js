@@ -59,7 +59,7 @@ export default function ComputeStatus({ perspective }) {
     const fetchSpecs = async () => {
       try {
         const specRes = await axios.get(
-          `http://${metadata.api.domain}/system-specs`
+          `${process.env.REACT_APP_HTTP_PREFIX}://${metadata.api.domain}/system-specs`
         )
         setSpecs(specRes.data)
       } catch (error) {
@@ -75,7 +75,7 @@ export default function ComputeStatus({ perspective }) {
     const fetchMetrics = async () => {
       try {
         const metricRes = await axios.get(
-          `http://${metadata.api.domain}/consumption-metrics`
+          `${process.env.REACT_APP_HTTP_PREFIX}://${metadata.api.domain}/consumption-metrics`
         )
         setMetrics(metricRes.data)
       } catch (error) {

@@ -24,7 +24,7 @@ export function GetLogs({ link, taskId }) {
   useEffect(() => {
     const fetchData = async (retryCount = 5, interval = 6000) => {
       try {
-        const response = await axios.get(`http://${link}/logs/${taskId}`, {
+        const response = await axios.get(`${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`, {
           headers: {
             'Access-Control-Allow-Origin': '*',
           },
@@ -45,7 +45,7 @@ export function GetLogs({ link, taskId }) {
         }
       }
     }
-    console.log('deploy data: ', data, `http://${link}/logs/${taskId}`)
+    console.log('deploy data: ', data, `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`)
     const stored = sessionStorage.getItem(`TASKID:${taskId}`)
     console.log('stored: ', taskId, stored)
     if (stored && stored.length > 0) {
@@ -57,7 +57,7 @@ export function GetLogs({ link, taskId }) {
     const fetchStatusInfo = async () => {
       try {
         const response = await axios.get(
-          `http://${link}/deployment-status/${taskId}`,
+          `${process.env.REACT_APP_HTTP_PREFIX}://${link}/deployment-status/${taskId}`,
           {
             headers: {
               'Access-Control-Allow-Origin': '*',
@@ -319,7 +319,7 @@ export default function ComputeProviderStatus({ perspective }) {
   useEffect(() => {
     const fetchSpecs = async () => {
       try {
-        const specRes = await axios.get(`http://${link}/system-specs`)
+        const specRes = await axios.get(`${process.env.REACT_APP_HTTP_PREFIX}://${link}/system-specs`)
         setSpecs(specRes.data)
       } catch (error) {
         console.error('SPECS ERROR:: ', error)
@@ -330,7 +330,7 @@ export default function ComputeProviderStatus({ perspective }) {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const metricRes = await axios.get(`http://${link}/consumption-metrics`)
+        const metricRes = await axios.get(`${process.env.REACT_APP_HTTP_PREFIX}://${link}/consumption-metrics`)
         setMetrics(metricRes.data)
       } catch (error) {
         console.error('METRICS ERROR:: ', error)

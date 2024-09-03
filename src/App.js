@@ -9,6 +9,7 @@ import {
   Button,
 } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
+import { ROUTES } from './index'
 
 import { useSubstrateState } from './substrate-lib'
 import { DeveloperConsole } from './substrate-lib/components'
@@ -91,7 +92,7 @@ export function Main() {
         </Grid>
       </Container>
       <DeveloperConsole />
-      <Link to={"/cyborg-connect"}>
+      <Link to={ROUTES.CHOOSE_PATH}>
         <Button className='fixed bottom-2 right-2 z-40'>Test Cyborg DApp</Button>
       </Link>
     </div>

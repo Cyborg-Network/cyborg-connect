@@ -16,12 +16,12 @@ import ComputeStatus from './cyborg/components/general/compute-status/ComputeSta
 import PageNotFound from './cyborg/components/general/PageNotFound';
 
 export const ROUTES = {
-  CHOOSE_PATH: "/cyborg-connect",
-  PROVIDE_COMPUTE: "/cyborg-connect/provide-compute",
-  ACCESS_COMPUTE: "/cyborg-connect/access-compute",
-  DASHBOARD: "/cyborg-connect/access-compute/dashboard",
-  COMPUTE_STATUS: "/cyborg-connect/access-compute/dashboard/compute-status",
-  DEV_MODE: "/cyborg-connect/dev-mode",
+  CHOOSE_PATH: "/",
+  PROVIDE_COMPUTE: "/provide-compute",
+  ACCESS_COMPUTE: "/access-compute",
+  DASHBOARD: "/access-compute/dashboard",
+  COMPUTE_STATUS: "/access-compute/dashboard/compute-status",
+  DEV_MODE: "/dev-mode",
 }
 
 const Layout = () => {
@@ -29,12 +29,14 @@ const Layout = () => {
     <>
       <Outlet />
       <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
-      <Link to={"cyborg-connect/dev-mode"}>
+      <Link to={ROUTES.DEV_MODE}>
         <button className='fixed text-lg rounded-lg p-4 bottom-2 right-2 z-40 bg-white'>Test Substrate Chain</button>
       </Link>
     </>
   )
 }
+
+console.log(process.env.REACT_APP_ENV)
 
 const router = createBrowserRouter([
   {
