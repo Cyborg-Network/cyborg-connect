@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css' 
 import { Main } from './App'
-import { createBrowserRouter, RouterProvider, Outlet, Link } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet, Link, useLocation } from 'react-router-dom';
 import { SubstrateContextProvider } from './substrate-lib'
 import { CyborgContextProvider } from './cyborg/CyborgContext'
 import { Toaster } from 'react-hot-toast'
@@ -25,12 +25,25 @@ export const ROUTES = {
 }
 
 const Layout = () => {
+  const location = useLocation().pathname;
+
+  const linkProperties = location === ROUTES.DEV_MODE ? 
+    {
+      route: ROUTES.CHOOSE_PATH,
+      name: "Test Cyborg DApp",
+    }
+    :
+    {
+      route: ROUTES.DEV_MODE,
+      name: "Test Substrate Chain",
+    }
+
   return (
     <>
       <Outlet />
       <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
-      <Link to={ROUTES.DEV_MODE}>
-        <button className='fixed text-lg rounded-lg p-4 bottom-2 right-2 z-40 bg-white'>Test Substrate Chain</button>
+      <Link to={linkProperties.route}>
+        <button className='fixed text-lg rounded-lg p-4 bottom-2 right-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
       </Link>
     </>
   )
@@ -68,14 +81,14 @@ const router = createBrowserRouter([
         element: <ChooseServices />,
       },
       {
-        path: '*',
-        element: <PageNotFound />,
+        path: ROUTES.DEV_MODE,
+        element: <Main />
       }
     ]
   },
   {
-        path: ROUTES.DEV_MODE,
-        element: <Main />
+    path: '*',
+    element: <PageNotFound />,
   }
 ]);
 
