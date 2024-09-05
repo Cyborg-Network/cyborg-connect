@@ -3,7 +3,7 @@ import logo from '../../../../../public/assets/Logo.png'
 import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
 import { useUi } from '../../../context/UiContext'
 
@@ -27,22 +27,12 @@ function ServiceTab({ name }) {
 }
  
 function SideBar() {
+
   const navigate = useNavigate()
   const { sidebarIsActive, setSidebarIsActive } = useUi();
 
   const returnSidebarClass = sidebarIsActive ? '' : '-translate-x-full'
   const returnButtonClass = sidebarIsActive ? '-translate-x-0' : 'translate-x-20'
-
-  const SidebarWrapper = ({children}) => {
-  
-  const { sidebarIsActive } = useUi();
-
-  return(
-    <div className={`w-screen h-screen ${sidebarIsActive ? "lg:pl-80 transition-all duration-500 ease-in-out" : "" }`}>
-      {children}
-    </div>
-    )
-  }
 
   return (
     <>
@@ -53,9 +43,9 @@ function SideBar() {
           <span className="flex items-center justify-between p-4 pr-6">
             <div className="flex gap-4 items-center flex-shrink-0">
               <button></button>
-              <a href="/cyborg-connect/">
+              <Link href={ROUTES.CHOOSE_PATH}>
                 <img src={logo} className="h-10S" />
-              </a>
+              </Link>
             </div>
             <div
               onClick={() => setSidebarIsActive(!sidebarIsActive)}
@@ -96,9 +86,9 @@ function SideBar() {
           </span>
         </div>
       </div>
-      <SidebarWrapper>
-        <Outlet />
-      </SidebarWrapper>
+      {/*Invisible overlay for the sidebar so that clicks beside it can also deactivate it*/}
+      <div className={`fixed w-screen h-screen ${sidebarIsActive ? '' : 'hidden'}`} onMouseDown={() => setSidebarIsActive(!sidebarIsActive)}/>
+      <Outlet />
     </>
   )
 }

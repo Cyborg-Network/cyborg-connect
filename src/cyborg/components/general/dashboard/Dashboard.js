@@ -6,6 +6,7 @@ import { useCyborg, useCyborgState } from '../../../CyborgContext'
 import { Button } from 'semantic-ui-react'
 import { TbRefresh } from 'react-icons/tb'
 import { NodeList } from './NodeList'
+import { useUi } from '../../../context/UiContext'
 
 function AddNodeButton({ addNode }) {
   return (
@@ -39,13 +40,15 @@ function Dashboard({ perspective }) {
 
   const { taskMetadata } = useCyborgState()
   const { workersWithLastTasks, setReloadWorkers } = useCyborg()
+  const { sidebarIsActive } = useUi();
 
   console.log('workerList: ', workersWithLastTasks)
 
   return (
+    <div className={`w-screen h-screen ${sidebarIsActive ? 'lg:pl-80' : 'lg:pl-0'} transition-all duration-500 ease-in-out`}>
     <div className='w-full h-full justify-self-start flex flex-col'>
       <div className="flex items-center justify-between mx-2 text-white">
-        <div className="flex items-center ml-burger-btn-offset">
+        <div className={`flex items-center ${sidebarIsActive ? 'lg:ml-0' : 'lg:ml-burger-btn-offset'} transition-all duration-500 ease-in-out`}>
           <img src={deploymentsTab} />
           <div>
             <h3 className="mb-0">Deployments</h3>
@@ -71,6 +74,7 @@ function Dashboard({ perspective }) {
       ) : (
         <NoNodes addNode={addNode} />
       )}
+    </div>
     </div>
   )
 }
