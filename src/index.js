@@ -15,6 +15,7 @@ import { AccountContextProvider } from './cyborg/context/AccountContext';
 import ComputeStatus from './cyborg/components/general/compute-status/ComputeStatus';
 import PageNotFound from './cyborg/components/general/PageNotFound';
 import PageWrapper from './cyborg/components/general/layouts/PageWrapper';
+import { UiContextProvider } from './cyborg/context/UiContext';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -113,11 +114,13 @@ ReactDOM.render(
     <SubstrateContextProvider>
       <AccountContextProvider>
         <CyborgContextProvider>
+          <UiContextProvider>
           <Toaster
             position="top-center"
             reverseOrder={false}
           />
           <RouterProvider router={router} />
+          </UiContextProvider>
         </CyborgContextProvider>
       </AccountContextProvider>
     </SubstrateContextProvider>

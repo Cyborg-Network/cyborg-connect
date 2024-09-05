@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import logo from '../../../../../public/assets/Logo.png'
 import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
+import { useUi } from '../../../context/UiContext'
 
 function NavigationTab({ name, trigger }) {
   return (
@@ -24,13 +25,24 @@ function ServiceTab({ name }) {
     </button>
   )
 }
-
+ 
 function SideBar() {
   const navigate = useNavigate()
-  const [isActive, setIsActive] = useState(false)
+  const { sidebarIsActive, setSidebarIsActive } = useUi();
 
-  const returnSidebarClass = isActive ? '' : '-translate-x-full'
-  const returnButtonClass = isActive ? 'translate-x-0' : 'translate-x-20'
+  const returnSidebarClass = sidebarIsActive ? '' : '-translate-x-full'
+  const returnButtonClass = sidebarIsActive ? '-translate-x-0' : 'translate-x-20'
+
+  const SidebarWrapper = ({children}) => {
+  
+  const { sidebarIsActive } = useUi();
+
+  return(
+    <div className={`w-screen h-screen ${sidebarIsActive ? "lg:pl-80 transition-all duration-500 ease-in-out" : "" }`}>
+      {children}
+    </div>
+    )
+  }
 
   return (
     <>
@@ -46,8 +58,8 @@ function SideBar() {
               </a>
             </div>
             <div
-              onClick={() => setIsActive(!isActive)}
-              className={`absolute right-4 transform ${returnButtonClass} transition-transform duration-500 border border-cb-gray-400 flex items-center justify-center size-10 bg-cb-gray-700 rounded-md`}
+              onClick={() => setSidebarIsActive(!sidebarIsActive)}
+              className={`hover:cursor-pointer absolute right-4 transform ${returnButtonClass} transition-transform duration-500 border border-cb-gray-400 flex items-center justify-center size-10 bg-cb-gray-700 rounded-md`}
             >
               <IoMenu size={27} color="gray" />
             </div>
@@ -84,9 +96,9 @@ function SideBar() {
           </span>
         </div>
       </div>
-      <div>
+      <SidebarWrapper>
         <Outlet />
-      </div>
+      </SidebarWrapper>
     </>
   )
 }
