@@ -15,6 +15,22 @@ module.exports = {
         'gauge-green': 'var(--gauge-green)',
         'gauge-yellow': 'var(--gauge-yellow)',
       },
+      animation: {
+        'sidebar-on': 'toggleSidebar 1s ease-in-out 0s 1 normal',
+        'menu-on': 'shiftSidebarButton 1s ease-in-out 0s 1 normal',
+        'sidebar-off': 'toggleSidebar 1s ease-in-out 0s 1 reverse',
+        'menu-off': 'shiftSidebarButton 1s ease-in-out 0s 1 reverse',
+      },
+      keyframes: {
+        toggleSidebar: {
+          '0%': { left: '-20rem' },
+          '100%': { left: '0rem' },
+        },
+        shiftSidebarButton: {
+          '0%': { left: '5rem' },
+          '100%': { left: '70rem' },
+        }
+      }
     },
   },
   plugins: [],

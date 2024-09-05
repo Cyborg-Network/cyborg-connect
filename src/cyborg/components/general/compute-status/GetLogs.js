@@ -14,11 +14,14 @@ export function GetLogs({ link, taskId }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`, {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          },
-        })
+        const response = await axios.get(
+          `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`,
+          {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            },
+          }
+        )
         console.log('logs response: ', response)
         // if (data != response.data) setData(response.data);
         // if (data != response.data) {
@@ -30,7 +33,11 @@ export function GetLogs({ link, taskId }) {
         setData('error')
       }
     }
-    console.log('deploy data: ', data, `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`)
+    console.log(
+      'deploy data: ',
+      data,
+      `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`
+    )
     const stored = sessionStorage.getItem(`TASKID:${taskId}`)
     console.log('stored: ', taskId, stored)
     if (stored && stored.length > 0) {

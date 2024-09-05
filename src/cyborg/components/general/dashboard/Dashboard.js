@@ -43,7 +43,7 @@ function Dashboard({ perspective }) {
   console.log('workerList: ', workersWithLastTasks)
 
   return (
-    <div className="h-screen bg-cb-gray-700 flex flex-col ">
+    <div className="w-screen h-screen justify-self-start flex flex-col">
       <div className="flex items-center justify-between mx-2 text-white">
         <div className="flex items-center">
           <img src={deploymentsTab} />

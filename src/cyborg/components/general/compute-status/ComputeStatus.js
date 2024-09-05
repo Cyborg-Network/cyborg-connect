@@ -101,7 +101,7 @@ export default function ComputeStatus({ perspective }) {
 
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
-    <div className="h-screen bg-cb-gray-700 flex flex-col overflow-scroll">
+    <div className="flex flex-col overflow-scroll">
       {metadata ? (
         <>
           <div className="flex items-center justify-between mx-2 text-white p-4 px-14">

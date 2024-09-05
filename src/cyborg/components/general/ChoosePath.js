@@ -18,7 +18,7 @@ function ChoosePath() {
   }
 
   return (
-    <div className="h-screen bg-cb-gray-700 flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       <h1 className="text-white">Choose Your Path</h1>
       <div className="flex">
         <Button

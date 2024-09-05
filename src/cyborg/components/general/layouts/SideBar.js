@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import logo from '../../../../../public/assets/Logo.png'
 import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
@@ -27,10 +27,16 @@ function ServiceTab({ name }) {
 
 function SideBar() {
   const navigate = useNavigate()
+  const [isActive, setIsActive] = useState(false)
+
+  const returnSidebarClass = isActive ? '' : '-translate-x-full'
+  const returnButtonClass = isActive ? 'translate-x-0' : 'translate-x-20'
 
   return (
     <>
-      <div className="w-80 fixed left-0 top-0 flex flex-col bg-cb-gray-600 h-screen justify-between">
+      <div
+        className={`w-80 fixed left-0 top-0 flex flex-col bg-cb-gray-600 h-screen justify-between transform ${returnSidebarClass} transition-transform duration-500 z-50`}
+      >
         <div>
           <span className="flex items-center justify-between p-4 pr-6">
             <div className="flex gap-4 items-center flex-shrink-0">
@@ -39,7 +45,10 @@ function SideBar() {
                 <img src={logo} className="h-10S" />
               </a>
             </div>
-            <div className="flex items-center justify-center size-10 bg-cb-gray-700 rounded-md">
+            <div
+              onClick={() => setIsActive(!isActive)}
+              className={`absolute right-4 transform ${returnButtonClass} transition-transform duration-500 border border-cb-gray-400 flex items-center justify-center size-10 bg-cb-gray-700 rounded-md`}
+            >
               <IoMenu size={27} color="gray" />
             </div>
           </span>
@@ -75,7 +84,7 @@ function SideBar() {
           </span>
         </div>
       </div>
-      <div className="ml-80">
+      <div>
         <Outlet />
       </div>
     </>

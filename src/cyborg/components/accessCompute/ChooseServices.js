@@ -16,7 +16,7 @@ function ChooseServices() {
   const { selectService } = useCyborg()
 
   return (
-    <div className="relative h-screen bg-cb-gray-700 flex flex-col items-center justify-center">
+    <div className="relative py-20 flex flex-col items-center justify-center md:py-0">
       <h1 className="text-white">Choose Services</h1>
       <div className="flex sm:flex-row flex-col gap-4 p-2">
         <ServiceCard
