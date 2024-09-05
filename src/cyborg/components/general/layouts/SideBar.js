@@ -3,7 +3,7 @@ import logo from '../../../../../public/assets/Logo.png'
 import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
 
 function NavigationTab({ name, trigger }) {
@@ -35,9 +35,9 @@ function SideBar() {
           <span className="flex items-center justify-between p-4 pr-6">
             <div className="flex gap-4 items-center flex-shrink-0">
               <button></button>
-              <a href="/cyborg-connect/">
+              <Link href={ROUTES.CHOOSE_PATH}>
                 <img src={logo} className="h-10S" />
-              </a>
+              </Link>
             </div>
             <div className="flex items-center justify-center size-10 bg-cb-gray-700 rounded-md">
               <IoMenu size={27} color="gray" />
