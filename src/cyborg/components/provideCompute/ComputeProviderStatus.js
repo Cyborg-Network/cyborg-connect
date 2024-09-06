@@ -24,11 +24,14 @@ export function GetLogs({ link, taskId }) {
   useEffect(() => {
     const fetchData = async (retryCount = 5, interval = 6000) => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`, {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          },
-        })
+        const response = await axios.get(
+          `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`,
+          {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            },
+          }
+        )
         console.log('logs response: ', response)
         sessionStorage.setItem(`TASKID:${taskId}`, response.data)
         setData(response.data)
@@ -45,7 +48,11 @@ export function GetLogs({ link, taskId }) {
         }
       }
     }
-    console.log('deploy data: ', data, `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`)
+    console.log(
+      'deploy data: ',
+      data,
+      `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`
+    )
     const stored = sessionStorage.getItem(`TASKID:${taskId}`)
     console.log('stored: ', taskId, stored)
     if (stored && stored.length > 0) {
@@ -319,7 +326,9 @@ export default function ComputeProviderStatus({ perspective }) {
   useEffect(() => {
     const fetchSpecs = async () => {
       try {
-        const specRes = await axios.get(`${process.env.REACT_APP_HTTP_PREFIX}://${link}/system-specs`)
+        const specRes = await axios.get(
+          `${process.env.REACT_APP_HTTP_PREFIX}://${link}/system-specs`
+        )
         setSpecs(specRes.data)
       } catch (error) {
         console.error('SPECS ERROR:: ', error)
@@ -330,7 +339,9 @@ export default function ComputeProviderStatus({ perspective }) {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const metricRes = await axios.get(`${process.env.REACT_APP_HTTP_PREFIX}://${link}/consumption-metrics`)
+        const metricRes = await axios.get(
+          `${process.env.REACT_APP_HTTP_PREFIX}://${link}/consumption-metrics`
+        )
         setMetrics(metricRes.data)
       } catch (error) {
         console.error('METRICS ERROR:: ', error)
