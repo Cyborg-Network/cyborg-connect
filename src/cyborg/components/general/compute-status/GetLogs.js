@@ -12,7 +12,7 @@ export function GetLogs({ link, taskId }) {
   // }, [])
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (retryCount = 5, interval = 6000) => {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_HTTP_PREFIX}://${link}/logs/${taskId}`,
@@ -23,14 +23,19 @@ export function GetLogs({ link, taskId }) {
           }
         )
         console.log('logs response: ', response)
-        // if (data != response.data) setData(response.data);
-        // if (data != response.data) {
         sessionStorage.setItem(`TASKID:${taskId}`, response.data)
         setData(response.data)
-        // }
       } catch (error) {
-        console.log('DATA ERROR:: ', error)
-        setData('error')
+        if (retryCount === 0) {
+          setData(error)
+          console.error('API call failed after 5 retries:', error)
+        } else {
+          setData(
+            'Pending..' + ['.', '.', '.', '.', '.'].slice(retryCount).join(',')
+          )
+          console.warn(`Retrying... ${retryCount} attempts left.`)
+          setTimeout(() => fetchData(retryCount - 1, interval), interval)
+        }
       }
     }
     console.log(
