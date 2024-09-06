@@ -25,14 +25,15 @@ function ServiceTab({ name }) {
     </button>
   )
 }
- 
-function SideBar() {
 
+function SideBar() {
   const navigate = useNavigate()
-  const { sidebarIsActive, setSidebarIsActive } = useUi();
+  const { sidebarIsActive, setSidebarIsActive } = useUi()
 
   const returnSidebarClass = sidebarIsActive ? '' : '-translate-x-full'
-  const returnButtonClass = sidebarIsActive ? '-translate-x-0' : 'translate-x-20'
+  const returnButtonClass = sidebarIsActive
+    ? '-translate-x-0'
+    : 'translate-x-20'
 
   return (
     <>
@@ -67,7 +68,6 @@ function SideBar() {
               <li>Docs</li>
               <li>Community</li>
               <li>Help</li>
-              {window.innerWidth < 768 ? <li>Test Substrate Chain</li> : <></>}
             </ul>
           </span>
           <span className="flex flex-col p-4 bg-cb-gray-700 m-4 rounded-md">
@@ -88,7 +88,10 @@ function SideBar() {
         </div>
       </div>
       {/*Invisible overlay for the sidebar so that clicks beside it can also deactivate it*/}
-      <div className={`fixed w-screen h-screen ${sidebarIsActive ? '' : 'hidden'}`} onMouseDown={() => setSidebarIsActive(!sidebarIsActive)}/>
+      <div
+        className={`fixed w-screen h-screen ${sidebarIsActive ? '' : 'hidden'}`}
+        onMouseDown={() => setSidebarIsActive(!sidebarIsActive)}
+      />
       <Outlet />
     </>
   )

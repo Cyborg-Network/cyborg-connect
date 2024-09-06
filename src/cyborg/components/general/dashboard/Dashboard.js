@@ -40,41 +40,51 @@ function Dashboard({ perspective }) {
 
   const { taskMetadata } = useCyborgState()
   const { workersWithLastTasks, setReloadWorkers } = useCyborg()
-  const { sidebarIsActive } = useUi();
+  const { sidebarIsActive } = useUi()
 
   console.log('workerList: ', workersWithLastTasks)
 
   return (
-    <div className={`w-screen h-screen ${sidebarIsActive ? 'lg:pl-80' : 'lg:pl-0'} transition-all duration-500 ease-in-out`}>
-    <div className='w-full h-full justify-self-start flex flex-col'>
-      <div className="flex items-center justify-between mx-2 text-white">
-        <div className={`flex items-center ${sidebarIsActive ? 'ml-0' : 'ml-burger-btn-offset'} transition-all duration-500 ease-in-out`}>
-          <img src={deploymentsTab} />
-          <div>
-            <h3 className="mb-0">Deployments</h3>
-            <p className="text-white text-opacity-70">Dashboard / Node List</p>
+    <div
+      className={`w-screen h-screen ${
+        sidebarIsActive ? 'lg:pl-80' : 'lg:pl-0'
+      } transition-all duration-500 ease-in-out`}
+    >
+      <div className="w-full h-full justify-self-start flex flex-col">
+        <div className="flex items-center justify-between mx-2 text-white">
+          <div
+            className={`flex items-center ${
+              sidebarIsActive ? 'ml-0' : 'ml-burger-btn-offset'
+            } transition-all duration-500 ease-in-out`}
+          >
+            <img src={deploymentsTab} />
+            <div>
+              <h3 className="mb-0">Deployments</h3>
+              <p className="hidden sm:block text-white text-opacity-70">
+                Dashboard / Node List
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => setReloadWorkers(true)}>
+              <TbRefresh />
+            </Button>
+            {perspective === 'provide-compute' ? (
+              <AddNodeButton addNode={addNode} />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setReloadWorkers(true)}>
-            <TbRefresh />
-          </Button>
-          {perspective === 'provide-compute' ? (
-            <AddNodeButton addNode={addNode} />
-          ) : (
-            <></>
-          )}
-        </div>
+        {node ||
+        (workersWithLastTasks &&
+          workersWithLastTasks.length > 0 &&
+          taskMetadata) ? (
+          <NodeList nodes={workersWithLastTasks} taskMetadata={taskMetadata} />
+        ) : (
+          <NoNodes addNode={addNode} />
+        )}
       </div>
-      {node ||
-      (workersWithLastTasks &&
-        workersWithLastTasks.length > 0 &&
-        taskMetadata) ? (
-        <NodeList nodes={workersWithLastTasks} taskMetadata={taskMetadata} />
-      ) : (
-        <NoNodes addNode={addNode} />
-      )}
-    </div>
     </div>
   )
 }

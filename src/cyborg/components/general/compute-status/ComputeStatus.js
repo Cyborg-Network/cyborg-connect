@@ -99,33 +99,47 @@ export default function ComputeStatus({ perspective }) {
   // },[taskMetadata])
   console.log('metadata: ', metadata)
 
+  const truncateAddress = (address) => {
+      if(window.innerWidth < 600) {
+        return `${address.slice(0,6)}...${address.slice(-6)}`
+      } else {
+        return address
+      }
+  }
+
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
-    <div className="flex flex-col overflow-scroll">
+    <div className='mt-5 mb-20 mx-4 flex flex-col gap-10 lg:mx-14'>
       {metadata ? (
         <>
-          <div className="flex items-center justify-between mx-2 text-white p-4 px-14">
-            <div className="flex items-end gap-2 text-xl">
-              <div>Node Name: </div>
+          <div className="grid text-right justify-end items-center mx-2 text-white">
+            <div className="flex items-center gap-2 lg:text-xl">
+              <div className='text-lg'>Node Name: </div>
               <div className="text-cb-green">
-                {metadata.owner}:{metadata.id}
+                {truncateAddress(metadata.owner)}:{metadata.id}
               </div>
             </div>
-            <div className="flex items-end gap-2 text-md">
+            <div className="flex justify-end items-center gap-2 text-md">
               <div className="text-opacity-50 text-white">IP Address: </div>
               <div>{metadata.api.domain}</div>
             </div>
           </div>
-          <div className="grid grid-col-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 p-2 px-16 text-white">
-            {perspective === 'provider' ? <NodeInformation /> : <></>}
-            <ServerSpecs spec={specs} metric={metrics} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-white w-full">
+            {perspective === 'provider' ? 
+            <div className='col-span-1'>
+              <NodeInformation />
+            </div> : <></>}
+            <div className='col-span-1 md:col-span-2 lg:col-span-1'>
+              <ServerSpecs spec={specs} metric={metrics} />
+            </div>
             <div
-              className={`${perspective !== 'provider' ? 'col-span-2' : ''}`}
+              className={`col-span-1 md:col-span-2 ${perspective !== 'provider' ? '' : ''}`}
             >
               <Terminal link={metadata.api.domain} taskId={metadata.lastTask} />
             </div>
             {metrics && (
               <>
+                <div className='col-span-1'>
                 <GaugeDisplay
                   setAsSelectedGauge={handleSetSelectedGauge}
                   selectedGauge={selectedGauge}
@@ -138,6 +152,8 @@ export default function ComputeStatus({ perspective }) {
                   name={'CPU'}
                   styleAdditions={'ring-gauge-red bg-gauge-red'}
                 />
+                </div>
+                <div className='col-span-1'>
                 <GaugeDisplay
                   setAsSelectedGauge={handleSetSelectedGauge}
                   selectedGauge={selectedGauge}
@@ -150,6 +166,8 @@ export default function ComputeStatus({ perspective }) {
                   name={'RAM'}
                   styleAdditions={'ring-gauge-green bg-gauge-green'}
                 />
+                </div>
+                <div className='col-span-1'>
                 <GaugeDisplay
                   setAsSelectedGauge={handleSetSelectedGauge}
                   selectedGauge={selectedGauge}
@@ -162,13 +180,16 @@ export default function ComputeStatus({ perspective }) {
                   name={'DISK'}
                   styleAdditions={'ring-gauge-yellow bg-gauge-yellow'}
                 />
+                </div>
               </>
             )}
+            <div className='col-span-1 md:col-span-2 lg:col-span-3'>
             <RenderChart
               metric={selectedGauge.name}
               data={selectedGauge.data}
               color={selectedGauge.color}
             />
+            </div>
           </div>
         </>
       ) : (

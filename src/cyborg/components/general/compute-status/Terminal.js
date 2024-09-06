@@ -13,7 +13,7 @@ export function Terminal({ link, taskId }) {
       <div className="bg-gradient-to-b from-cb-gray-400 to-cb-gray-600 p-6 rounded-t-lg">
         <h4 className="flex justify-center font-thin">Terminal</h4>
       </div>
-      <ul className="h-full">
+      <ul className="h-96 sm:h-full overflow-y-scroll bg-cb-gray-700">
         {/* <li className='flex justify-between'><p>Last Login:</p><p>Fri June 04, 01:34:00</p></li> */}
         <GetLogs link={link} taskId={taskId} />
       </ul>

@@ -1,7 +1,6 @@
 import NodeCard from './NodeCard'
 
 export function NodeList({ nodes, taskMetadata }) {
-
   const lastTask = taskMetadata.taskId
 
   console.log('nodes: in list: ', nodes)
@@ -12,7 +11,7 @@ export function NodeList({ nodes, taskMetadata }) {
       <span
         className={`${nodes.length < 1 ? 'hidden' : ''} flex w-full py-2 px-5`}
       >
-        <ul className="grid grid-cols-4 w-full">
+        <ul className="hidden lg:grid grid-cols-4 w-full">
           <li>Name / Address</li>
           <li>Type</li>
           <li>URL / IP</li>
@@ -22,8 +21,12 @@ export function NodeList({ nodes, taskMetadata }) {
       <div className="grid gap-4 lg:block lg:bg-white lg:bg-opacity-10 m-4 rounded-lg">
         {nodes.length > 0 &&
           nodes.map(item => (
-            <NodeCard key={item.owner + item.id} item={item} lastTask={lastTask} />
-        ))}
+            <NodeCard
+              key={item.owner + item.id}
+              item={item}
+              lastTask={lastTask}
+            />
+          ))}
       </div>
     </div>
   )
