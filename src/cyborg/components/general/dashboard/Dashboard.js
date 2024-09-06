@@ -48,7 +48,7 @@ function Dashboard({ perspective }) {
     <div className={`w-screen h-screen ${sidebarIsActive ? 'lg:pl-80' : 'lg:pl-0'} transition-all duration-500 ease-in-out`}>
     <div className='w-full h-full justify-self-start flex flex-col'>
       <div className="flex items-center justify-between mx-2 text-white">
-        <div className={`flex items-center ${sidebarIsActive ? 'lg:ml-0' : 'lg:ml-burger-btn-offset'} transition-all duration-500 ease-in-out`}>
+        <div className={`flex items-center ${sidebarIsActive ? 'ml-0' : 'ml-burger-btn-offset'} transition-all duration-500 ease-in-out`}>
           <img src={deploymentsTab} />
           <div>
             <h3 className="mb-0">Deployments</h3>

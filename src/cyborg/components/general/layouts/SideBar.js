@@ -67,6 +67,7 @@ function SideBar() {
               <li>Docs</li>
               <li>Community</li>
               <li>Help</li>
+              {window.innerWidth < 768 ? <li>Test Substrate Chain</li> : <></>}
             </ul>
           </span>
           <span className="flex flex-col p-4 bg-cb-gray-700 m-4 rounded-md">

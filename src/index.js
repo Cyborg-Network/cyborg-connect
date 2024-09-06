@@ -37,15 +37,15 @@ const GlobalLayout = () => {
     :
     {
       route: ROUTES.DEV_MODE,
-      name: "Test Substrate Chain",
+      name: "Test Chain",
     }
 
   return (
     <>
       <Outlet />
-      <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
+      <div className='fixed bottom-2 left-2 md:left-1/2 transform md:-translate-x-1/2 z-30'><RpcSelector /></div>
       <Link to={linkProperties.route}>
-        <button className='fixed rounded-lg p-4 top-2 right-2 z-40 bg-white text-black border border-black md:top-auto md:bottom-2'>{linkProperties.name}</button>
+        <button className='fixed rounded-lg p-4 bottom-2 right-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
       </Link>
     </>
   )
