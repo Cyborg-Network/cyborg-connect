@@ -11,29 +11,35 @@ function UploadDockerImgURL({setService}) {
   const [url,setUrl] = useState('')
 
   const getFromAcct = async () => {
-    const {
-      address,
-      meta: { source, isInjected },
-    } = currentAccount
+    if(currentAccount){
+      const {
+        address,
+        meta: { source, isInjected },
+      } = currentAccount
 
-    if (!isInjected) {
-      return [currentAccount]
+      if (!isInjected) {
+        return [currentAccount]
+      }
+
+      // currentAccount is injected from polkadot-JS extension, need to return the addr and signer object.
+      // ref: https://polkadot.js.org/docs/extension/cookbook#sign-and-send-a-transaction
+      const injector = await web3FromSource(source)
+      return [address, { signer: injector.signer }]
+    } else {
+      toast("Please connect your wallet!")
+      return null
     }
-
-    // currentAccount is injected from polkadot-JS extension, need to return the addr and signer object.
-    // ref: https://polkadot.js.org/docs/extension/cookbook#sign-and-send-a-transaction
-    const injector = await web3FromSource(source)
-    return [address, { signer: injector.signer }]
   }
   const handleUrlChange = (e) => {
     setUrl(e.target.value)
   }
   const handleSubmit = async (event) => {
     event.preventDefault();
+        
+    const fromAcct = await getFromAcct()
+    if(fromAcct){
     selectService(SERVICES.CYBER_DOCK)
     setTaskStatus(DEPLOY_STATUS.PENDING)
-    
-    const fromAcct = await getFromAcct()
     const containerTask = api.tx.taskManagement.taskScheduler(url)
     await containerTask.signAndSend(...fromAcct,({ status, events, dispatchError }) => {
       // status would still be set, but in the case of error we can shortcut
@@ -96,6 +102,7 @@ function UploadDockerImgURL({setService}) {
       toast.error(error.toString());
       setTaskStatus(DEPLOY_STATUS.FAILED)
     });
+    }
   }
   return (
       <Dimmer active >
