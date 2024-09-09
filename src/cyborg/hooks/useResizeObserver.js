@@ -1,46 +1,39 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react'
 
 function useResizeObserver() {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const ref = useRef(null);
-  const resizeObserverRef = useRef(null);
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
-  };
-
-  const updateDimensions = useCallback(
-    debounce((width, height) => {
-      setDimensions({ width, height });
-    }, 100),
-    []
-  );
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const ref = useRef(null)
+  const resizeObserverRef = useRef(null)
 
   useEffect(() => {
-    const observeTarget = ref.current;
-    if (!observeTarget) return;
+    let isMounted = true
+    const observeTarget = ref.current
+    if (!observeTarget) return
+
+    const updateDimensions = ({ width, height }) => {
+      if (isMounted) {
+        setDimensions({ width, height })
+      }
+    }
 
     resizeObserverRef.current = new ResizeObserver(entries => {
       entries.forEach(entry => {
-        const { width, height } = entry.contentRect;
-        updateDimensions(width, height);
-      });
-    });
+        const { width, height } = entry.contentRect
+        setTimeout(() => updateDimensions({ width, height }), 100)
+      })
+    })
 
-    resizeObserverRef.current.observe(observeTarget);
+    resizeObserverRef.current.observe(observeTarget)
 
     return () => {
       if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current.disconnect()
       }
-    };
-  }, [updateDimensions]);
+      isMounted = false
+    }
+  }, [])
 
-  return { ref, ...dimensions };
+  return { ref, ...dimensions }
 }
 
-export default useResizeObserver;
+export default useResizeObserver
