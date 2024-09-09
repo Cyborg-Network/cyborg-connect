@@ -1,5 +1,10 @@
-node_modules
-.vscode
-**/.DS_Store
-build
-coverage
+# This order has to be kept for the exclusion of everything except the cyborg dir to work:
+# https://stackoverflow.com/questions/5533050/gitignore-exclude-folder-but-include-specific-subfolder/20652768#20652768
+# exclude everything
+/*
+# re-include src
+!/src/
+# exclude everything in src
+/src/*
+# re-include cyborg
+!/src/cyborg/

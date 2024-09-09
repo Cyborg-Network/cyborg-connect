@@ -4,7 +4,7 @@
   "private": true,
   "author": "Cyborg Network",
   "license": "Unlicense",
-  "homepage": "https://cyborg-network.github.io/cyborg-connect/",
+  "homepage": "https://demo.cyborgnetwork.io/",
   "bugs": {
     "url": "https://github.com/substrate-developer-hub/substrate-front-end-template/issues"
   },
@@ -49,6 +49,7 @@
     "react-dom": "^17.0.2",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.2.0",
+    "react-router-dom": "^6.26.1",
     "react-scripts": "^5.0.0",
     "semantic-ui-css": "Semantic-Org/Semantic-UI-CSS#master",
     "semantic-ui-react": "^2.1.2",
