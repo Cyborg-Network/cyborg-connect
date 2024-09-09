@@ -14,22 +14,43 @@ const Chart = ({ color, data }) => {
     padding: 60,
     fontSize: 15,
     height: 500,
-    Xdx:0,
-    Xdy:0,
-    Ydx:-20,
+    Xdx: 0,
+    Xdy: 0,
+    Ydx: -20,
   }
 
-  const [dimensions, setDimensions] = useState(initialState);
+  const [dimensions, setDimensions] = useState(initialState)
 
   useEffect(() => {
     console.log(dimensions)
     console.log(width)
-    if(width < 768){
-      setDimensions({padding: 10, fontSize: 10, height: 300, Xdx: 18, Xdy: -23, Ydx: 27})
-    }else if(768 < width && width < 1024){
-      setDimensions({padding: 30, fontSize: 12, height: 500, Xdx: 0, Xdy: 0, Ydx: 27})
-    }else{
-      setDimensions({padding: 60, fontSize: 15, height: 500, Xdx: 0, Xdy: 0, Ydx: -20})
+    if (width < 768) {
+      setDimensions({
+        padding: 10,
+        fontSize: 10,
+        height: 300,
+        Xdx: 18,
+        Xdy: -23,
+        Ydx: 27,
+      })
+    } else if (768 < width && width < 1024) {
+      setDimensions({
+        padding: 30,
+        fontSize: 12,
+        height: 500,
+        Xdx: 0,
+        Xdy: 0,
+        Ydx: 27,
+      })
+    } else {
+      setDimensions({
+        padding: 60,
+        fontSize: 15,
+        height: 500,
+        Xdx: 0,
+        Xdy: 0,
+        Ydx: -20,
+      })
     }
   }, [width])
 
@@ -55,7 +76,7 @@ const Chart = ({ color, data }) => {
             <VictoryLabel
               dx={dimensions.Xdx}
               dy={dimensions.Xdy}
-              textAnchor='middle'  
+              textAnchor="middle"
             />
           }
           style={{
@@ -68,10 +89,7 @@ const Chart = ({ color, data }) => {
         <VictoryAxis
           dependentAxis
           tickLabelComponent={
-            <VictoryLabel
-              dx={dimensions.Ydx}
-              textAnchor='middle'  
-            />
+            <VictoryLabel dx={dimensions.Ydx} textAnchor="middle" />
           }
           style={{
             axis: { stroke: 'var(--cb-gray-400)' }, // Custom color for the axis line

@@ -1,4 +1,4 @@
-import { toast } from "react-hot-toast";
+import { toast } from 'react-hot-toast'
 
 export function ServerSpecs({ spec, metric }) {
   return (
@@ -12,9 +12,20 @@ export function ServerSpecs({ spec, metric }) {
           <p>OS:</p>
           <p>{spec ? spec.operatingSystem.Description : null}</p>
         </li>
-        <li className="flex justify-between gap-4" onClick={spec ? () => toast(spec.cpuInformation.ModelName) : () => { return }}>
+        <li
+          className="flex justify-between gap-4"
+          onClick={
+            spec
+              ? () => toast(spec.cpuInformation.ModelName)
+              : () => {
+                  return
+                }
+          }
+        >
           <p>CPU:</p>
-          <p className="truncate">{spec ? spec.cpuInformation.ModelName : null}</p>
+          <p className="truncate">
+            {spec ? spec.cpuInformation.ModelName : null}
+          </p>
         </li>
         <li className="flex justify-between">
           <p>Memory:</p>

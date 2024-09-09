@@ -9,7 +9,9 @@ const NodeCard = ({ item, lastTask }) => {
 
   //li with exactly these specs needed a lot here, sets parent up for responsiveness
   const LI = ({ children, additionalClasses }) => (
-    <li className={`w-full flex justify-between ${additionalClasses}`}>{children}</li>
+    <li className={`w-full flex justify-between ${additionalClasses}`}>
+      {children}
+    </li>
   )
 
   //span with exactly these specs needed a lot here, sets parent up for responsiveness
@@ -44,19 +46,25 @@ const NodeCard = ({ item, lastTask }) => {
             <SPAN>Type:</SPAN>
             <span>Providers</span>
           </LI>
-          <Separator colorClass={'bg-gray-500'} additionalStyles={'lg:hidden'}/>
+          <Separator
+            colorClass={'bg-gray-500'}
+            additionalStyles={'lg:hidden'}
+          />
           <LI>
             <SPAN>IP / URL:</SPAN>
             <span>{`${item.api.domain}`}</span>
           </LI>
-          <Separator colorClass={'bg-gray-500'} additionalStyles={'lg:hidden'}/>
+          <Separator
+            colorClass={'bg-gray-500'}
+            additionalStyles={'lg:hidden'}
+          />
           <LI
             additionalClasses={`flex gap-2 ${
               item.status ? 'text-cb-green' : 'text-red-600'
             }`}
           >
             <SPAN>Status:</SPAN>
-            <span className='flex gap-2'>
+            <span className="flex gap-2">
               {item.lastTask ? `taskId: ${item.lastTask}` : 'idle'}
               <p
                 className={`font-bold ${

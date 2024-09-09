@@ -28,52 +28,55 @@ function UploadDockerImgURL({ setService }) {
   const handleSubmit = async event => {
     event.preventDefault()
 
-    selectService(SERVICES.CYBER_DOCK)
-    setTaskStatus(DEPLOY_STATUS.PENDING)
-
     const fromAcct = await getAccount(currentAccount)
-
-    const containerTask = api.tx.taskManagement.taskScheduler(url)
-    await containerTask
-      .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
-        // status would still be set, but in the case of error we can shortcut
-        // to just check it (so an error would indicate InBlock or Finalized)
-        if (dispatchError) {
-          handleDispatchError(api, dispatchError)
-          setTaskStatus(DEPLOY_STATUS.FAILED)
-        }
-
-        if (status.isInBlock || status.isFinalized) {
-          const { hasErrored, successfulEvents } = handleStatusEvents(
-            api,
-            events
-          )
-
-          if (hasErrored) {
+    if (fromAcct) {
+      selectService(SERVICES.CYBER_DOCK)
+      const containerTask = api.tx.taskManagement.taskScheduler(url)
+      await containerTask
+        .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
+          setTaskStatus(DEPLOY_STATUS.PENDING)
+          // status would still be set, but in the case of error we can shortcut
+          // to just check it (so an error would indicate InBlock or Finalized)
+          if (dispatchError) {
+            handleDispatchError(api, dispatchError)
             setTaskStatus(DEPLOY_STATUS.FAILED)
-          } else if (successfulEvents) {
-            setTaskStatus(DEPLOY_STATUS.READY)
-            const taskEvent = successfulEvents[0].toJSON().event.data
-            console.log('Extrinsic Success: ', taskEvent)
+            setService(null)
+          }
 
-            const [taskExecutor, , taskId] = taskEvent
-            const [workerAddress, workerId] = taskExecutor
-            setTaskMetadata(workerAddress, workerId.toString(), taskId)
+          if (status.isInBlock || status.isFinalized) {
+            const { hasErrored, successfulEvents } = handleStatusEvents(
+              api,
+              events
+            )
+            setService(null)
 
-            //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
-            if (status.isInBlock && !onIsInBlockWasCalled) {
-              setOnIsInBlockWasCalled(true)
-              toast.success(`Task Scheduled`)
-              navigate(ROUTES.DASHBOARD)
+            if (hasErrored) {
+              setTaskStatus(DEPLOY_STATUS.FAILED)
+            } else if (successfulEvents) {
+              setTaskStatus(DEPLOY_STATUS.READY)
+              const taskEvent = successfulEvents[0].toJSON().event.data
+              console.log('Extrinsic Success: ', taskEvent)
+
+              const [taskExecutor, , taskId] = taskEvent
+              const [workerAddress, workerId] = taskExecutor
+              setTaskMetadata(workerAddress, workerId.toString(), taskId)
+
+              //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
+              if (status.isInBlock && !onIsInBlockWasCalled) {
+                setOnIsInBlockWasCalled(true)
+                toast.success(`Task Scheduled`)
+                navigate(ROUTES.DASHBOARD)
+              }
             }
           }
-        }
-      })
-      .catch(error => {
-        console.error('Other Errors', error)
-        toast.error(error.toString())
-        setTaskStatus(DEPLOY_STATUS.FAILED)
-      })
+        })
+        .catch(error => {
+          console.error('Other Errors', error)
+          toast.error(error.toString())
+          setTaskStatus(DEPLOY_STATUS.FAILED)
+          setService(null)
+        })
+    }
   }
 
   return (

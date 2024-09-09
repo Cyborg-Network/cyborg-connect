@@ -30,6 +30,11 @@ function SideBar() {
   const navigate = useNavigate()
   const { sidebarIsActive, setSidebarIsActive } = useUi()
 
+  const navigateAndCloseSidebar = url => {
+    setSidebarIsActive(false)
+    navigate(url)
+  }
+
   const returnSidebarClass = sidebarIsActive ? '' : '-translate-x-full'
   const returnButtonClass = sidebarIsActive
     ? '-translate-x-0'
@@ -58,7 +63,7 @@ function SideBar() {
           <span className="flex flex-col items-center my-6">
             <NavigationTab
               name={'Dashboard'}
-              trigger={() => navigate(ROUTES.DASHBOARD)}
+              trigger={() => navigateAndCloseSidebar(ROUTES.DASHBOARD)}
             />
           </span>
         </div>

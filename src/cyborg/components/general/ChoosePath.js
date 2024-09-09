@@ -26,8 +26,12 @@ function ChoosePath() {
             return /*setPath('provide-compute')*/
           }}
           variation="inactive"
+          additionalClasses={'relative'}
         >
-          Coming Soon
+          <div className="font-bold">Provide Compute</div>
+          <div className="text-xs absolute bottom-2 left-1/2 transform -translate-x-1/2">
+            Coming Soon
+          </div>
         </Button>
         <Button onClick={() => setPath('access-compute')} variation="secondary">
           Access Compute

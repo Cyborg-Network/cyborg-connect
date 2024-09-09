@@ -9,9 +9,11 @@ import { useCyborg } from '../../../CyborgContext'
 import { NodeInformation } from './NodeInformation'
 import { ServerSpecs } from './ServerSpecs'
 import { Terminal } from './Terminal'
+import { useUi } from '../../../context/UiContext'
 
 export default function ComputeStatus({ perspective }) {
   const { workersWithLastTasks } = useCyborg()
+  const { sidebarIsActive } = useUi()
 
   const { domain } = useParams()
 
@@ -99,22 +101,26 @@ export default function ComputeStatus({ perspective }) {
   // },[taskMetadata])
   console.log('metadata: ', metadata)
 
-  const truncateAddress = (address) => {
-      if(window.innerWidth < 600) {
-        return `${address.slice(0,6)}...${address.slice(-6)}`
-      } else {
-        return address
-      }
+  const truncateAddress = address => {
+    if (window.innerWidth < 600) {
+      return `${address.slice(0, 6)}...${address.slice(-6)}`
+    } else {
+      return address
+    }
   }
 
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
-    <div className='mt-5 mb-20 mx-4 flex flex-col gap-10 lg:mx-14'>
+    <div
+      className={`w-screen mt-5 mb-20 self-start px-4 sm:px-6 lg:px-16 flex flex-col gap-10 ${
+        sidebarIsActive ? 'lg:pl-96' : 'lg:pl-16'
+      } transition-all duration-500 ease-in-out`}
+    >
       {metadata ? (
         <>
           <div className="grid text-right justify-end items-center mx-2 text-white">
             <div className="flex items-center gap-2 lg:text-xl">
-              <div className='text-lg'>Node Name: </div>
+              <div className="text-lg">Node Name: </div>
               <div className="text-cb-green">
                 {truncateAddress(metadata.owner)}:{metadata.id}
               </div>
@@ -124,71 +130,76 @@ export default function ComputeStatus({ perspective }) {
               <div>{metadata.api.domain}</div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-white w-full">
-            {perspective === 'provider' ? 
-            <div className='col-span-1'>
-              <NodeInformation />
-            </div> : <></>}
-            <div className='col-span-1 md:col-span-2 lg:col-span-1'>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
+            {perspective === 'provider' ? (
+              <div className="col-span-1">
+                <NodeInformation />
+              </div>
+            ) : (
+              <></>
+            )}
+            <div className="col-span-1 md:col-span-2 lg:col-span-1">
               <ServerSpecs spec={specs} metric={metrics} />
             </div>
             <div
-              className={`col-span-1 md:col-span-2 ${perspective !== 'provider' ? '' : ''}`}
+              className={`col-span-1 md:col-span-2 ${
+                perspective !== 'provider' ? '' : ''
+              }`}
             >
               <Terminal link={metadata.api.domain} taskId={metadata.lastTask} />
             </div>
             {metrics && (
               <>
-                <div className='col-span-1'>
-                <GaugeDisplay
-                  setAsSelectedGauge={handleSetSelectedGauge}
-                  selectedGauge={selectedGauge}
-                  percentage={
-                    metrics && metrics.cpuUsage
-                      ? Number(metrics.cpuUsage.usage.slice(0, -1))
-                      : 1
-                  }
-                  fill={'var(--gauge-red)'}
-                  name={'CPU'}
-                  styleAdditions={'ring-gauge-red bg-gauge-red'}
-                />
+                <div className="col-span-1">
+                  <GaugeDisplay
+                    setAsSelectedGauge={handleSetSelectedGauge}
+                    selectedGauge={selectedGauge}
+                    percentage={
+                      metrics && metrics.cpuUsage
+                        ? Number(metrics.cpuUsage.usage.slice(0, -1))
+                        : 1
+                    }
+                    fill={'var(--gauge-red)'}
+                    name={'CPU'}
+                    styleAdditions={'ring-gauge-red bg-gauge-red'}
+                  />
                 </div>
-                <div className='col-span-1'>
-                <GaugeDisplay
-                  setAsSelectedGauge={handleSetSelectedGauge}
-                  selectedGauge={selectedGauge}
-                  percentage={
-                    metrics && metrics.memoryUsage
-                      ? Number(metrics.memoryUsage.usage.slice(0, -1))
-                      : 1
-                  }
-                  fill={'var(--gauge-green)'}
-                  name={'RAM'}
-                  styleAdditions={'ring-gauge-green bg-gauge-green'}
-                />
+                <div className="col-span-1">
+                  <GaugeDisplay
+                    setAsSelectedGauge={handleSetSelectedGauge}
+                    selectedGauge={selectedGauge}
+                    percentage={
+                      metrics && metrics.memoryUsage
+                        ? Number(metrics.memoryUsage.usage.slice(0, -1))
+                        : 1
+                    }
+                    fill={'var(--gauge-green)'}
+                    name={'RAM'}
+                    styleAdditions={'ring-gauge-green bg-gauge-green'}
+                  />
                 </div>
-                <div className='col-span-1'>
-                <GaugeDisplay
-                  setAsSelectedGauge={handleSetSelectedGauge}
-                  selectedGauge={selectedGauge}
-                  percentage={
-                    metrics && metrics.diskUsage
-                      ? Number(metrics.diskUsage[0]['use%'].slice(0, -1))
-                      : 1
-                  }
-                  fill={'var(--gauge-yellow)'}
-                  name={'DISK'}
-                  styleAdditions={'ring-gauge-yellow bg-gauge-yellow'}
-                />
+                <div className="col-span-1">
+                  <GaugeDisplay
+                    setAsSelectedGauge={handleSetSelectedGauge}
+                    selectedGauge={selectedGauge}
+                    percentage={
+                      metrics && metrics.diskUsage
+                        ? Number(metrics.diskUsage[0]['use%'].slice(0, -1))
+                        : 1
+                    }
+                    fill={'var(--gauge-yellow)'}
+                    name={'DISK'}
+                    styleAdditions={'ring-gauge-yellow bg-gauge-yellow'}
+                  />
                 </div>
               </>
             )}
-            <div className='col-span-1 md:col-span-2 lg:col-span-3'>
-            <RenderChart
-              metric={selectedGauge.name}
-              data={selectedGauge.data}
-              color={selectedGauge.color}
-            />
+            <div className="col-span-1 md:col-span-2 lg:col-span-3">
+              <RenderChart
+                metric={selectedGauge.name}
+                data={selectedGauge.data}
+                color={selectedGauge.color}
+              />
             </div>
           </div>
         </>
