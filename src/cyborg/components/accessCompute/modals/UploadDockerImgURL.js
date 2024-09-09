@@ -48,10 +48,10 @@ function UploadDockerImgURL({ setService }) {
               api,
               events
             )
-            setService(null)
 
             if (hasErrored) {
               setTaskStatus(DEPLOY_STATUS.FAILED)
+              setService(null)
             } else if (successfulEvents) {
               setTaskStatus(DEPLOY_STATUS.READY)
               const taskEvent = successfulEvents[0].toJSON().event.data
@@ -63,6 +63,7 @@ function UploadDockerImgURL({ setService }) {
 
               //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
               if (status.isInBlock && !onIsInBlockWasCalled) {
+                setService(null)
                 setOnIsInBlockWasCalled(true)
                 toast.success(`Task Scheduled`)
                 navigate(ROUTES.DASHBOARD)
