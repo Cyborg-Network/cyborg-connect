@@ -4,9 +4,10 @@ const ServiceCard = ({
   description = '',
   setService,
   service = null,
+  additionalClasses
 }) => {
   return (
-    <div className="border hover:ring-2 hover:ring-cb-gray-400 border-cb-gray-400 rounded-md w-80">
+    <div className={`${additionalClasses} border hover:ring-2 hover:ring-cb-gray-400 border-cb-gray-400 rounded-md w-80`}>
       <div className="flex flex-col items-center focus:text-cb-green bg-cb-gray-600 h-full justify-between">
         <a className="pt-10">
           <img src={logo} />
