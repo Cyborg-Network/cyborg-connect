@@ -90,16 +90,11 @@ function UploadDockerImgURL({ setService }) {
       <form onSubmit={handleSubmit}>
         <h5 className="flex">Upload Docker Image</h5>
         <div className="mb-4">
-          <label
-            htmlFor="url"
-            className="flex text-white text-sm font-bold py-4 mb-2"
-          >
-            Docker image URL
-          </label>
           <input
             type="text"
             id="url"
             name="url"
+            placeholder='Insert Docker Image URL'
             onChange={handleUrlChange}
             className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />

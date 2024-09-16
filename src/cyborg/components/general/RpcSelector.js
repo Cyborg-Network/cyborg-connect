@@ -6,13 +6,13 @@ import {
 import { SlArrowUp } from 'react-icons/sl'
 
 function RpcSelector() {
-  const { setRelaychainProvider, setCyborgProvider, setLocalProvider } =
+  const { setCyborgProvider, setLocalProvider } =
     useSubstrate()
   const { chain } = useSubstrateState()
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false)
 
-  const rpcItems = ['Roccoco', 'Cyborg Hosted', 'Local Chain']
+  const rpcItems = ['Cyborg Hosted', 'Local Chain']
 
   const handleMenuItemClick = item => {
     if (item === chain) return
@@ -25,7 +25,7 @@ function RpcSelector() {
         setLocalProvider()
         break
       default:
-        setRelaychainProvider()
+        setCyborgProvider()
     }
 
     setDropdownIsOpen(false)
@@ -63,7 +63,7 @@ function RpcSelector() {
   return (
     <>
       {window.innerWidth < 768 ? (
-        <div className="flex flex-col rounded-lg p-1 bg-cb-gray-600">
+        <div className="hover:cursor-pointer flex flex-col rounded-lg p-1 bg-cb-gray-600">
           {dropdownIsOpen ? (
             rpcItems
               .filter(item => item !== chain)
@@ -81,7 +81,7 @@ function RpcSelector() {
           <DropdownButton name={chain} onClick={handleDropdownClick} />
         </div>
       ) : (
-        <div className="flex rounded-lg p-1 bg-cb-gray-600">
+        <div className="hover:cursor-pointer flex rounded-lg p-1 bg-cb-gray-600">
           {rpcItems.map((item, index) => (
             <MenuItem
               additionalStyles={
