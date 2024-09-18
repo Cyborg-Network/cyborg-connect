@@ -1,18 +1,58 @@
-import { VictoryArea, VictoryChart, VictoryAxis } from 'victory'
+import { useEffect, useState } from 'react'
+import { VictoryArea, VictoryChart, VictoryAxis, VictoryLabel } from 'victory'
 import useResizeObserver from '../../hooks/useResizeObserver'
-import { useEffect } from 'react'
 
 const Chart = ({ color, data }) => {
-  const { ref, width, height } = useResizeObserver()
+  const { ref, width } = useResizeObserver()
 
   //When logic is implemented this will be calculated based on the returned workload of the worker
   //Y Axis has to be offset by a little bit, else the absolute maxY will overflow
   const maxY = 220
   const domainY = [0, maxY * 1.1]
 
+  const initialState = {
+    padding: 60,
+    fontSize: 15,
+    height: 500,
+    Xdx: 0,
+    Xdy: 0,
+    Ydx: -20,
+  }
+
+  const [dimensions, setDimensions] = useState(initialState)
+
   useEffect(() => {
-    console.log(height)
-  }, [])
+    console.log(dimensions)
+    console.log(width)
+    if (width < 768) {
+      setDimensions({
+        padding: 10,
+        fontSize: 10,
+        height: 300,
+        Xdx: 18,
+        Xdy: -23,
+        Ydx: 27,
+      })
+    } else if (768 < width && width < 1024) {
+      setDimensions({
+        padding: 30,
+        fontSize: 12,
+        height: 500,
+        Xdx: 0,
+        Xdy: 0,
+        Ydx: 27,
+      })
+    } else {
+      setDimensions({
+        padding: 60,
+        fontSize: 15,
+        height: 500,
+        Xdx: 0,
+        Xdy: 0,
+        Ydx: -20,
+      })
+    }
+  }, [width])
 
   return (
     <div ref={ref}>
@@ -27,24 +67,34 @@ const Chart = ({ color, data }) => {
       </svg>
       <VictoryChart
         width={width}
-        height={500}
-        padding={60}
+        height={dimensions.height}
+        padding={dimensions.padding}
         domain={{ y: domainY }}
       >
         <VictoryAxis
+          tickLabelComponent={
+            <VictoryLabel
+              dx={dimensions.Xdx}
+              dy={dimensions.Xdy}
+              textAnchor="middle"
+            />
+          }
           style={{
             axis: { stroke: 'var(--cb-gray-400)' },
             ticks: { stroke: 'var(--cb-gray-400)' },
-            tickLabels: { fontSize: 15, fill: 'white' },
+            tickLabels: { fontSize: dimensions.fontSize, fill: 'white' },
             grid: { stroke: 'var(--cb-gray-400)', strokeWidth: 0.5 },
           }}
         />
         <VictoryAxis
           dependentAxis
+          tickLabelComponent={
+            <VictoryLabel dx={dimensions.Ydx} textAnchor="middle" />
+          }
           style={{
             axis: { stroke: 'var(--cb-gray-400)' }, // Custom color for the axis line
             ticks: { stroke: 'var(--cb-gray-400)' },
-            tickLabels: { fontSize: 15, fill: 'white' },
+            tickLabels: { fontSize: dimensions.fontSize, fill: 'white' },
             grid: { stroke: 'var(--cb-gray-400)', strokeWidth: 0.5 },
           }}
           tickFormat={tick => `${tick}GB`}

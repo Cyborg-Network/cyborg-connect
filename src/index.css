@@ -16,6 +16,20 @@
     }
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cb-gray-400) var(--cb-gray-600);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--cb-gray-400);
+  border-radius: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: var(--cb-gray-600);
+}
+
 /*Colors should be declared here and then imported into tailwind config from here so they can be used in className AND svgs*/
 :root {
     --cb-green: #01DA63;
@@ -26,5 +40,7 @@
     --gauge-red: #FF5858;
     --gauge-green: #28E92F;
     --gauge-yellow: #F8A832;
+
+    --burger-btn-offset: 4rem;
 }
   

@@ -1,19 +1,23 @@
-import React from 'react'
-import { MenuItem, Menu, Segment } from 'semantic-ui-react'
+import React, { useState } from 'react'
 import {
   useSubstrate,
   useSubstrateState,
 } from '../../../substrate-lib/SubstrateContext'
+import { SlArrowUp } from 'react-icons/sl'
 
 function RpcSelector() {
-  const { setRelaychainProvider, setCyborgProvider, setLocalProvider } =
+  const { setCyborgProvider, setLocalProvider } =
     useSubstrate()
   const { chain } = useSubstrateState()
 
-  function handleItemClick(e, { name }) {
-    if (name === chain) return
+  const [dropdownIsOpen, setDropdownIsOpen] = useState(false)
 
-    switch (name) {
+  const rpcItems = ['Cyborg Hosted', 'Local Chain']
+
+  const handleMenuItemClick = item => {
+    if (item === chain) return
+
+    switch (item) {
       case 'Cyborg Hosted':
         setCyborgProvider()
         break
@@ -21,29 +25,78 @@ function RpcSelector() {
         setLocalProvider()
         break
       default:
-        setRelaychainProvider()
+        setCyborgProvider()
     }
+
+    setDropdownIsOpen(false)
   }
+
+  const handleDropdownClick = () => {
+    setDropdownIsOpen(!dropdownIsOpen)
+  }
+
+  const MenuItem = ({ name, onClick, additionalStyles }) => {
+    return (
+      <div
+        className={`p-3 rounded-xl ${additionalStyles}`}
+        onClick={() => onClick(name)}
+      >
+        {name}
+      </div>
+    )
+  }
+
+  const DropdownButton = ({ name, onClick }) => {
+    return (
+      <div
+        className="text-white bg-cb-gray-400 p-3 rounded-xl"
+        onClick={() => onClick()}
+      >
+        <div className="flex items-center gap-2">
+          {name}
+          <SlArrowUp />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <Segment inverted>
-      <Menu inverted secondary>
-        <MenuItem
-          name="Roccoco"
-          active={chain === 'Roccoco'}
-          onClick={handleItemClick}
-        />
-        <MenuItem
-          name="Cyborg Hosted"
-          active={chain === 'Cyborg Hosted'}
-          onClick={handleItemClick}
-        />
-        <MenuItem
-          name="Local Chain"
-          active={chain === 'Local Chain'}
-          onClick={handleItemClick}
-        />
-      </Menu>
-    </Segment>
+    <>
+      {window.innerWidth < 768 ? (
+        <div className="hover:cursor-pointer flex flex-col rounded-lg p-1 bg-cb-gray-600">
+          {dropdownIsOpen ? (
+            rpcItems
+              .filter(item => item !== chain)
+              .map((item, index) => (
+                <MenuItem
+                  name={item}
+                  key={index}
+                  onClick={handleMenuItemClick}
+                  additionalStyles="text-gray-400 bg-cb-gray-600"
+                />
+              ))
+          ) : (
+            <></>
+          )}
+          <DropdownButton name={chain} onClick={handleDropdownClick} />
+        </div>
+      ) : (
+        <div className="hover:cursor-pointer flex rounded-lg p-1 bg-cb-gray-600">
+          {rpcItems.map((item, index) => (
+            <MenuItem
+              additionalStyles={
+                chain === item
+                  ? 'text-white bg-cb-gray-400'
+                  : 'text-gray-400 bg-cb-gray-600'
+              }
+              name={item}
+              key={index}
+              onClick={handleMenuItemClick}
+            />
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 

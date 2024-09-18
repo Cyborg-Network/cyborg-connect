@@ -5,6 +5,7 @@ import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
+import { useUi } from '../../../context/UiContext'
 
 function NavigationTab({ name, trigger }) {
   return (
@@ -27,10 +28,23 @@ function ServiceTab({ name }) {
 
 function SideBar() {
   const navigate = useNavigate()
+  const { sidebarIsActive, setSidebarIsActive } = useUi()
+
+  const navigateAndCloseSidebar = url => {
+    setSidebarIsActive(false)
+    navigate(url)
+  }
+
+  const returnSidebarClass = sidebarIsActive ? '' : '-translate-x-full'
+  const returnButtonClass = sidebarIsActive
+    ? '-translate-x-0'
+    : 'translate-x-20'
 
   return (
     <>
-      <div className="w-80 fixed left-0 top-0 flex flex-col bg-cb-gray-600 h-screen justify-between">
+      <div
+        className={`w-80 fixed left-0 top-0 flex flex-col bg-cb-gray-600 h-screen justify-between transform ${returnSidebarClass} transition-transform duration-500 z-50`}
+      >
         <div>
           <span className="flex items-center justify-between p-4 pr-6">
             <div className="flex gap-4 items-center flex-shrink-0">
@@ -39,14 +53,17 @@ function SideBar() {
                 <img src={logo} className="h-10S" />
               </Link>
             </div>
-            <div className="flex items-center justify-center size-10 bg-cb-gray-700 rounded-md">
+            <div
+              onClick={() => setSidebarIsActive(!sidebarIsActive)}
+              className={`hover:cursor-pointer absolute right-4 transform ${returnButtonClass} transition-transform duration-500 border border-cb-gray-400 flex items-center justify-center size-10 bg-cb-gray-700 rounded-md`}
+            >
               <IoMenu size={27} color="gray" />
             </div>
           </span>
           <span className="flex flex-col items-center my-6">
             <NavigationTab
               name={'Dashboard'}
-              trigger={() => navigate(ROUTES.DASHBOARD)}
+              trigger={() => navigateAndCloseSidebar(ROUTES.DASHBOARD)}
             />
           </span>
         </div>
@@ -75,9 +92,12 @@ function SideBar() {
           </span>
         </div>
       </div>
-      <div className="ml-80">
-        <Outlet />
-      </div>
+      {/*Invisible overlay for the sidebar so that clicks beside it can also deactivate it*/}
+      <div
+        className={`fixed top-0 left-0 w-screen h-screen lg:hidden z-40 ${sidebarIsActive ? '' : 'hidden'}`}
+        onMouseDown={() => setSidebarIsActive(!sidebarIsActive)}
+      />
+      <Outlet />
     </>
   )
 }

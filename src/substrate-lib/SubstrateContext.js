@@ -8,13 +8,14 @@ import { isTestChain } from '@polkadot/util'
 import { TypeRegistry } from '@polkadot/types/create'
 
 import config from '../config'
+import { toast } from 'react-hot-toast'
 const SOCKETS = {
-  RELAY_DEV: 'wss://rococo-rpc.polkadot.io',
+  //RELAY_DEV: 'wss://rococo-rpc.polkadot.io',
   CYBORG: 'wss://fraa-flashbox-3239-rpc.a.stagenet.tanssi.network',
   LOCAL: 'ws://127.0.0.1:9988' //change to 'ws://127.0.0.1:9944' if using solochain
 }
 const CHAIN = {
-  RELAY_DEV: 'Roccoco',
+  //RELAY_DEV: 'Roccoco',
   CYBORG: 'Cyborg Hosted',
   LOCAL: 'Local Chain'
 }
@@ -93,7 +94,16 @@ const connect = (state, dispatch) => {
     _api.isReady.then(_api => dispatch({ type: 'CONNECT_SUCCESS' }))
   })
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }))
-  _api.on('error', err => dispatch({ type: 'CONNECT_ERROR', payload: err }))
+  _api.on('error', err => {
+    toast(`Error connecting to socket ${socket}, switching back to default socket.`)
+    dispatch({ type: 'CONNECT_ERROR', payload: err })
+    if(socket !== SOCKETS.CYBORG)
+    setTimeout(() => {
+      dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.CYBORG, chain: CHAIN.CYBORG } })
+      sessionStorage.setItem('CHAIN', CHAIN.CYBORG);
+      window.location.reload(true)
+    }, 1500)
+  })
 }
 
 const retrieveChainInfo = async api => {
@@ -163,9 +173,11 @@ const SubstrateContextProvider = props => {
   // check if existing session
   if (SelectedChain && SelectedChain !== state.chain) {
     switch(SelectedChain) {
+      /*
       case CHAIN.RELAY_DEV:
         dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.RELAY_DEV, chain: CHAIN.RELAY_DEV } })
       break;
+      */
       case CHAIN.CYBORG:
         dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.CYBORG, chain: CHAIN.CYBORG } })
       break;
@@ -191,11 +203,13 @@ const SubstrateContextProvider = props => {
     dispatch({ type: 'SET_CURRENT_ACCOUNT', payload: acct })
   }
 
+  /*
   function setRelaychainProvider() {
     dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.RELAY_DEV, chain: CHAIN.RELAY_DEV } })
     sessionStorage.setItem('CHAIN', CHAIN.RELAY_DEV);
     window.location.reload(true)
   }
+  */
 
   function setCyborgProvider() {
     dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.CYBORG, chain: CHAIN.CYBORG } })
@@ -210,7 +224,7 @@ const SubstrateContextProvider = props => {
   }
 
   return (
-    <SubstrateContext.Provider value={{ state, setCurrentAccount, setRelaychainProvider, setCyborgProvider, setLocalProvider }}>
+    <SubstrateContext.Provider value={{ state, setCurrentAccount, /*setRelaychainProvider,*/ setCyborgProvider, setLocalProvider }}>
       {props.children}
     </SubstrateContext.Provider>
   )

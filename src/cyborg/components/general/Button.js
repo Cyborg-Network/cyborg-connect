@@ -24,7 +24,7 @@ export default function Button({
       break
     case 'cancel':
       className =
-        'bg-cb-gray-400 rounded-full w-10 p-1.5 aspect-square grid justify-center items-center hover:text-cb-green'
+        'bg-cb-gray-400 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center hover:text-cb-green'
       content = <IoClose size={20} />
       break
     case 'inactive':

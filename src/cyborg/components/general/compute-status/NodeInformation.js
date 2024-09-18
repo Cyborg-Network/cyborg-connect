@@ -22,7 +22,7 @@ export function NodeInformation() {
   }
 
   return (
-    <div className="col-span-1 lg:col-span-2 xl:col-span-1 flex flex-col justify-evenly gap-10">
+    <div className="flex flex-col justify-evenly gap-10">
       {itemData.map(({ name, value, icon }, index) => (
         <InformationItem key={index} name={name} value={value} icon={icon} />
       ))}

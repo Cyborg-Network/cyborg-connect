@@ -14,6 +14,8 @@ import ChoosePath from './cyborg/components/general/ChoosePath'
 import { AccountContextProvider } from './cyborg/context/AccountContext';
 import ComputeStatus from './cyborg/components/general/compute-status/ComputeStatus';
 import PageNotFound from './cyborg/components/general/PageNotFound';
+import PageWrapper from './cyborg/components/general/layouts/PageWrapper';
+import { UiContextProvider } from './cyborg/context/UiContext';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -24,7 +26,7 @@ export const ROUTES = {
   DEV_MODE: "/dev-mode",
 }
 
-const Layout = () => {
+const GlobalLayout = () => {
   const location = useLocation().pathname;
 
   const linkProperties = location === ROUTES.DEV_MODE ? 
@@ -35,16 +37,26 @@ const Layout = () => {
     :
     {
       route: ROUTES.DEV_MODE,
-      name: "Test Substrate Chain",
+      name: "Test Chain",
     }
 
   return (
     <>
       <Outlet />
-      <div className='fixed -bottom-2 left-1/2 transform -translate-x-1/2 z-30'><RpcSelector /></div>
+      <div className='fixed bottom-2 left-2 md:left-1/2 transform md:-translate-x-1/2 z-30'><RpcSelector /></div>
       <Link to={linkProperties.route}>
-        <button className='fixed text-lg rounded-lg p-4 bottom-2 right-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
+        <button className='fixed rounded-lg p-4 bottom-2 right-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
       </Link>
+    </>
+  )
+}
+
+const CyborgLayout = () => {
+  return(
+    <>
+      <PageWrapper>
+        <Outlet />
+      </PageWrapper>
     </>
   )
 }
@@ -53,32 +65,37 @@ console.log(process.env.REACT_APP_ENV)
 
 const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <GlobalLayout />,
     children: [
       {
-        path: ROUTES.CHOOSE_PATH,
-        element: <ChoosePath />,
-      },
-      {
-        element: <SideBar />,
+        element: <CyborgLayout />,
         children: [
           {
-            path: ROUTES.PROVIDE_COMPUTE,
-            element: <Dashboard />,
+            path: ROUTES.ACCESS_COMPUTE,
+            element: <ChooseServices />,
           },
           {
-            path: ROUTES.DASHBOARD,
-            element: <Dashboard />,
+            path: ROUTES.CHOOSE_PATH,
+            element: <ChoosePath />,
           },
           {
-            path: `${ROUTES.COMPUTE_STATUS}/:domain`,
-            element: <ComputeStatus />,
-          }
+            element: <SideBar />,
+            children: [
+              {
+                path: ROUTES.PROVIDE_COMPUTE,
+                element: <Dashboard />,
+              },
+              {
+                path: ROUTES.DASHBOARD,
+                element: <Dashboard />,
+              },
+              {
+                path: `${ROUTES.COMPUTE_STATUS}/:domain`,
+                element: <ComputeStatus />,
+              },
+            ]
+          },
         ]
-      },
-      {
-        path: ROUTES.ACCESS_COMPUTE,
-        element: <ChooseServices />,
       },
       {
         path: ROUTES.DEV_MODE,
@@ -97,11 +114,13 @@ ReactDOM.render(
     <SubstrateContextProvider>
       <AccountContextProvider>
         <CyborgContextProvider>
+          <UiContextProvider>
           <Toaster
             position="top-center"
             reverseOrder={false}
           />
           <RouterProvider router={router} />
+          </UiContextProvider>
         </CyborgContextProvider>
       </AccountContextProvider>
     </SubstrateContextProvider>
