@@ -41,7 +41,7 @@ export function GetLogs({ link, taskId }) {
           console.error('API call failed after 3 retries:', error)
         } else {
           setData(
-            'Pending..' + ['.', '.', '.', '.', '.'].slice(retryCount).join(',')
+            'Pending..' + ['.', '.', '.', '.', '.'].slice(retryCount).join('')
           )
           console.warn(`Retrying... ${retryCount} attempts left.`)
           setTimeout(() => fetchData(retryCount - 1, interval), interval)
