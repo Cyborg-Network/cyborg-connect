@@ -22,8 +22,6 @@ const Chart = ({ color, data }) => {
   const [dimensions, setDimensions] = useState(initialState)
 
   useEffect(() => {
-    console.log(dimensions)
-    console.log(width)
     if (width < 768) {
       setDimensions({
         padding: 10,
@@ -55,7 +53,7 @@ const Chart = ({ color, data }) => {
   }, [width])
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className='VictoryContainer'>
       {/*Position has to be absolute and height of 0 otherwise the svg starts to take up space, it is only supposed to attach itself to the line*/}
       <svg style={{ position: 'absolute' }} height={0}>
         <defs>

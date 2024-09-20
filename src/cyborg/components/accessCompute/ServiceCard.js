@@ -7,7 +7,10 @@ const ServiceCard = ({
   additionalClasses
 }) => {
   return (
-    <div className={`${additionalClasses} border hover:ring-2 hover:ring-cb-gray-400 border-cb-gray-400 rounded-md w-80`}>
+    <div 
+      className={`${additionalClasses} border hover:text-cb-green hover:cursor-pointer text-white hover:ring-2 hover:ring-cb-gray-400 border-cb-gray-400 rounded-md w-80`}
+      onClick={() => setService(service)}
+    >
       <div className="flex flex-col items-center focus:text-cb-green bg-cb-gray-600 h-full justify-between">
         <a className="pt-10">
           <img src={logo} />
@@ -17,13 +20,8 @@ const ServiceCard = ({
         <p className="text-white opacity-50 text-center text-sm">
           {description}
         </p>
-        <div className="flex justify-center text-white opacity-50 bg-cb-gray-400 w-full h-14">
-          <button
-            onClick={() => setService(service)}
-            className="hover:text-cb-green"
-          >
-            <h4>Deploy Now</h4>
-          </button>
+        <div className="grid justify-center items-center text-lg font-bold opacity-50 bg-cb-gray-400 w-full h-14">
+          Deploy Now
         </div>
       </div>
     </div>
