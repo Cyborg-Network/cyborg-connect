@@ -16,6 +16,7 @@ import ComputeStatus from './cyborg/components/general/compute-status/ComputeSta
 import PageNotFound from './cyborg/components/general/PageNotFound';
 import PageWrapper from './cyborg/components/general/layouts/PageWrapper';
 import { UiContextProvider } from './cyborg/context/UiContext';
+import MapPreview from './cyborg/components/general/map/MapPreview';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -24,6 +25,7 @@ export const ROUTES = {
   DASHBOARD: "/access-compute/dashboard",
   COMPUTE_STATUS: "/access-compute/dashboard/compute-status",
   DEV_MODE: "/dev-mode",
+  MAP: "/access-compute/dashboard/map",
 }
 
 const GlobalLayout = () => {
@@ -93,6 +95,10 @@ const router = createBrowserRouter([
                 path: `${ROUTES.COMPUTE_STATUS}/:domain`,
                 element: <ComputeStatus />,
               },
+              {
+                path: `${ROUTES.MAP}`,
+                element: <MapPreview />,
+              }
             ]
           },
         ]
