@@ -16,7 +16,7 @@ import ComputeStatus from './cyborg/components/general/compute-status/ComputeSta
 import PageNotFound from './cyborg/components/general/PageNotFound';
 import PageWrapper from './cyborg/components/general/layouts/PageWrapper';
 import { UiContextProvider } from './cyborg/context/UiContext';
-import MapPreview from './cyborg/components/general/map/MapPreview';
+import MapInteractor from './cyborg/components/general/map/MapInteractor';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -97,7 +97,7 @@ const router = createBrowserRouter([
               },
               {
                 path: `${ROUTES.MAP}`,
-                element: <MapPreview />,
+                element: <MapInteractor />,
               }
             ]
           },

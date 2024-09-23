@@ -3,7 +3,7 @@ import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
 import toast from 'react-hot-toast'
 import Modal from '../../general/Modal'
-import Button from '../../general/Button'
+import CloseButton from '../../general/buttons/CloseButton'
 import { useNavigate } from 'react-router-dom'
 import {
   handleDispatchError,
@@ -82,7 +82,7 @@ function UploadDockerImgURL({ setService }) {
 
   return (
     <Modal onOutsideClick={() => setService(null)}>
-      <Button
+      <CloseButton
         variation="cancel"
         onClick={() => setService(null)}
         additionalClasses="absolute top-6 right-6"
@@ -94,7 +94,7 @@ function UploadDockerImgURL({ setService }) {
             type="text"
             id="url"
             name="url"
-            placeholder='Insert Docker Image URL'
+            placeholder="Insert Docker Image URL"
             onChange={handleUrlChange}
             className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />

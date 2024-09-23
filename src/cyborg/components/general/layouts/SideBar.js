@@ -94,7 +94,9 @@ function SideBar() {
       </div>
       {/*Invisible overlay for the sidebar so that clicks beside it can also deactivate it*/}
       <div
-        className={`fixed top-0 left-0 w-screen h-screen lg:hidden z-40 ${sidebarIsActive ? '' : 'hidden'}`}
+        className={`fixed top-0 left-0 w-screen h-screen lg:hidden z-40 ${
+          sidebarIsActive ? '' : 'hidden'
+        }`}
         onMouseDown={() => setSidebarIsActive(!sidebarIsActive)}
       />
       <Outlet />

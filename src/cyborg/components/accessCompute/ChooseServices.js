@@ -27,7 +27,11 @@ function ChooseServices() {
           service={SERVICES.CYBER_DOCK}
         />
         <ServiceCard logo={comingsoon} title="Coming Soon..." />
-        <ServiceCard additionalClasses='sm:col-span-2 sm:justify-self-center' logo={comingsoon} title="Coming Soon..." />
+        <ServiceCard
+          additionalClasses="sm:col-span-2 sm:justify-self-center"
+          logo={comingsoon}
+          title="Coming Soon..."
+        />
       </div>
       <div className="flex sm:flex-row flex-col gap-4 p-3">
         <ServiceCard logo={comingsoon} title="Coming Soon..." />

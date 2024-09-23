@@ -11,17 +11,17 @@ export function GetLogs({ link, taskId, scrollIsAutomated }) {
   //   if (stored) setData(stored)
   // }, [])
 
-  const scrollRef = useRef(null);
-  
+  const scrollRef = useRef(null)
+
   //Checks if user has locked the scrollbar, and if not resets it down to the current log
   useEffect(() => {
     const setScrollThumb = () => {
-      if(scrollIsAutomated){
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      if (scrollIsAutomated) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight
       }
     }
 
-    if(scrollRef.current){
+    if (scrollRef.current) {
       setScrollThumb()
     }
   }, [data, scrollIsAutomated])
@@ -90,7 +90,10 @@ export function GetLogs({ link, taskId, scrollIsAutomated }) {
   console.log('logs data: ', data)
   // console.log("display data: ", display)
   return (
-    <code ref={scrollRef} className="flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2 overflow-y-scroll">
+    <code
+      ref={scrollRef}
+      className="flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2 overflow-y-scroll"
+    >
       <div className="flex flex-col">
         {status && status.conditions && status.conditions.length > 0 ? (
           <div

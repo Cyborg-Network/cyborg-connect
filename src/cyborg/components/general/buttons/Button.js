@@ -19,7 +19,7 @@ export default function Button({
       break
     case 'secondary':
       className =
-        'size-30 border border-cb-gray-400 text-white py-6 px-10 rounded-md hover:border-cb-green m-2 focus:border-cb-green focus:bg-cb-gray-400'
+        'size-30 border border-cb-gray-400 text-white py-3 bg-cb-gray-600 px-6 hover:text-cb-green rounded-md hover:border-cb-green m-2 focus:border-cb-green focus:bg-cb-gray-400'
       content = children
       break
     case 'cancel':
