@@ -90,7 +90,7 @@ const Map = ({ userCoordinates, nodes, handleSelectNode, selectedNode }) => {
                   onClick={() => handleSelectNode(node)}
                   r={(1 / zoom) * 3}
                   fill={
-                    (node.id === selectedNode.id && node.owner === selectedNode.owner)
+                    selectedNode && (node.id === selectedNode.id && node.owner === selectedNode.owner)
                     ? '#15E674'
                     : '#439448'
                   }

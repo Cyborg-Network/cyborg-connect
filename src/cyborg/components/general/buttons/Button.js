@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { IoClose } from 'react-icons/io5'
+import './Button.styles.css';
 
 //with ts, add exclusivity of either varation === "cancel"
 export default function Button({
@@ -8,18 +10,21 @@ export default function Button({
   onClick,
   additionalClasses,
 }) {
+
+  const [btnState, setBtnState] = useState('initial')
+
   let className
   let content
 
   switch (variation) {
     case 'primary':
       className =
-        'size-30 text-black py-3 px-6 rounded-md hover:border-cb-green m-2 focus:border-cb-green bg-cb-green focus:bg-cb-gray-400'
+        `size-30 text-black py-3 px-6 rounded-md btn-prim ${btnState === 'btn-on' && 'btn-prim-on'} ${btnState === 'btn-off' && 'btn-prim-off'}`
       content = children
       break
     case 'secondary':
       className =
-        'size-30 border border-cb-gray-400 text-white py-3 bg-cb-gray-600 px-6 hover:text-cb-green rounded-md hover:border-cb-green m-2 focus:border-cb-green focus:bg-cb-gray-400'
+        `size-30 text-white py-3 px-6 rounded-md btn-sec ${btnState === 'btn-on' && 'btn-sec-on'} ${btnState === 'btn-off' && 'btn-sec-off'}`
       content = children
       break
     case 'cancel':
@@ -29,7 +34,7 @@ export default function Button({
       break
     case 'inactive':
       className =
-        'bg-cb-gray-400 size-30 text-gray-500 py-6 px-10 rounded-md m-2 border border-gray-500'
+        'bg-cb-gray-400 size-30 text-gray-500 py-3 px-6 rounded-md border border-gray-500'
       content = children
       break
     default:
@@ -38,7 +43,10 @@ export default function Button({
 
   return (
     <button
+      onMouse
       type={type}
+      onMouseEnter={() => setBtnState(btnState => 'btn-on')}
+      onMouseLeave={() => setBtnState(btnState => 'btn-off')}
       onClick={() => onClick()}
       className={`${className} ${additionalClasses}`}
     >

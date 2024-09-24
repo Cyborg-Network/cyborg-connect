@@ -5,6 +5,9 @@ import haversineDistance from 'haversine-distance'
 import MapHeader from './MapHeader'
 import NodeInformationBar from './NodeInformationBar'
 import { toast } from 'react-hot-toast'
+import Button from '../buttons/Button'
+import Modal from '../Modal'
+import InfoBox from '../InfoBox'
 const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
@@ -37,6 +40,7 @@ const MapInteractor = () => {
   const [selectedNode, setSelectedNode] = useState(null)
   const [distance, setDistance] = useState(null)
   const [nearestNode, setNearestNode] = useState(null)
+  const [userLocationInput, setUserLocationInput] = useState(null)
 
   const handleReturnToNearestNode = () => {
     setSelectedNode(nearestNode)
@@ -46,7 +50,7 @@ const MapInteractor = () => {
     setSelectedNode({ ...node, ['country']: getNodeCountry(node) })
   }
 
-  useEffect(() => {
+  const getUserLocation = () => {
     const success = position => {
       setUserLocation({
         lat: position.coords.latitude,
@@ -84,7 +88,7 @@ const MapInteractor = () => {
         'Geolocation is not supported by your browser, please enter your location manually.'
       )
     }
-  }, [])
+  }
 
   useEffect(() => {
     if (userLocation && nodes) {
@@ -114,6 +118,12 @@ const MapInteractor = () => {
     }
   }, [selectedNode, userLocation])
 
+  const handleUserLocationInputChange = (type, value) => {
+    setUserLocationInput({...userLocationInput, [`${type}`]: value});
+  }
+  
+  const userInputIsPresent = userLocationInput && userLocationInput.lat && userLocationInput.lon
+
   return (
     <div className="w-screen h-screen">
       <div className="absolute h-5/6 w-5/6 left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 overflow-hidden flex flex-col gap-5">
@@ -136,6 +146,30 @@ const MapInteractor = () => {
             distance={distance}
             returntoNearestNode={handleReturnToNearestNode}
           />
+        ) : (
+          <></>
+        )}
+        {!userLocation ?(
+          <Modal additionalClasses='flex flex-col gap-3'>
+            <div className='text-xl font-bold'>Choose Location</div>
+            <Button variation='primary' onClick={getUserLocation}>Allow Location Access</Button>
+            <div className='font-bold self-center text-lg'>or</div>
+            <div className='flex gap-2'>
+              <div className='text-xl font-bold'>Enter Manually</div>
+              <InfoBox>
+                <div>
+                  If your device doesn't support automatic location access, you can use navigation services (eg. Google Maps) on your phone with GPS enabled, and then enter the location here manually. In some cases this will also be more accurate than automatic location access.
+                </div>
+              </InfoBox>
+            </div>
+            <div className='flex gap-2'>
+              <input className='w-full p-2 rounded-md text-black' type='text' placeholder='Latiitude' onChange={e => handleUserLocationInputChange('lat', e.target.value)}/>
+              <input className='w-full p-2 rounded-md text-black' type='text' placeholder='Longitude' onChange={e => handleUserLocationInputChange('lon', e.target.value)}/>
+            </div>
+            <Button onClick={userInputIsPresent ? () => setUserLocation(userLocationInput) : () => {return}} variation={`${ userInputIsPresent ? 'primary' : 'inactive'}`}>
+              Confirm
+            </Button>
+          </Modal> 
         ) : (
           <></>
         )}

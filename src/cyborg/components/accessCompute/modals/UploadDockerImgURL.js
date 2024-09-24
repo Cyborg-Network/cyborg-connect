@@ -11,6 +11,7 @@ import {
 } from '../../../util/serviceDeployment'
 import { getAccount } from '../../../util/getAccount'
 import { ROUTES } from '../../../../index'
+import Button from '../../general/buttons/Button'
 
 function UploadDockerImgURL({ setService }) {
   const navigate = useNavigate()
@@ -101,20 +102,22 @@ function UploadDockerImgURL({ setService }) {
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className=" flex items-center justify-between">
-            <button
+            <Button
+              variation='secondary'
               onClick={() => setService(null)}
-              className="bg-cb-gray-600 w-full hover:ring-2 ring-cb-gray-500 text-white py-2 rounded"
+              additionalClasses='w-full'
             >
               Close
-            </button>
+            </Button>
           </div>
           <div className=" flex items-center justify-between">
-            <button
+            <Button
+              variation='primary'
               onClick={handleSubmit}
-              className="bg-cb-green w-full hover:ring-2 ring-white  text-black py-2 rounded"
+              additionalClasses='w-full'
             >
               Submit
-            </button>
+            </Button>
           </div>
         </div>
       </form>

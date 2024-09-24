@@ -14,7 +14,7 @@ import ChoosePath from './cyborg/components/general/ChoosePath'
 import { AccountContextProvider } from './cyborg/context/AccountContext';
 import ComputeStatus from './cyborg/components/general/compute-status/ComputeStatus';
 import PageNotFound from './cyborg/components/general/PageNotFound';
-import PageWrapper from './cyborg/components/general/layouts/PageWrapper';
+import PageWrapper from './cyborg/components/general/layouts/page-wrapper/PageWrapper';
 import { UiContextProvider } from './cyborg/context/UiContext';
 import MapInteractor from './cyborg/components/general/map/MapInteractor';
 

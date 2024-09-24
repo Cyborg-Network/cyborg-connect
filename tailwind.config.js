@@ -32,7 +32,7 @@ module.exports = {
         shiftSidebarButton: {
           '0%': { left: '5rem' },
           '100%': { left: '70rem' },
-        }
+        },
       },
       spacing: {
         'burger-btn-offset': 'var(--burger-btn-offset)'

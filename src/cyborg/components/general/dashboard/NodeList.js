@@ -18,7 +18,7 @@ export function NodeList({ nodes, taskMetadata }) {
           <li>Status</li>
         </ul>
       </span>
-      <div className="grid gap-4 lg:block lg:bg-white lg:bg-opacity-10 m-4 rounded-lg">
+      <div className="grid gap-3 m-4 rounded-lg">
         {nodes.length > 0 &&
           nodes.map(item => (
             <NodeCard

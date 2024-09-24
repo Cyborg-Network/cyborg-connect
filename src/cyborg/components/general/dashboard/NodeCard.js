@@ -30,7 +30,7 @@ const NodeCard = ({ item, lastTask }) => {
           : ''
       }`}
     >
-      <div className="lg:w-full items-center py-4 px-5 bg-cb-gray-400 rounded-lg lg:rounded-none">
+      <div className="lg:w-full items-center py-4 px-5 bg-cb-gray-400 rounded-lg">
         <ul className="w-full flex flex-col gap-2 items-center lg:grid lg:gap-0 lg:grid-cols-4 lg:grid-rows-1">
           <li className="flex items-center gap-3]">
             <a>

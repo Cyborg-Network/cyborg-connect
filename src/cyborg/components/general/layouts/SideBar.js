@@ -6,17 +6,7 @@ import { BsThreeDots } from 'react-icons/bs'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
 import { useUi } from '../../../context/UiContext'
-
-function NavigationTab({ name, trigger }) {
-  return (
-    <button
-      onClick={() => trigger()}
-      className="flex items-center text-black py-3 px-24 rounded-md bg-cb-green focus:bg-cb-gray-400"
-    >
-      {name}
-    </button>
-  )
-}
+import Button from '../buttons/Button'
 
 function ServiceTab({ name }) {
   return (
@@ -61,10 +51,13 @@ function SideBar() {
             </div>
           </span>
           <span className="flex flex-col items-center my-6">
-            <NavigationTab
-              name={'Dashboard'}
-              trigger={() => navigateAndCloseSidebar(ROUTES.DASHBOARD)}
-            />
+            <Button
+              variation='primary'
+              onClick={() => navigateAndCloseSidebar(ROUTES.DASHBOARD)}
+              additionalClasses={'w-5/6'}
+            >
+              Dashboard
+            </Button>
           </span>
         </div>
         <div>
