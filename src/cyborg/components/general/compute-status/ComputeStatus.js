@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import RenderChart from './RenderChart'
 //import { useCyborgState } from '../../../CyborgContext'
 import GaugeDisplay from './GaugeDisplay'
+import MetaDataHeader from './MetaDataHeader'
 import axios from 'axios'
 import { data1, data2, data3 } from '../../../data/MockData'
 import { useParams } from 'react-router-dom'
@@ -101,13 +102,7 @@ export default function ComputeStatus({ perspective }) {
   // },[taskMetadata])
   console.log('metadata: ', metadata)
 
-  const truncateAddress = address => {
-    if (window.innerWidth < 600) {
-      return `${address.slice(0, 6)}...${address.slice(-6)}`
-    } else {
-      return address
-    }
-  }
+
 
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
@@ -118,18 +113,7 @@ export default function ComputeStatus({ perspective }) {
     >
       {metadata ? (
         <>
-          <div className="grid text-right justify-end items-center mx-2 text-white">
-            <div className="flex items-center gap-2 lg:text-xl">
-              <div className="text-lg">Node Name: </div>
-              <div className="text-cb-green">
-                {truncateAddress(metadata.owner)}:{metadata.id}
-              </div>
-            </div>
-            <div className="flex justify-end items-center gap-2 text-md">
-              <div className="text-opacity-50 text-white">IP Address: </div>
-              <div>{metadata.api.domain}</div>
-            </div>
-          </div>
+          <MetaDataHeader owner={metadata.owner} id={metadata.id} domain={metadata.api.domain} status='active' lastCheck='96, 21:45:00'/>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
             {perspective === 'provider' ? (
               <div className="col-span-1">
@@ -139,7 +123,7 @@ export default function ComputeStatus({ perspective }) {
               <></>
             )}
             <div className="col-span-1 md:col-span-2 lg:col-span-1">
-              <ServerSpecs spec={specs} metric={metrics} />
+              <ServerSpecs spec={specs} metric={metrics} uptime={64} />
             </div>
             <div
               className={`col-span-1 md:col-span-2 ${
