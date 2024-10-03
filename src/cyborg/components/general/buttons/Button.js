@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoClose } from 'react-icons/io5'
 import './Button.styles.css';
 
@@ -9,9 +9,17 @@ export default function Button({
   type,
   onClick,
   additionalClasses,
+  isSelected,
+  selectable,
 }) {
 
   const [btnState, setBtnState] = useState('initial')
+
+  useEffect(() => {
+    if(selectable && btnState === 'btn-on' && !isSelected){
+      setBtnState('btn-off')
+    }
+  }, [isSelected])
 
   let className
   let content
@@ -46,7 +54,7 @@ export default function Button({
       onMouse
       type={type}
       onMouseEnter={() => setBtnState(btnState => 'btn-on')}
-      onMouseLeave={() => setBtnState(btnState => 'btn-off')}
+      onMouseLeave={(!selectable || !isSelected) ? () => setBtnState(btnState => 'btn-off') : () => {return}}
       onClick={() => onClick()}
       className={`${className} ${additionalClasses}`}
     >

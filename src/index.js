@@ -17,6 +17,7 @@ import PageNotFound from './cyborg/components/general/PageNotFound';
 import PageWrapper from './cyborg/components/general/layouts/page-wrapper/PageWrapper';
 import { UiContextProvider } from './cyborg/context/UiContext';
 import MapInteractor from './cyborg/components/general/map/MapInteractor';
+import PaymentModal from './cyborg/components/accessCompute/modals/Payment';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -26,6 +27,8 @@ export const ROUTES = {
   COMPUTE_STATUS: "/access-compute/dashboard/compute-status",
   DEV_MODE: "/dev-mode",
   MAP: "/access-compute/dashboard/map",
+  MODAL_PAYMENT: "/access-compute/dashboard/modal-payment",
+
 }
 
 const GlobalLayout = () => {
@@ -98,6 +101,11 @@ const router = createBrowserRouter([
               {
                 path: `${ROUTES.MAP}`,
                 element: <MapInteractor />,
+              },
+              {
+                path: `${ROUTES.MODAL_PAYMENT}`,
+                element: <PaymentModal />,
+
               }
             ]
           },
