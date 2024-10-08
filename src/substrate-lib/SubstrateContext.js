@@ -11,7 +11,7 @@ import config from '../config'
 import { toast } from 'react-hot-toast'
 const SOCKETS = {
   //RELAY_DEV: 'wss://rococo-rpc.polkadot.io',
-  CYBORG: 'wss://fraa-flashbox-3239-rpc.a.stagenet.tanssi.network',
+  CYBORG: 'wss://fraa-flashbox-4478-rpc.a.stagenet.tanssi.network',
   LOCAL: 'ws://127.0.0.1:9988' //change to 'ws://127.0.0.1:9944' if using solochain
 }
 const CHAIN = {
