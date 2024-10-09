@@ -97,7 +97,8 @@ const MapInteractor = () => {
   }
 
   useEffect(() => {
-    if (userLocation && workersWithLastTasks) {
+    if (userLocation && workersWithLastTasks)
+    if (workersWithLastTasks.length > 0) {
       const nodeData = getNearestNode(userLocation, workersWithLastTasks)
 
       setNearestNode({
