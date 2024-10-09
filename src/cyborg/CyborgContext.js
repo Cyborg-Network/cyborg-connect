@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from 'react'
 import { useSubstrateState } from '../substrate-lib'
+import { i32CoordinateToFloatCoordinate } from './util/coordinateConversion'
 
 export const SERVICES = {
   CYBER_DOCK: 'CYBER_DOCK',
@@ -117,6 +118,17 @@ const CyborgContextProvider = props => {
     if (workers && tasks) {
       // console.log("task with workers: ", workers,tasks)
       return workers.map(worker => {
+        if (
+          isNaN(worker.location.latitue) &&
+          isNaN(worker.location.longitude)
+        ) {
+          worker.location.latitude = i32CoordinateToFloatCoordinate(
+            worker.location.latitude
+          )
+          worker.location.longitude = i32CoordinateToFloatCoordinate(
+            worker.location.longitude
+          )
+        }
         // tasks are iterated through reverse order to find the most recent task for a worker
         for (let i = tasks.length - 1; i >= 0; i--) {
           const { taskExecutor, workerId } = tasks[i]

@@ -13,7 +13,7 @@ import { getAccount } from '../../../util/getAccount'
 import { ROUTES } from '../../../../index'
 import Button from '../../general/buttons/Button'
 
-function UploadDockerImgURL({ setService }) {
+function UploadDockerImgURL({ setService, onCancel, nodeIds }) {
   const navigate = useNavigate()
 
   const { selectService, setTaskStatus, setTaskMetadata } = useCyborg()
@@ -29,10 +29,14 @@ function UploadDockerImgURL({ setService }) {
   const handleSubmit = async event => {
     event.preventDefault()
 
+    toast(`Scheduling task for node ${nodeIds[0].owner} / ${nodeIds[0].id}`)
+
     const fromAcct = await getAccount(currentAccount)
     if (fromAcct) {
       selectService(SERVICES.CYBER_DOCK)
-      const containerTask = api.tx.taskManagement.taskScheduler(url)
+      const containerTask = api.tx.taskManagement.taskScheduler(
+        url /*, nodeId.owner, nodeId.id*/
+      )
       await containerTask
         .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
           setTaskStatus(DEPLOY_STATUS.PENDING)
@@ -64,9 +68,10 @@ function UploadDockerImgURL({ setService }) {
 
               //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
               if (status.isInBlock && !onIsInBlockWasCalled) {
-                setService(null)
                 setOnIsInBlockWasCalled(true)
-                toast.success(`Task Scheduled`)
+                toast.success(
+                  `Task scheduled for node ${nodeIds[0].owner} / ${nodeIds[0].id}`
+                )
                 navigate(ROUTES.DASHBOARD)
               }
             }
@@ -82,10 +87,10 @@ function UploadDockerImgURL({ setService }) {
   }
 
   return (
-    <Modal onOutsideClick={() => setService(null)}>
+    <Modal onOutsideClick={() => onCancel()}>
       <CloseButton
         variation="cancel"
-        onClick={() => setService(null)}
+        onClick={() => onCancel()}
         additionalClasses="absolute top-6 right-6"
       />
       <form onSubmit={handleSubmit}>
@@ -103,18 +108,18 @@ function UploadDockerImgURL({ setService }) {
         <div className="grid grid-cols-2 gap-2">
           <div className=" flex items-center justify-between">
             <Button
-              variation='secondary'
+              variation="secondary"
               onClick={() => setService(null)}
-              additionalClasses='w-full'
+              additionalClasses="w-full"
             >
               Close
             </Button>
           </div>
           <div className=" flex items-center justify-between">
             <Button
-              variation='primary'
+              variation="primary"
               onClick={handleSubmit}
-              additionalClasses='w-full'
+              additionalClasses="w-full"
             >
               Submit
             </Button>

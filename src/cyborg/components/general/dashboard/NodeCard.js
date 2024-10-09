@@ -26,7 +26,7 @@ const NodeCard = ({ item, lastTask }) => {
       }
       className={`hover:text-cb-green hover:font-bold hover:cursor-pointer rounded-lg lg:rounded-none ${
         lastTask === item.lastTask
-          ? 'p-1 border border-transparent bg-gradient-to-r from-cb-green via-yellow-500 to-cb-green bg-clip-border animated-border'
+          ? 'p-1 border border-transparent bg-gradient-to-r from-cb-green via-yellow-500 to-cb-green bg-clip-border animated-border rounded-lg'
           : ''
       }`}
     >

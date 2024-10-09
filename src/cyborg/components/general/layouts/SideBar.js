@@ -52,7 +52,7 @@ function SideBar() {
           </span>
           <span className="flex flex-col items-center my-6">
             <Button
-              variation='primary'
+              variation="primary"
               onClick={() => navigateAndCloseSidebar(ROUTES.DASHBOARD)}
               additionalClasses={'w-5/6'}
             >

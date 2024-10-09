@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react'
 import { IoClose } from 'react-icons/io5'
-import './Button.styles.css';
+import './Button.styles.css'
 
 //with ts, add exclusivity of either varation === "cancel"
 export default function Button({
@@ -12,37 +12,59 @@ export default function Button({
   isSelected,
   selectable,
 }) {
-
   const [btnState, setBtnState] = useState('initial')
-
-  useEffect(() => {
-    if(selectable && btnState === 'btn-on' && !isSelected){
-      setBtnState('btn-off')
-    }
-  }, [isSelected])
 
   let className
   let content
 
+  const returnButtonClass = variation => {
+    //Order is important here! Change with care
+    if (selectable) {
+      if (isSelected) {
+        return `btn-${variation}-selected`
+      }
+    }
+
+    if (btnState === 'btn-on') {
+      return `btn-${variation}-on`
+    }
+
+    if (btnState === 'initial') {
+      return ''
+    }
+
+    if (btnState === 'btn-off') {
+      return `btn-${variation}-off`
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (selectable && !isSelected && btnState !== 'btn-off') {
+      setBtnState('initial')
+    } else {
+      setBtnState('btn-off')
+    }
+  }
+
   switch (variation) {
     case 'primary':
-      className =
-        `size-30 text-black py-3 px-6 rounded-md btn-prim ${btnState === 'btn-on' && 'btn-prim-on'} ${btnState === 'btn-off' && 'btn-prim-off'}`
+      className = `size-30 text-black py-3 px-6 rounded-md btn-prim ${returnButtonClass(
+        'prim'
+      )} ${additionalClasses}`
       content = children
       break
     case 'secondary':
-      className =
-        `size-30 text-white py-3 px-6 rounded-md btn-sec ${btnState === 'btn-on' && 'btn-sec-on'} ${btnState === 'btn-off' && 'btn-sec-off'}`
+      className = `size-30 text-white py-3 px-6 rounded-md btn-sec ${returnButtonClass(
+        'sec'
+      )} ${additionalClasses}`
       content = children
       break
     case 'cancel':
-      className =
-        'bg-cb-gray-400 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center hover:text-cb-green'
+      className = `bg-cb-gray-400 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center hover:text-cb-green ${additionalClasses}`
       content = <IoClose size={20} />
       break
     case 'inactive':
-      className =
-        'bg-cb-gray-400 size-30 text-gray-500 py-3 px-6 rounded-md border border-gray-500'
+      className = `bg-cb-gray-400 size-30 text-gray-500 py-3 px-6 rounded-md border border-gray-500 ${additionalClasses}`
       content = children
       break
     default:
@@ -51,12 +73,11 @@ export default function Button({
 
   return (
     <button
-      onMouse
       type={type}
-      onMouseEnter={() => setBtnState(btnState => 'btn-on')}
-      onMouseLeave={(!selectable || !isSelected) ? () => setBtnState(btnState => 'btn-off') : () => {return}}
-      onClick={() => onClick()}
-      className={`${className} ${additionalClasses}`}
+      onMouseEnter={() => setBtnState('btn-on')}
+      onMouseLeave={() => handleMouseLeave()}
+      onClick={e => onClick(e)}
+      className={`${className}`}
     >
       {content}
     </button>

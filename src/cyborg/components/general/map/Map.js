@@ -83,16 +83,18 @@ const Map = ({ userCoordinates, nodes, handleSelectNode, selectedNode }) => {
             nodes.map((node, index) => (
               <Marker
                 key={index}
-                coordinates={[node.location.lon, node.location.lat]}
+                coordinates={[node.location.longitude, node.location.latitude]}
               >
                 <circle
                   className="hover:cursor-pointer"
                   onClick={() => handleSelectNode(node)}
                   r={(1 / zoom) * 3}
                   fill={
-                    selectedNode && (node.id === selectedNode.id && node.owner === selectedNode.owner)
-                    ? '#15E674'
-                    : '#439448'
+                    selectedNode &&
+                    node.id === selectedNode.id &&
+                    node.owner === selectedNode.owner
+                      ? '#15E674'
+                      : '#439448'
                   }
                   filter="url(#markerShadow)"
                 />

@@ -34,7 +34,12 @@ function ChoosePath() {
             Coming Soon
           </div>
         </Button>
-        <Button onClick={() => setPath('access-compute')} selectable isSelected={path === 'access-compute' ? true : false} variation="secondary">
+        <Button
+          onClick={() => setPath('access-compute')}
+          selectable
+          isSelected={path === 'access-compute' ? true : false}
+          variation="secondary"
+        >
           Access Compute
         </Button>
       </div>

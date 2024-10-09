@@ -1,75 +1,88 @@
 .btn-prim {
-  background: linear-gradient(100deg, var(--cb-green) 40%, #84ffa5 50%, #32b054 60%);
+  background: linear-gradient(
+    100deg,
+    var(--cb-green) 40%,
+    #84ffa5 50%,
+    #32b054 60%
+  );
   background-size: 400% 400%;
   background-position: right;
 }
 
-.btn-prim-on{
+.btn-prim-on {
   animation-name: move-gradient-in;
-  animation-duration: .7s;
+  animation-duration: 0.7s;
   animation-fill-mode: forwards;
 }
 
-.btn-prim-off{
+.btn-prim-off {
   animation-name: move-gradient-out;
   animation-duration: 1s;
   animation-fill-mode: forwards;
 }
 
-.btn-sec{
+.btn-prim-selected {
+  background-position: left;
+}
+
+.btn-sec {
   border: 1px solid var(--cb-gray-500);
   background-color: var(--cb-gray-600);
 }
 
-.btn-sec-on{
+.btn-sec-on {
   animation-name: border-bg-highlight-on;
-  animation-duration: .8s;
+  animation-duration: 0.8s;
   animation-fill-mode: forwards;
 }
 
-.btn-sec-off{
+.btn-sec-off {
   animation-name: border-bg-highlight-off;
   animation-duration: 1s;
   animation-fill-mode: forwards;
 }
 
+.btn-sec-selected {
+  border-color: var(--cb-green);
+  background-color: var(--cb-gray-400);
+}
+
 @keyframes move-gradient-in {
-  0%{
+  0% {
     background-position: right;
   }
-  100%{
+  100% {
     background-position: left;
   }
 }
 
 @keyframes move-gradient-out {
-  0%{
+  0% {
     background-position: left;
   }
-  100%{
+  100% {
     background-position: right;
   }
 }
 
 @keyframes border-bg-highlight-on {
-  0%{
+  0% {
     border-color: var(--cb-gray-500);
     background-color: var(--cb-gray-600);
   }
-  100%{
+  100% {
     border-color: var(--cb-green);
     background-color: var(--cb-gray-400);
   }
 }
 
 @keyframes border-bg-highlight-off {
-  0%{
+  0% {
     border-color: var(--cb-green);
     background-color: var(--cb-gray-400);
   }
-  100%{
+  100% {
     border-color: var(--cb-gray-500);
     background-color: var(--cb-gray-600);
   }
 }
-

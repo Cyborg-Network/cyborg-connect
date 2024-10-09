@@ -43,6 +43,7 @@
     "axios": "^1.6.8",
     "bn.js": "^5.2.1",
     "country-reverse-geocoding": "^0.2.2",
+    "framer-motion": "^6.5.1",
     "haversine-distance": "^1.2.3",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "prop-types": "^15.8.1",

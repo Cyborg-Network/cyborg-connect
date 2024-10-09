@@ -5,7 +5,7 @@ export function ServerSpecs({ spec, metric, uptime }) {
     <div className="bg-cb-gray-600 rounded-lg w-full h-full">
       <div className="flex items-center justify-between bg-gradient-to-b from-cb-gray-400 p-6 rounded-lg">
         <div className="font-thin">Server Specifications</div>
-        <div className='rounded-full bg-cb-gray-400 border border-gray-500 py-1 px-3 flex items-center'>
+        <div className="rounded-full bg-cb-gray-400 border border-gray-500 py-1 px-3 flex items-center">
           {`Uptime: ${uptime}%`}
         </div>
       </div>

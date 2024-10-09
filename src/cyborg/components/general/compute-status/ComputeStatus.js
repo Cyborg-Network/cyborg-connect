@@ -102,18 +102,22 @@ export default function ComputeStatus({ perspective }) {
   // },[taskMetadata])
   console.log('metadata: ', metadata)
 
-
-
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
     <div
-      className={`w-screen mt-5 mb-20 self-start px-4 sm:px-6 lg:px-16 flex flex-col gap-10 ${
+      className={`w-screen mt-6 mb-20 self-start px-4 sm:px-6 lg:px-16 flex flex-col gap-10 ${
         sidebarIsActive ? 'lg:pl-96' : 'lg:pl-16'
       } transition-all duration-500 ease-in-out`}
     >
       {metadata ? (
         <>
-          <MetaDataHeader owner={metadata.owner} id={metadata.id} domain={metadata.api.domain} status='active' lastCheck='96, 21:45:00'/>
+          <MetaDataHeader
+            owner={metadata.owner}
+            id={metadata.id}
+            domain={metadata.api.domain}
+            status="active"
+            lastCheck="96, 21:45:00"
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
             {perspective === 'provider' ? (
               <div className="col-span-1">
