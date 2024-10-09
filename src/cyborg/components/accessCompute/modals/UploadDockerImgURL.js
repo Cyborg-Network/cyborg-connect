@@ -35,7 +35,7 @@ function UploadDockerImgURL({ setService, onCancel, nodeIds }) {
     if (fromAcct) {
       selectService(SERVICES.CYBER_DOCK)
       const containerTask = api.tx.taskManagement.taskScheduler(
-        url /*, nodeId.owner, nodeId.id*/
+        url, nodeIds[0].owner, nodeIds[0].id
       )
       await containerTask
         .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
