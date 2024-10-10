@@ -12,7 +12,7 @@ import {
   DEPLOY_STATUS,
   useCyborgState,
 } from '../../../CyborgContext'
-import LoadDeployCyberDock from './../modals/LoadDeployCyberDock'
+import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 
 const DEPLOYMENT_STAGES = {
@@ -178,7 +178,7 @@ function SelectNodePage() {
         <></>
       )}
       {serviceStatus.deployTask === DEPLOY_STATUS.PENDING ? (
-        <LoadDeployCyberDock />
+        <LoadingModal text={'Deploying your container securely!'} />
       ) : (
         <></>
       )}

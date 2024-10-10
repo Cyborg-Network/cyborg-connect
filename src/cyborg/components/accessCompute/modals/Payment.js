@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import CloseButton from '../../general/buttons/CloseButton'
 import { Separator } from '../../general/Separator'
-import Modal from '../../general/Modal'
+import Modal from '../../general/modals/Modal'
 import borg from '../../../../../public/assets/icons/dockdeploy.png'
 import crypto from '../../../../../public/assets/icons/crypto.svg'
 import fiat from '../../../../../public/assets/icons/fiat-currencty.svg'

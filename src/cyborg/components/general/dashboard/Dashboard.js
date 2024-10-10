@@ -3,25 +3,18 @@ import nondeployed from '../../../../../public/assets/icons/nondeployed.png'
 import deploymentsTab from '../../../../../public/assets/icons/deployment-logo.png'
 import { FiPlusCircle } from 'react-icons/fi'
 import { useCyborg, useCyborgState } from '../../../CyborgContext'
-import { Button } from 'semantic-ui-react'
+import Button from '../buttons/Button'
 import { TbRefresh } from 'react-icons/tb'
 import { NodeList } from './NodeList'
 import { useUi } from '../../../context/UiContext'
+import { useLocation } from 'react-router-dom'
+import { ROUTES } from '../../../../index'
+import AddNodeModal from '../../provideCompute/modals/AddNode'
+import FirstNodeDeployModal from '../../provideCompute/modals/FirstNodeDeploy'
 
-function AddNodeButton({ addNode }) {
+function PlaceholderIfNoNodes({ addNode }) {
   return (
-    <button
-      onClick={() => addNode(true)}
-      className="flex items-center gap-1 size-30 text-white py-3 px-6 rounded-md bg-cb-green focus:bg-cb-gray-400"
-    >
-      <FiPlusCircle size={18} /> Add Node
-    </button>
-  )
-}
-
-function NoNodes({ addNode }) {
-  return (
-    <div className="flex flex-col justify-center h-2/3 items-center">
+    <div className="flex flex-col justify-center h-full items-center">
       <a className="">
         <img src={nondeployed} />
       </a>
@@ -35,14 +28,31 @@ function NoNodes({ addNode }) {
   )
 }
 
-function Dashboard({ perspective }) {
-  const [node, addNode] = useState(false)
+function Dashboard() {
+  const location = useLocation();
+  const isProvider = location.pathname === ROUTES.PROVIDE_COMPUTE;
+
+  const [addNodeModalIsActive, setAddNodeModalIsActive] = useState(false);
+  const [firstDeployModalIsActive, setFirstDeployModalIsActive] = useState(false);
 
   const { taskMetadata } = useCyborgState()
   const { workersWithLastTasks, setReloadWorkers } = useCyborg()
   const { sidebarIsActive } = useUi()
 
   console.log('workerList: ', workersWithLastTasks)
+
+  const handleAddNodeButtonClick = () => {
+    if(!localStorage.getItem('cyborgConnectDeployIntroductionShown')){
+      setFirstDeployModalIsActive(true);
+    } else {
+      setAddNodeModalIsActive(true);
+    }
+  }
+  
+  const handleDismissFirstNodeModal = () => {
+    setFirstDeployModalIsActive(false);
+    setAddNodeModalIsActive(true);
+  }
 
   return (
     <div
@@ -59,31 +69,40 @@ function Dashboard({ perspective }) {
           >
             <img src={deploymentsTab} />
             <div>
-              <h3 className="mb-0">Deployments</h3>
+              <h3 className="mb-0">{isProvider ? 'Your Nodes' : 'Deployments'}</h3>
               <p className="hidden sm:block text-white text-opacity-70">
                 Dashboard / Node List
               </p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => setReloadWorkers(true)}>
+            <Button variation={'secondary'} onClick={() => setReloadWorkers(true)}>
               <TbRefresh />
             </Button>
-            {perspective === 'provide-compute' ? (
-              <AddNodeButton addNode={addNode} />
+            {isProvider ? (
+              <Button additionalClasses={'flex gap-2 items-center'} variation={'primary'} onClick={handleAddNodeButtonClick} >
+                <FiPlusCircle size={18} /> Add Node
+              </Button>
             ) : (
               <></>
             )}
           </div>
         </div>
-        {node ||
-        (workersWithLastTasks &&
+        {(workersWithLastTasks &&
           workersWithLastTasks.length > 0 &&
           taskMetadata) ? (
           <NodeList nodes={workersWithLastTasks} taskMetadata={taskMetadata} />
         ) : (
-          <NoNodes addNode={addNode} />
+          <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
         )}
+        {addNodeModalIsActive
+          ? <AddNodeModal onCancel={() => setAddNodeModalIsActive(false)}/>
+          : <></>
+        }
+        {firstDeployModalIsActive
+          ? <FirstNodeDeployModal onProceed={() => handleDismissFirstNodeModal()} onCancel={() => setFirstDeployModalIsActive(false)}/>
+          : <></>
+        }
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
 import toast from 'react-hot-toast'
-import Modal from '../../general/Modal'
+import Modal from '../../general/modals/Modal'
 import CloseButton from '../../general/buttons/CloseButton'
 import { useNavigate } from 'react-router-dom'
 import {
