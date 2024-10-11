@@ -16,6 +16,13 @@
     }
 }
 
+/*Without this, the chart component will prevent scrolling on mobile if the user starts scrolling from within the container*/
+.VictoryContainer {
+  user-select: auto !important;
+  pointer-events: auto !important;
+  touch-action: auto !important;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--cb-gray-400) var(--cb-gray-600);
