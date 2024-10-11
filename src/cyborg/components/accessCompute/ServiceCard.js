@@ -21,13 +21,8 @@ const ServiceCard = ({
         <p className="text-white opacity-50 text-center text-sm">
           {description}
         </p>
-        <div className="flex justify-center text-white opacity-50 bg-cb-gray-400 w-full h-14">
-          <button
-            onClick={() => setService(service)}
-            className="hover:text-cb-green"
-          >
-            <h4>Deploy Now</h4>
-          </button>
+        <div className="grid justify-center items-center text-lg font-bold opacity-50 bg-cb-gray-400 w-full h-14">
+          Deploy Now
         </div>
       </div>
     </div>
