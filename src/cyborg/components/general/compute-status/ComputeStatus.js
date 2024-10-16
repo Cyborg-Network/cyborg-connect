@@ -11,6 +11,15 @@ import { NodeInformation } from './NodeInformation'
 import { ServerSpecs } from './ServerSpecs'
 import { Terminal } from './Terminal'
 import { useUi } from '../../../context/UiContext'
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
+import { toast } from 'react-hot-toast'
+import { signMessageWithWallet } from '../../../util/non-bc-crypto/signMessageWithWallet'
+import { processAuthMessage } from '../../../util/non-bc-crypto/processAuthMessage'
+import { decryptMessage } from '../../../util/non-bc-crypto/decryptMessage'
+import { generateX25519KeyPair } from '../../../util/non-bc-crypto/generateX25519KeyPair'
+import sodium from 'libsodium-wrappers'
+
+const AGENT_URL = undefined //'ws://127.0.0.1:8081'
 
 export default function ComputeStatus({ perspective }) {
   const { workersWithLastTasks } = useCyborg()
@@ -29,6 +38,54 @@ export default function ComputeStatus({ perspective }) {
     color: 'var(--gauge-red)',
     data: data1,
   }) //"CPU || "RAM" || "DISK"
+
+  //TODO store in a real location
+  const [keys, setKeys] = useState(null);
+  const [diffieHellmanSecret, setDiffieHellmanSecret] = useState(null)
+
+  const { sendMessage } = useWebSocket(AGENT_URL, {
+    onOpen: () => {
+      toast("Connection established")
+    },
+    onMessage: async (message) => {
+
+      const messageData = message.data
+
+      if(messageData.startsWith("AUTH|")){
+        const decryptionKey = await processAuthMessage(messageData, keys.privateKey); 
+        setDiffieHellmanSecret(decryptionKey);
+      } else {
+        decryptMessage(messageData, diffieHellmanSecret)
+      }
+    }
+  });
+
+  useEffect(() => {
+    if(diffieHellmanSecret){
+      sendMessage("USAGE");
+    }
+  }, [diffieHellmanSecret])
+
+  useEffect( async () => {
+    if(AGENT_URL){
+      const keypair = await generateX25519KeyPair()
+      setKeys(keypair)
+    }
+  }, [])
+
+  useEffect(() => {
+    const sendAuthMessage = async () => {
+      try{
+        const { wrappedMessage, signature } = await signMessageWithWallet();
+        sendMessage(`AUTH|${wrappedMessage}|${signature}|${sodium.to_hex(keys.publicKey)}`);
+      } catch(e) {
+        toast("Error sending auth message. Cannot get usage data.")
+      }
+    }
+    if(keys){
+      sendAuthMessage()
+    }
+  }, [keys])
 
   const handleSetSelectedGauge = (name, color) => {
     let data
