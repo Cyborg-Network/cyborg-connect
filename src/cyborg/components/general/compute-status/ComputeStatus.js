@@ -19,7 +19,8 @@ import { decryptMessage } from '../../../util/non-bc-crypto/decryptMessage'
 import { generateX25519KeyPair } from '../../../util/non-bc-crypto/generateX25519KeyPair'
 import sodium from 'libsodium-wrappers'
 
-const AGENT_URL = undefined //'ws://127.0.0.1:8081'
+//const AGENT_URL = undefined // 'ws://138.2.181.77:120'
+const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io';
 
 export default function ComputeStatus({ perspective }) {
   const { workersWithLastTasks } = useCyborg()
@@ -38,12 +39,14 @@ export default function ComputeStatus({ perspective }) {
     color: 'var(--gauge-red)',
     data: data1,
   }) //"CPU || "RAM" || "DISK"
+  const [agentSpecs, setAgentSpecs] = useState(null);
+  const [usageData, setUsageData] = useState([]);
 
   //TODO store in a real location
   const [keys, setKeys] = useState(null);
   const [diffieHellmanSecret, setDiffieHellmanSecret] = useState(null)
 
-  const { sendMessage } = useWebSocket(AGENT_URL, {
+  const { sendMessage } = useWebSocket(CYBORG_SERVER_URL, {
     onOpen: () => {
       toast("Connection established")
     },
@@ -54,20 +57,52 @@ export default function ComputeStatus({ perspective }) {
       if(messageData.startsWith("AUTH|")){
         const decryptionKey = await processAuthMessage(messageData, keys.privateKey); 
         setDiffieHellmanSecret(decryptionKey);
+      } else if(messageData.startsWith("INIT|")){
+        const init = await decryptMessage(messageData, diffieHellmanSecret);
+        setAgentSpecs(init)
+      } else if(messageData.startsWith("USAGE")){
+        const usageJson = await decryptMessage(messageData, diffieHellmanSecret);
+        const usage = JSON.parse(usageJson);
+
+        const now = new Date().toLocaleString()
+
+        const usageWithTimestamp = {...usage, ['timestamp']: now };
+
+        setUsageData([...usageData, usageWithTimestamp]);
+        console.log(usageData)
       } else {
-        decryptMessage(messageData, diffieHellmanSecret)
+        //TODO: remove this
+        setAgentSpecs(true);
+        console.log('Received unknown ws message type.')
+        toast(messageData)
       }
     }
   });
 
+  const constructMessage = (messageData) => {
+  
+    const message = JSON.stringify({
+      target_ip: "138.2.181.77",
+      data: messageData
+    })
+
+    return message
+  }
+
   useEffect(() => {
     if(diffieHellmanSecret){
-      sendMessage("USAGE");
+      sendMessage(constructMessage("INIT"));
     }
   }, [diffieHellmanSecret])
 
+  useEffect(() => {
+    if(agentSpecs){
+      sendMessage(constructMessage("USAGE"));
+    }
+  }, [agentSpecs])
+
   useEffect( async () => {
-    if(AGENT_URL){
+    if(CYBORG_SERVER_URL){
       const keypair = await generateX25519KeyPair()
       setKeys(keypair)
     }
@@ -77,7 +112,8 @@ export default function ComputeStatus({ perspective }) {
     const sendAuthMessage = async () => {
       try{
         const { wrappedMessage, signature } = await signMessageWithWallet();
-        sendMessage(`AUTH|${wrappedMessage}|${signature}|${sodium.to_hex(keys.publicKey)}`);
+        const messageData = `AUTH|${wrappedMessage}|${signature}|${sodium.to_hex(keys.publicKey)}`
+        sendMessage(constructMessage(messageData));
       } catch(e) {
         toast("Error sending auth message. Cannot get usage data.")
       }
@@ -241,8 +277,8 @@ export default function ComputeStatus({ perspective }) {
             )}
             <div className="col-span-1 md:col-span-2 lg:col-span-3">
               <RenderChart
-                metric={selectedGauge.name}
-                data={selectedGauge.data}
+                metric={"CPU"}
+                data={usageData}
                 color={selectedGauge.color}
               />
             </div>

@@ -7,9 +7,10 @@ import React, {
 } from 'react'
 import { useSubstrateState } from '../substrate-lib'
 import { i32CoordinateToFloatCoordinate } from './util/coordinateConversion'
+import cyberdock from '../../public/assets/icons/cyberdock.png'
 
 export const SERVICES = {
-  CYBER_DOCK: 'CYBER_DOCK',
+  CYBER_DOCK: { id: 'CYBER_DOCK', name: "Cyber Dock", icon: cyberdock },
 }
 
 export const DEPLOY_STATUS = {

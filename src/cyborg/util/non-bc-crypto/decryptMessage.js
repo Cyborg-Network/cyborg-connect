@@ -4,9 +4,6 @@ import { toast } from 'react-hot-toast';
 export const decryptMessage = async (messageData, diffieHellmanSecret) => {
     await sodium.ready;
 
-    console.log(diffieHellmanSecret)
-    console.log(messageData)
-
     if(!diffieHellmanSecret){
       toast("No decryption key found, aborting message decryption.")
       return
@@ -15,8 +12,9 @@ export const decryptMessage = async (messageData, diffieHellmanSecret) => {
     try{
       const [messageType, encryptedDataHex, nonceHex] = messageData.split("|");
 
-      toast(messageType)
-      
+      console.log(`Ws message of type ${messageType} received.`)
+      console.log(messageData)
+
       const encryptedData = sodium.from_hex(encryptedDataHex);
       const nonce = sodium.from_hex(nonceHex);
 
@@ -25,6 +23,8 @@ export const decryptMessage = async (messageData, diffieHellmanSecret) => {
       const decryptedText = new TextDecoder().decode(decryptedMessage);
 
       toast(decryptedText)
+
+      return decryptedText
     } catch (error) {
       console.error('Decryption failed: ', error)
     }

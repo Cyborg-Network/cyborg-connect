@@ -23,11 +23,11 @@ export const ROUTES = {
   CHOOSE_PATH: "/",
   PROVIDE_COMPUTE: "/provide-compute",
   ACCESS_COMPUTE: "/access-compute",
-  DASHBOARD: "/access-compute/dashboard",
-  COMPUTE_STATUS: "/access-compute/dashboard/compute-status",
+  DASHBOARD: "/access-compute/cyberdock/dashboard",
+  COMPUTE_STATUS: "/access-compute/cyberdock/dashboard/compute-status",
   DEV_MODE: "/dev-mode",
-  MAP: "/access-compute/map",
-  MODAL_NODES: "/access-compute/modal-nodes",
+  MAP: "/access-compute/cyberdock/map",
+  MODAL_NODES: "/access-compute/cyberdock/modal-nodes",
 }
 
 const GlobalLayout = () => {

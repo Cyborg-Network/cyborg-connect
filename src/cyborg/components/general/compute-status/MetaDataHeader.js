@@ -1,7 +1,7 @@
-import polkadotLogo from '../../../../../public/assets/icons/dot.svg'
 import { FaRegClock } from 'react-icons/fa6'
 import { FaCheck } from 'react-icons/fa6'
 import { useUi } from '../../../context/UiContext'
+import useService from '../../../hooks/useService'
 
 const truncateAddress = address => {
   if (window.innerWidth < 600) {
@@ -19,7 +19,8 @@ export function MetaDataHeader({ owner, id, domain, status, lastCheck }) {
   const isOnline = status === 'active' || status === 'busy' ? true : false
   const isBusy = status === 'busy' || status !== 'active' ? true : false
 
-  const { sidebarIsActive } = useUi()
+  const { sidebarIsActive } = useUi();
+  const service = useService();
 
   return (
     <div
@@ -28,12 +29,12 @@ export function MetaDataHeader({ owner, id, domain, status, lastCheck }) {
       } transition-all duration-500 ease-in-out grid gap-2 justify-end md:flex md:justify-between`}
     >
       <div className="flex text-white gap-3 flex-row-reverse md:flex-row flex-nowrap items-center">
-        <div className="rounded-md bg-cb-gray-600 h-full aspect-square p-3 flex items-center justify-center">
-          <img src={polkadotLogo} />
+        <div className="rounded-md h-24 aspect-square p-3 flex items-center justify-center">
+          <img src={service.icon} />
         </div>
         <div className="justify-end md:justify-start flex flex-col gap-1">
           <div className="text-xl font-bold text-right md:text-left">
-            Polkadot
+            {service.name}
           </div>
           <div className="text-nowrap flex gap-1">
             RPC Node |
