@@ -21,9 +21,9 @@ export const signMessageWithWallet = async () => {
     
     // Polkadot-js will add this wrapper to the message in the signRaw function, so we need to as well, 
     // otherwise signature verification will fail
-    const wrappedMessage = `<Bytes>${message}</Bytes>`;
+    const signedTimestamp = `<Bytes>${message}</Bytes>`;
 
-    return { wrappedMessage, signature }
+    return { signedTimestamp, signature }
   } catch(err) {
     if (err.message.includes('cancelled')) {
       toast("User cancelled the signature process.");

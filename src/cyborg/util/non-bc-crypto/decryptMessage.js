@@ -1,7 +1,7 @@
 import sodium from 'libsodium-wrappers'
 import { toast } from 'react-hot-toast';
 
-export const decryptMessage = async (messageData, diffieHellmanSecret) => {
+export const decryptMessage = async (encryptedDataHex, nonceHex, diffieHellmanSecret) => {
     await sodium.ready;
 
     if(!diffieHellmanSecret){
@@ -10,11 +10,6 @@ export const decryptMessage = async (messageData, diffieHellmanSecret) => {
     }
 
     try{
-      const [messageType, encryptedDataHex, nonceHex] = messageData.split("|");
-
-      console.log(`Ws message of type ${messageType} received.`)
-      console.log(messageData)
-
       const encryptedData = sodium.from_hex(encryptedDataHex);
       const nonce = sodium.from_hex(nonceHex);
 
@@ -22,7 +17,6 @@ export const decryptMessage = async (messageData, diffieHellmanSecret) => {
 
       const decryptedText = new TextDecoder().decode(decryptedMessage);
 
-      toast(decryptedText)
 
       return decryptedText
     } catch (error) {

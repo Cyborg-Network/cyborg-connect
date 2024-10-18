@@ -13,11 +13,10 @@ import { Terminal } from './Terminal'
 import { useUi } from '../../../context/UiContext'
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
 import { toast } from 'react-hot-toast'
-import { signMessageWithWallet } from '../../../util/non-bc-crypto/signMessageWithWallet'
 import { processAuthMessage } from '../../../util/non-bc-crypto/processAuthMessage'
 import { decryptMessage } from '../../../util/non-bc-crypto/decryptMessage'
 import { generateX25519KeyPair } from '../../../util/non-bc-crypto/generateX25519KeyPair'
-import sodium from 'libsodium-wrappers'
+import { constructAgentApiRequest, constructAgentAuthRequest } from '../../../api/agent'
 
 //const AGENT_URL = undefined // 'ws://138.2.181.77:120'
 const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io';
@@ -40,7 +39,7 @@ export default function ComputeStatus({ perspective }) {
     data: data1,
   }) //"CPU || "RAM" || "DISK"
   const [agentSpecs, setAgentSpecs] = useState(null);
-  const [usageData, setUsageData] = useState([]);
+  const [usageData, setUsageData] = useState({CPU: [], RAM: [], DISK: [], timestamp: []});
 
   //TODO store in a real location
   const [keys, setKeys] = useState(null);
@@ -48,56 +47,97 @@ export default function ComputeStatus({ perspective }) {
 
   const { sendMessage } = useWebSocket(CYBORG_SERVER_URL, {
     onOpen: () => {
-      toast("Connection established")
+      console.log("Connection established")
     },
     onMessage: async (message) => {
 
-      const messageData = message.data
+      const messageData = JSON.parse(message.data)
 
-      if(messageData.startsWith("AUTH|")){
-        const decryptionKey = await processAuthMessage(messageData, keys.privateKey); 
-        setDiffieHellmanSecret(decryptionKey);
-      } else if(messageData.startsWith("INIT|")){
-        const init = await decryptMessage(messageData, diffieHellmanSecret);
-        setAgentSpecs(init)
-      } else if(messageData.startsWith("USAGE")){
-        const usageJson = await decryptMessage(messageData, diffieHellmanSecret);
-        const usage = JSON.parse(usageJson);
-
-        const now = new Date().toLocaleString()
-
-        const usageWithTimestamp = {...usage, ['timestamp']: now };
-
-        setUsageData([...usageData, usageWithTimestamp]);
-        console.log(usageData)
-      } else {
-        //TODO: remove this
-        setAgentSpecs(true);
-        console.log('Received unknown ws message type.')
-        toast(messageData)
+      switch (messageData.response_type) {
+        case "Usage": {
+          const usageJson = await decryptMessage(messageData.encrypted_data_hex, messageData.nonce_hex, diffieHellmanSecret) 
+          const usage = JSON.parse(usageJson);
+          const now = new Date().toLocaleString();
+          setUsageData(prev => ({
+            CPU: [...prev.CPU, usage.cpu_usage], 
+            RAM: [...prev.RAM, usage.mem_usage],
+            DISK: [...prev.DISK, usage.disk_usage],
+            timestamp: [...prev.timestamp, now]
+          }))
+          break;
+        }
+        case "Init": {
+          const init = await decryptMessage(messageData.encrypted_data_hex, messageData.nonce_hex, diffieHellmanSecret);
+          setAgentSpecs(init);
+          break;
+        }
+        case "Auth": {
+          const decryptionKey = await processAuthMessage(messageData.node_public_key, keys.privateKey);
+          setDiffieHellmanSecret(decryptionKey);
+          break;
+        }
+        case "Test": {
+          console.warn("Received test message from cyborg-agent.");
+          break;
+        }
+        default: {
+          console.warn("Recieved unknown message from cyborg-agent.")
+        }
       }
     }
   });
 
-  const constructMessage = (messageData) => {
-  
-    const message = JSON.stringify({
-      target_ip: "138.2.181.77",
-      data: messageData
-    })
+  const transformUsageDataToChartData = (usageType) => {
+    let truncatedUsageData;
 
-    return message
+    const truncateUsageData = (usageTypeArray) => {
+      if(usageData.timestamp.length > 10){
+        truncatedUsageData = {
+          timestamp: usageData.timestamp.slice(-10),
+          [`${usageType}`]: usageTypeArray.slice(-10),
+        }
+      } else{
+        truncatedUsageData = usageData;
+      } 
+    }
+
+    switch (usageType) {
+      case 'CPU':
+        truncateUsageData(usageData.CPU)
+        return truncatedUsageData.CPU.map((value, index) => ({
+          x: truncatedUsageData.timestamp[index],
+          y: value
+        }));
+      case 'RAM':
+        truncateUsageData(usageData.RAM)
+        return truncatedUsageData.RAM.map((value, index) => ({
+          x: truncatedUsageData.timestamp[index],
+          y: value
+        }));
+      case 'DISK':
+        truncateUsageData(usageData.DISK)
+        return truncatedUsageData.DISK.map((value, index) => ({
+          x: truncatedUsageData.timestamp[index],
+          y: value
+        }));
+      default:
+        return [];
+    }
   }
 
   useEffect(() => {
+    console.log(usageData);
+  }, [usageData])
+
+  useEffect(() => {
     if(diffieHellmanSecret){
-      sendMessage(constructMessage("INIT"));
+      sendMessage(constructAgentApiRequest("138.2.181.77", "Init"));
     }
   }, [diffieHellmanSecret])
 
   useEffect(() => {
     if(agentSpecs){
-      sendMessage(constructMessage("USAGE"));
+      sendMessage(constructAgentApiRequest("138.2.181.77", "Usage"));
     }
   }, [agentSpecs])
 
@@ -111,9 +151,8 @@ export default function ComputeStatus({ perspective }) {
   useEffect(() => {
     const sendAuthMessage = async () => {
       try{
-        const { wrappedMessage, signature } = await signMessageWithWallet();
-        const messageData = `AUTH|${wrappedMessage}|${signature}|${sodium.to_hex(keys.publicKey)}`
-        sendMessage(constructMessage(messageData));
+        const message =  await constructAgentAuthRequest("138.2.181.77", keys.publicKey);
+        sendMessage(message);
       } catch(e) {
         toast("Error sending auth message. Cannot get usage data.")
       }
@@ -277,8 +316,8 @@ export default function ComputeStatus({ perspective }) {
             )}
             <div className="col-span-1 md:col-span-2 lg:col-span-3">
               <RenderChart
-                metric={"CPU"}
-                data={usageData}
+                metric={selectedGauge.name}
+                data={transformUsageDataToChartData(selectedGauge.name)}
                 color={selectedGauge.color}
               />
             </div>
