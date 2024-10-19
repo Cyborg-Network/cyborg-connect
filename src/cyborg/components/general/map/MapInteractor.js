@@ -10,6 +10,7 @@ import InfoBox from '../InfoBox'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
 import { useCyborg } from '../../../CyborgContext'
+import useService from '../../../hooks/useService'
 const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
@@ -41,6 +42,7 @@ const MapInteractor = () => {
   const navigate = useNavigate()
 
   const { workersWithLastTasks } = useCyborg()
+  const service = useService();
 
   const [userLocation, setUserLocation] = useState(null)
   const [selectedNode, setSelectedNode] = useState(null)
@@ -130,7 +132,13 @@ const MapInteractor = () => {
   }
 
   const navigateToNearestNodesSelection = () => {
-    navigate(ROUTES.MODAL_NODES, {
+    if(service.id === 'CYBER_DOCK')
+    navigate(ROUTES.CYBERDOCK_MODAL_NODES, {
+      state: { userLocation: userLocation, preSelectedNode: selectedNode },
+    })
+
+    if(service.id === 'NEURAL_ZK')
+    navigate(ROUTES.NEURAL_ZK_MODAL_NODES, {
       state: { userLocation: userLocation, preSelectedNode: selectedNode },
     })
   }
@@ -142,7 +150,7 @@ const MapInteractor = () => {
     <div className="w-screen h-screen">
       <div className="absolute h-5/6 w-5/6 left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 overflow-hidden flex flex-col gap-5">
         {selectedNode && selectedNode.country ? (
-          <MapHeader country={selectedNode.country} />
+          <MapHeader country={selectedNode.country} service={service} />
         ) : (
           <></>
         )}

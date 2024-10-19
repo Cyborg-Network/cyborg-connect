@@ -23,11 +23,15 @@ export const ROUTES = {
   CHOOSE_PATH: "/",
   PROVIDE_COMPUTE: "/provide-compute",
   ACCESS_COMPUTE: "/access-compute",
-  DASHBOARD: "/access-compute/cyberdock/dashboard",
-  COMPUTE_STATUS: "/access-compute/cyberdock/dashboard/compute-status",
+  CYBERDOCK_DASHBOARD: "/access-compute/cyberdock/dashboard",
+  NEURAL_ZK_DASHBOARD: "/access-compute/neuralzk/dashboard",
+  CYBERDOCK_COMPUTE_STATUS: "/access-compute/cyberdock/dashboard/compute-status",
+  NEURAL_ZK_COMPUTE_STATUS: "/access-compute/neuralzk/dashboard/compute-status",
   DEV_MODE: "/dev-mode",
-  MAP: "/access-compute/cyberdock/map",
-  MODAL_NODES: "/access-compute/cyberdock/modal-nodes",
+  CYBERDOCK_MAP: "/access-compute/cyberdock/map",
+  NEURAL_ZK_MAP: "/access-compute/neuralzk/map",
+  CYBERDOCK_MODAL_NODES: "/access-compute/cyberdock/modal-nodes",
+  NEURAL_ZK_MODAL_NODES: "/access-compute/neuralzk/modal-nodes",
 }
 
 const GlobalLayout = () => {
@@ -90,21 +94,36 @@ const router = createBrowserRouter([
                 element: <Dashboard />,
               },
               {
-                path: ROUTES.DASHBOARD,
+                path: ROUTES.CYBERDOCK_DASHBOARD,
                 element: <Dashboard />,
               },
               {
-                path: `${ROUTES.COMPUTE_STATUS}/:domain`,
+                path: `${ROUTES.CYBERDOCK_COMPUTE_STATUS}/:domain`,
                 element: <ComputeStatus />,
               },
               {
-                path: `${ROUTES.MAP}`,
+                path: `${ROUTES.CYBERDOCK_MAP}`,
                 element: <MapInteractor />,
               },
               {
-                path: `${ROUTES.MODAL_NODES}`,
+                path: `${ROUTES.CYBERDOCK_MODAL_NODES}`,
                 element: <SelectNodePage />,
-
+              },
+              {
+                path: ROUTES.NEURAL_ZK_DASHBOARD,
+                element: <Dashboard />,
+              },
+              {
+                path: `${ROUTES.NEURAL_ZK_COMPUTE_STATUS}/:domain`,
+                element: <ComputeStatus />,
+              },
+              {
+                path: `${ROUTES.NEURAL_ZK_MAP}`,
+                element: <MapInteractor />,
+              },
+              {
+                path: `${ROUTES.NEURAL_ZK_MODAL_NODES}`,
+                element: <SelectNodePage />,
               }
             ]
           },
@@ -131,6 +150,13 @@ ReactDOM.render(
           <Toaster
             position="top-center"
             reverseOrder={false}
+            toastOptions={{
+                style: {
+                  background: 'var(--cb-gray-600)',
+                  color: 'white',
+                  border: '1px solid var(--cb-green)'
+                }
+              }}
           />
           <RouterProvider router={router} />
           </UiContextProvider>

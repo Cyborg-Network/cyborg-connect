@@ -17,8 +17,8 @@ import { processAuthMessage } from '../../../util/non-bc-crypto/processAuthMessa
 import { decryptMessage } from '../../../util/non-bc-crypto/decryptMessage'
 import { generateX25519KeyPair } from '../../../util/non-bc-crypto/generateX25519KeyPair'
 import { constructAgentApiRequest, constructAgentAuthRequest } from '../../../api/agent'
+import SigntoUnlockModal from '../modals/SignToUnlock'
 
-//const AGENT_URL = undefined // 'ws://138.2.181.77:120'
 const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io';
 
 export default function ComputeStatus({ perspective }) {
@@ -33,6 +33,7 @@ export default function ComputeStatus({ perspective }) {
   const [metadata, setMetadata] = useState(null)
   const [specs, setSpecs] = useState()
   const [metrics, setMetrics] = useState()
+  const [isLocked, setIsLocked] = useState(true);
   const [selectedGauge, setSelectedGauge] = useState({
     name: 'CPU',
     color: 'var(--gauge-red)',
@@ -60,14 +61,15 @@ export default function ComputeStatus({ perspective }) {
           const now = new Date().toLocaleString();
           setUsageData(prev => ({
             CPU: [...prev.CPU, usage.cpu_usage], 
-            RAM: [...prev.RAM, usage.mem_usage],
-            DISK: [...prev.DISK, usage.disk_usage],
+            RAM: [...prev.RAM, usage.mem_usage / (1024 * 1024)], // get ram usage in mb
+            DISK: [...prev.DISK, usage.disk_usage / (1024 * 1024 * 1024)], //get disk usage in gb
             timestamp: [...prev.timestamp, now]
           }))
           break;
         }
         case "Init": {
-          const init = await decryptMessage(messageData.encrypted_data_hex, messageData.nonce_hex, diffieHellmanSecret);
+          const initJson = await decryptMessage(messageData.encrypted_data_hex, messageData.nonce_hex, diffieHellmanSecret);
+          const init = JSON.parse(initJson);
           setAgentSpecs(init);
           break;
         }
@@ -88,6 +90,7 @@ export default function ComputeStatus({ perspective }) {
   });
 
   const transformUsageDataToChartData = (usageType) => {
+    console.log(`Transforming data for ${usageType}`)
     let truncatedUsageData;
 
     const truncateUsageData = (usageTypeArray) => {
@@ -110,6 +113,7 @@ export default function ComputeStatus({ perspective }) {
         }));
       case 'RAM':
         truncateUsageData(usageData.RAM)
+        console.log(truncatedUsageData)
         return truncatedUsageData.RAM.map((value, index) => ({
           x: truncatedUsageData.timestamp[index],
           y: value
@@ -126,11 +130,12 @@ export default function ComputeStatus({ perspective }) {
   }
 
   useEffect(() => {
-    console.log(usageData);
-  }, [usageData])
+    console.warn(agentSpecs);
+  }, [agentSpecs])
 
   useEffect(() => {
     if(diffieHellmanSecret){
+      setIsLocked(false)
       sendMessage(constructAgentApiRequest("138.2.181.77", "Init"));
     }
   }, [diffieHellmanSecret])
@@ -148,7 +153,7 @@ export default function ComputeStatus({ perspective }) {
     }
   }, [])
 
-  useEffect(() => {
+  const authenticateWithAgent = () => {
     const sendAuthMessage = async () => {
       try{
         const message =  await constructAgentAuthRequest("138.2.181.77", keys.publicKey);
@@ -160,7 +165,7 @@ export default function ComputeStatus({ perspective }) {
     if(keys){
       sendAuthMessage()
     }
-  }, [keys])
+  }
 
   const handleSetSelectedGauge = (name, color) => {
     let data
@@ -236,6 +241,7 @@ export default function ComputeStatus({ perspective }) {
 
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
+    <>
     <div
       className={`w-screen mt-6 mb-20 self-start px-4 sm:px-6 lg:px-16 flex flex-col gap-10 ${
         sidebarIsActive ? 'lg:pl-96' : 'lg:pl-16'
@@ -259,7 +265,7 @@ export default function ComputeStatus({ perspective }) {
               <></>
             )}
             <div className="col-span-1 md:col-span-2 lg:col-span-1">
-              <ServerSpecs spec={specs} metric={metrics} uptime={64} />
+              <ServerSpecs specs={agentSpecs} metric={metrics} uptime={64} />
             </div>
             <div
               className={`col-span-1 md:col-span-2 ${
@@ -268,7 +274,7 @@ export default function ComputeStatus({ perspective }) {
             >
               <Terminal link={metadata.api.domain} taskId={metadata.lastTask} />
             </div>
-            {metrics && (
+            {usageData && (
               <>
                 <div className="col-span-1">
                   <GaugeDisplay
@@ -327,5 +333,13 @@ export default function ComputeStatus({ perspective }) {
         <div>Loading</div>
       )}
     </div>
+    {isLocked 
+      ? <SigntoUnlockModal 
+          text={'For privacy reasons, only the user who is currently in control of the worker is allowed to view the workers usage. Please confirm your identity with your public key.'}
+          onClick={authenticateWithAgent}
+        />
+      : <></>
+    }
+    </>
   )
 }

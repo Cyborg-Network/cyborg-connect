@@ -19,15 +19,20 @@ function ChooseServices() {
     <div className="relative py-20 flex flex-col items-center justify-center md:py-0">
       <h1 className="text-white">Choose Services</h1>
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row gap-4 p-2">
+        <ServiceCard 
+          logo={SERVICES.NEURAL_ZK.icon} 
+          title={SERVICES.NEURAL_ZK.name}
+          description="(placeholder)"
+          onClick={() => handleSelectService(SERVICES.NEURAL_ZK, ROUTES.NEURAL_ZK_MAP)}
+        />
         <ServiceCard
           logo={cyberdock}
           title="Cyber Dock"
           description="(deploy docker images at ease)"
-          onClick={() => handleSelectService(SERVICES.CYBER_DOCK, ROUTES.MAP)}
+          onClick={() => handleSelectService(SERVICES.CYBER_DOCK, ROUTES.CYBERDOCK_MAP)}
           setService={selectService}
           service={SERVICES.CYBER_DOCK}
         />
-        <ServiceCard logo={comingsoon} title="Coming Soon..." />
         <ServiceCard
           additionalClasses="sm:col-span-2 sm:justify-self-center"
           logo={comingsoon}

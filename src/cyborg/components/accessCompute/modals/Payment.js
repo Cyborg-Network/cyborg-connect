@@ -8,17 +8,51 @@ import fiat from '../../../../../public/assets/icons/fiat-currencty.svg'
 import Button from '../../general/buttons/Button'
 import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
+import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
+import {
+  handleDispatchError,
+  handleStatusEvents,
+} from '../../../util/serviceDeployment'
+import { getAccount } from '../../../util/getAccount'
+import { useSubstrateState } from '../../../../substrate-lib'
+//import { useNavigate } from 'react-router-dom'
+//import { ROUTES } from '../../../../index'
+//import useService from '../../../hooks/useService'
 
 const PAYMENT_OPTIONS = [
   { name: 'BORGs', icon: borg, isAvailable: true },
   { name: 'Crypto', icon: crypto, isAvailable: false },
-  { name: 'FIAT', icon: fiat, isAvailable: false },
+  { name: '', icon: fiat, isAvailable: false },
 ]
 
-function PaymentModal({ onCancel, onConfirm }) {
-  // Modal will be integrated as soon as the rest of the infrastructure has caught up
 
-  const [selectedOption, setSelectedOption] = useState(null)
+
+function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
+  // from updoad docker modal
+   //const navigate = useNavigate()
+
+  const { selectService, setTaskStatus, setTaskMetadata, addUserTask } = useCyborg()
+  const { api, currentAccount } = useSubstrateState()
+  //const service = useService()
+
+  //const [url, setUrl] = useState('')
+  const [onIsInBlockWasCalled, setOnIsInBlockWasCalled] = useState(false)
+
+  //const handleUrlChange = e => {
+  //  setUrl(e.target.value)
+  //}
+
+  //const navigateToDashboard = () => {
+  //  if(service.id === 'CYBER_DOCK'){
+  //    navigate(ROUTES.CYBERDOCK_DASHBOARD);
+  //  }
+  // if(service.id === 'NEURAL_ZK'){
+  //   navigate(ROUTES.NEURAL_ZK_DASHBOARD);
+  //  }
+  //}
+  // from upload docker modal
+
+  const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
 
   const startTransaction = () => {
@@ -32,14 +66,78 @@ function PaymentModal({ onCancel, onConfirm }) {
       return
     }
 
-    onConfirm()
+    //onConfirm()
+    handleSubmit()
   }
+
+  const handleSubmit = async event => {
+    //event.preventDefault()
+
+    //toast(`Scheduling task for node ${nodeIds[0].owner} / ${nodeIds[0].id}`)
+
+    const fromAcct = await getAccount(currentAccount)
+    if (fromAcct) {
+      selectService(SERVICES.CYBER_DOCK)
+      const containerTask = api.tx.taskManagement.taskScheduler(
+        /*url*/'hello-world' /*, nodeId.owner, nodeId.id*/
+      )
+      await containerTask
+        .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
+          //setTaskStatus(DEPLOY_STATUS.PENDING)
+          // status would still be set, but in the case of error we can shortcut
+          // to just check it (so an error would indicate InBlock or Finalized)
+          onConfirm()
+          if (dispatchError) {
+            handleDispatchError(api, dispatchError)
+            setTaskStatus(DEPLOY_STATUS.FAILED)
+            setService(null)
+          }
+
+          if (status.isInBlock || status.isFinalized) {
+            const { hasErrored, successfulEvents } = handleStatusEvents(
+              api,
+              events
+            )
+
+            if (hasErrored) {
+              setTaskStatus(DEPLOY_STATUS.FAILED)
+              setService(null)
+            } else if (successfulEvents) {
+              //setTaskStatus(DEPLOY_STATUS.READY)
+              const taskEvent = successfulEvents[0].toJSON().event.data
+              console.log('Extrinsic Success: ', taskEvent)
+
+              const [taskExecutor, , taskId] = taskEvent
+              const [workerAddress, workerId] = taskExecutor
+              setTaskMetadata(workerAddress, workerId.toString(), taskId)
+              addUserTask(taskId)
+
+              //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
+              if (status.isInBlock && !onIsInBlockWasCalled) {
+                setOnIsInBlockWasCalled(true)
+                //toast.success(
+                //  `Task executing in node ${nodeIds[0].owner} / ${nodeIds[0].id}`
+                //)
+                //navigateToDashboard()
+              }
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Other Errors', error)
+          toast.error(error.toString())
+          setTaskStatus(DEPLOY_STATUS.FAILED)
+          setService(null)
+        })
+    }
+  }
+
 
   return (
     <Modal
       onOutsideClick={onCancel}
       additionalClasses={
-        'p-8 2xl:w-3/6 xl:w-3/5 lg:w-4/5 sm:w-4/5 w-11/12 md:p-16'
+        'p-8 2xl:w-4/12 xl:w-3/5 lg:w-4/5 sm:w-4/5 w-11/12 md:p-16'
       }
       alignment={undefined}
     >
@@ -64,7 +162,7 @@ function PaymentModal({ onCancel, onConfirm }) {
               }}
             >
               <div className="flex justify-center items-center gap-2">
-                <img className="h-8 aspect-square" src={option.icon} />
+                <img className="h-10 aspect-square" src={option.icon} />
                 <div>{option.name}</div>
                 {!option.isAvailable ? (
                   <div className="rounded-full bg-cb-gray-400 text-xs px-2 py-1">

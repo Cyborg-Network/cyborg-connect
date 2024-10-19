@@ -1,13 +1,13 @@
 import Flag from 'react-world-flags'
-import { ReactComponent as CyberIoT } from '../../../../../public/assets/icons/cyber-iot.svg'
 
-const MapHeader = ({ country }) => {
+const MapHeader = ({ country, service }) => {
+
   return (
     <div className="p-6 bg-cb-gray-600 rounded-lg flex flex-col gap-3 sm:flex-row justify-between">
       <div className="flex items-center gap-3">
-        <CyberIoT />
+        <img src={service.icon} />
         <div>
-          <div className="text-white text-3xl font-bold">Cyber IoT</div>
+          <div className="text-white text-3xl font-bold">{service.name}</div>
           <div className="text-cb-green text-lg">Zigbee</div>
         </div>
       </div>

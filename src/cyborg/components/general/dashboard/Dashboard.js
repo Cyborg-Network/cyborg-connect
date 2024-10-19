@@ -35,7 +35,7 @@ function Dashboard() {
   const [addNodeModalIsActive, setAddNodeModalIsActive] = useState(false);
   const [firstDeployModalIsActive, setFirstDeployModalIsActive] = useState(false);
 
-  const { taskMetadata } = useCyborgState()
+  const { taskMetadata, userTasks } = useCyborgState()
   const { workersWithLastTasks, setReloadWorkers } = useCyborg()
   const { sidebarIsActive } = useUi()
 
@@ -52,6 +52,16 @@ function Dashboard() {
   const handleDismissFirstNodeModal = () => {
     setFirstDeployModalIsActive(false);
     setAddNodeModalIsActive(true);
+  }
+
+  // TODO: The whole way of getting to this point is not optimal, but the root of this issue is in the task-management / edge-connect pallet and we should start fixing it there
+  const handleReturnWorkers = () => {
+    console.warn(userTasks);
+    console.warn(workersWithLastTasks);
+    const userWorkers = workersWithLastTasks.filter(worker => {
+      return userTasks.includes(worker.lastTask);
+    })
+    return userWorkers
   }
 
   return (
@@ -88,10 +98,10 @@ function Dashboard() {
             )}
           </div>
         </div>
-        {(workersWithLastTasks &&
+        {(workersWithLastTasks && userTasks &&
           workersWithLastTasks.length > 0 &&
           taskMetadata) ? (
-          <NodeList nodes={workersWithLastTasks} taskMetadata={taskMetadata} />
+          <NodeList nodes={handleReturnWorkers()} taskMetadata={taskMetadata} />
         ) : (
           <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
         )}

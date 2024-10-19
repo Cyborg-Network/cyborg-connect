@@ -165,6 +165,8 @@ function SelectNodePage() {
         <PaymentModal
           onCancel={cancelTransaction}
           onConfirm={confirmPaymentMethod}
+          //get rid of that
+          nodeIds={selectedNodes}
         />
       ) : (
         <></>
