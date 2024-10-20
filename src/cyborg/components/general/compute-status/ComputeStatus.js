@@ -33,7 +33,7 @@ export default function ComputeStatus({ perspective }) {
   const [metadata, setMetadata] = useState(null)
   const [specs, setSpecs] = useState()
   const [metrics, setMetrics] = useState()
-  const [isLocked, setIsLocked] = useState(true);
+  const [lockState, setLockState] = useState({isLocked: true, isLoading: false});
   const [selectedGauge, setSelectedGauge] = useState({
     name: 'CPU',
     color: 'var(--gauge-red)',
@@ -61,8 +61,8 @@ export default function ComputeStatus({ perspective }) {
           const now = new Date().toLocaleString();
           setUsageData(prev => ({
             CPU: [...prev.CPU, usage.cpu_usage], 
-            RAM: [...prev.RAM, usage.mem_usage / (1024 * 1024)], // get ram usage in mb
-            DISK: [...prev.DISK, usage.disk_usage / (1024 * 1024 * 1024)], //get disk usage in gb
+            RAM: [...prev.RAM, usage.mem_usage], // in bytes
+            DISK: [...prev.DISK, usage.disk_usage], // in bytes
             timestamp: [...prev.timestamp, now]
           }))
           break;
@@ -107,23 +107,31 @@ export default function ComputeStatus({ perspective }) {
     switch (usageType) {
       case 'CPU':
         truncateUsageData(usageData.CPU)
-        return truncatedUsageData.CPU.map((value, index) => ({
-          x: truncatedUsageData.timestamp[index],
-          y: value
-        }));
+        return {
+          yUnits: {name: "%", max: 100},
+          data: truncatedUsageData.CPU.map((value, index) => ({
+            x: truncatedUsageData.timestamp[index],
+            y: value
+          })),
+        }
       case 'RAM':
         truncateUsageData(usageData.RAM)
-        console.log(truncatedUsageData)
-        return truncatedUsageData.RAM.map((value, index) => ({
-          x: truncatedUsageData.timestamp[index],
-          y: value
-        }));
+        return {
+          yUnits: {name: "MB", max: agentSpecs.specs.memory / 1024 / 1024},
+          data: truncatedUsageData.RAM.map((value, index) => ({
+            x: truncatedUsageData.timestamp[index],
+            y: value / 1024 / 1024 // display memory in MB
+          })),
+        }
       case 'DISK':
         truncateUsageData(usageData.DISK)
-        return truncatedUsageData.DISK.map((value, index) => ({
-          x: truncatedUsageData.timestamp[index],
-          y: value
-        }));
+        return {
+          yUnits: {name: "GB", max: agentSpecs.specs.disk / 1024 / 1024 / 1024},
+          data: truncatedUsageData.DISK.map((value, index) => ({
+            x: truncatedUsageData.timestamp[index],
+            y: value / 1024 / 1024 / 1024 // display storage in GB
+          })),
+        }
       default:
         return [];
     }
@@ -135,13 +143,13 @@ export default function ComputeStatus({ perspective }) {
 
   useEffect(() => {
     if(diffieHellmanSecret){
-      setIsLocked(false)
       sendMessage(constructAgentApiRequest("138.2.181.77", "Init"));
     }
   }, [diffieHellmanSecret])
 
   useEffect(() => {
     if(agentSpecs){
+      setLockState({isLoading: false, isLocked: false})
       sendMessage(constructAgentApiRequest("138.2.181.77", "Usage"));
     }
   }, [agentSpecs])
@@ -158,6 +166,7 @@ export default function ComputeStatus({ perspective }) {
       try{
         const message =  await constructAgentAuthRequest("138.2.181.77", keys.publicKey);
         sendMessage(message);
+        setLockState({...lockState, isLoading: true})
       } catch(e) {
         toast("Error sending auth message. Cannot get usage data.")
       }
@@ -239,6 +248,22 @@ export default function ComputeStatus({ perspective }) {
   // },[taskMetadata])
   console.log('metadata: ', metadata)
 
+  const parseGaugeMetric = (usageDataArray, totalUsageAvailable, type) => {
+    let current = usageDataArray[usageDataArray.length -1];
+    console.log(`${type} total ${totalUsageAvailable}`)
+    console.log(`${type} current ${current}`)
+    if(totalUsageAvailable){
+      let percentage = (current / totalUsageAvailable) * 100;
+      return Number(parseFloat(percentage.toFixed(2)));
+    } else {
+      return Number(parseFloat(current.toFixed(2)));
+    }
+  }
+
+  useEffect(() => {
+    console.log(usageData)
+  }, [usageData])
+
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
     <>
@@ -281,8 +306,8 @@ export default function ComputeStatus({ perspective }) {
                     setAsSelectedGauge={handleSetSelectedGauge}
                     selectedGauge={selectedGauge}
                     percentage={
-                      metrics && metrics.cpuUsage
-                        ? Number(metrics.cpuUsage.usage.slice(0, -1))
+                      usageData && usageData.CPU.length > 0
+                        ? parseGaugeMetric(usageData.CPU, null, "CPU")
                         : 1
                     }
                     fill={'var(--gauge-red)'}
@@ -295,8 +320,8 @@ export default function ComputeStatus({ perspective }) {
                     setAsSelectedGauge={handleSetSelectedGauge}
                     selectedGauge={selectedGauge}
                     percentage={
-                      metrics && metrics.memoryUsage
-                        ? Number(metrics.memoryUsage.usage.slice(0, -1))
+                      usageData && usageData.RAM.length > 0
+                        ? parseGaugeMetric(usageData.RAM, agentSpecs.specs.memory, "RAM")
                         : 1
                     }
                     fill={'var(--gauge-green)'}
@@ -309,8 +334,8 @@ export default function ComputeStatus({ perspective }) {
                     setAsSelectedGauge={handleSetSelectedGauge}
                     selectedGauge={selectedGauge}
                     percentage={
-                      metrics && metrics.diskUsage
-                        ? Number(metrics.diskUsage[0]['use%'].slice(0, -1))
+                      usageData && usageData.DISK.length > 0
+                        ? parseGaugeMetric(usageData.DISK, agentSpecs.specs.disk, "DISK")
                         : 1
                     }
                     fill={'var(--gauge-yellow)'}
@@ -333,10 +358,11 @@ export default function ComputeStatus({ perspective }) {
         <div>Loading</div>
       )}
     </div>
-    {isLocked 
+    {lockState.isLocked
       ? <SigntoUnlockModal 
           text={'For privacy reasons, only the user who is currently in control of the worker is allowed to view the workers usage. Please confirm your identity with your public key.'}
           onClick={authenticateWithAgent}
+          loading={lockState.isLoading}
         />
       : <></>
     }

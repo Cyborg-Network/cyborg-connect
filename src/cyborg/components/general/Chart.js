@@ -7,7 +7,7 @@ const Chart = ({ color, data }) => {
 
   //When logic is implemented this will be calculated based on the returned workload of the worker
   //Y Axis has to be offset by a little bit, else the absolute maxY will overflow
-  const maxY = 220
+  const maxY = data.yUnits.max
   const domainY = [0, maxY * 1.1]
 
   const initialState = {
@@ -95,13 +95,13 @@ const Chart = ({ color, data }) => {
             tickLabels: { fontSize: dimensions.fontSize, fill: 'white' },
             grid: { stroke: 'var(--cb-gray-400)', strokeWidth: 0.5 },
           }}
-          tickFormat={tick => `${tick}GB`}
+          tickFormat={tick => `${tick}${data.yUnits.name}`}
         />
         <VictoryArea
           animate={{ duration: 1000, onLoad: { duration: 500 } }}
           interpolation={'natural'}
           style={{ data: { fill: 'url(#gradient)', stroke: color } }}
-          data={data}
+          data={data.data}
         />
       </VictoryChart>
     </div>

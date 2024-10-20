@@ -33,7 +33,7 @@ export function ServerSpecs({ specs, metric, uptime }) {
         <li className="flex justify-between">
           <p>Memory:</p>
           <p>
-            {specs ? `~${Math.round(specs.specs.memory / 1048576)} MB` : null}
+            {specs ? `~${Math.round(specs.specs.memory / (1024 * 1024))} MB` : null}
           </p>
         </li>
         <li className="flex justify-between">
