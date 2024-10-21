@@ -19,7 +19,9 @@ const ServiceCard = ({
     >
       <div className="flex flex-col items-center focus:text-cb-green bg-cb-gray-600 h-full justify-between">
         <a className="pt-10">
-          <img src={logo} />
+          <div className="p-4 rounded-full bg-cb-gray-500">
+            <img src={logo} />
+          </div>
         </a>
 
         <h3 className="text-white">{title}</h3>

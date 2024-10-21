@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useState, useEffect, useRef } from 'react'
 
-export function GetLogs({ link, taskId, scrollIsAutomated }) {
+export function GetLogs({ link, taskId, scrollIsAutomated, logs }) {
   const [data, setData] = useState(null)
   const [status, setStatus] = useState(null)
 
@@ -126,7 +126,7 @@ export function GetLogs({ link, taskId, scrollIsAutomated }) {
           ''
         )}
         <div>{`[${link}][TaskID: ${taskId}] Logs: ${
-          data ? data : 'Pending.....'
+          logs ? logs : 'Pending.....'
         }`}</div>
       </div>
     </code>

@@ -137,8 +137,8 @@ const MapInteractor = () => {
       state: { userLocation: userLocation, preSelectedNode: selectedNode },
     })
 
-    if(service.id === 'NEURAL_ZK')
-    navigate(ROUTES.NEURAL_ZK_MODAL_NODES, {
+    if(service.id === 'NEURO_ZK')
+    navigate(ROUTES.NEURO_ZK_MODAL_NODES, {
       state: { userLocation: userLocation, preSelectedNode: selectedNode },
     })
   }

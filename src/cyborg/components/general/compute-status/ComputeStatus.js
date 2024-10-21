@@ -41,6 +41,7 @@ export default function ComputeStatus({ perspective }) {
   }) //"CPU || "RAM" || "DISK"
   const [agentSpecs, setAgentSpecs] = useState(null);
   const [usageData, setUsageData] = useState({CPU: [], RAM: [], DISK: [], timestamp: []});
+  const [logs, setLogs] = useState("");
 
   //TODO store in a real location
   const [keys, setKeys] = useState(null);
@@ -65,6 +66,7 @@ export default function ComputeStatus({ perspective }) {
             DISK: [...prev.DISK, usage.disk_usage], // in bytes
             timestamp: [...prev.timestamp, now]
           }))
+          setLogs(prev => [...prev, ...usage.recent_logs])
           break;
         }
         case "Init": {
@@ -143,14 +145,14 @@ export default function ComputeStatus({ perspective }) {
 
   useEffect(() => {
     if(diffieHellmanSecret){
-      sendMessage(constructAgentApiRequest("138.2.181.77", "Init"));
+      sendMessage(constructAgentApiRequest(metadata.api.domain.split(':')[0], "Init"));
     }
   }, [diffieHellmanSecret])
 
   useEffect(() => {
     if(agentSpecs){
       setLockState({isLoading: false, isLocked: false})
-      sendMessage(constructAgentApiRequest("138.2.181.77", "Usage"));
+      sendMessage(constructAgentApiRequest(metadata.api.domain.split(':')[0], "Usage"));
     }
   }, [agentSpecs])
 
@@ -164,7 +166,7 @@ export default function ComputeStatus({ perspective }) {
   const authenticateWithAgent = () => {
     const sendAuthMessage = async () => {
       try{
-        const message =  await constructAgentAuthRequest("138.2.181.77", keys.publicKey);
+        const message =  await constructAgentAuthRequest(metadata.api.domain.split(':')[0], keys.publicKey);
         sendMessage(message);
         setLockState({...lockState, isLoading: true})
       } catch(e) {
@@ -297,7 +299,7 @@ export default function ComputeStatus({ perspective }) {
                 perspective !== 'provider' ? '' : ''
               }`}
             >
-              <Terminal link={metadata.api.domain} taskId={metadata.lastTask} />
+              <Terminal link={metadata.api.domain} logs={logs} taskId={metadata.lastTask} />
             </div>
             {usageData && (
               <>

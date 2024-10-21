@@ -7,13 +7,15 @@ import React, {
 } from 'react'
 import { useSubstrateState } from '../substrate-lib'
 import { i32CoordinateToFloatCoordinate } from './util/coordinateConversion'
-import cyberdock from '../../public/assets/icons/cyberdock.png'
-import neuralzkplaceholder from '../../public/assets/icons/neural-placeholder.png'
+import comingsoon from '../../public/assets/icons/comingsoon.svg'
+import cyberdock from '../../public/assets/icons/cyberdock.svg'
+import neurozk from '../../public/assets/icons/neuro-zk.svg'
 import { getAccount } from './util/getAccount'
 
 export const SERVICES = {
-  NEURAL_ZK: { id: 'NEURA_ZK', name: "Neural ZK", icon: neuralzkplaceholder },
-  CYBER_DOCK: { id: 'CYBER_DOCK', name: "Cyber Dock", icon: cyberdock },
+  NO_SERVICE: {id: "0", name: "No service selected", icon: comingsoon},
+  CYBER_DOCK: {id: "CYBER_DOCK", name: "Cyber Dock", icon: cyberdock},
+  NEURO_ZK: {id: "NEURO_ZK", name: "Neuro ZK", icon: neurozk}
 }
 
 export const DEPLOY_STATUS = {

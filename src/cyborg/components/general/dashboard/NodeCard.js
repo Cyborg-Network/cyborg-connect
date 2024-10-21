@@ -22,8 +22,8 @@ const NodeCard = ({ item, lastTask }) => {
           state: item,
       })
     }
-    if(service.id === "NEURAL_ZK"){
-      navigate(`${ROUTES.NEURAL_ZK_COMPUTE_STATUS}/${item.api.domain}`, {
+    if(service.id === "NEURO_ZK"){
+      navigate(`${ROUTES.NEURO_ZK_COMPUTE_STATUS}/${item.api.domain}`, {
           state: item,
       })
     }

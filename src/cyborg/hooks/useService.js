@@ -1,22 +1,15 @@
 import { useLocation } from 'react-router-dom'
-import cyberdock from '../../../public/assets/icons/cyberdock.png';
-import neuralplaceholder from '../../../public/assets/icons/neural-placeholder.png'
-
-const services = {
-  noService: {id: "0", name: "No service selected", icon: cyberdock},
-  cyberdock: {id: "CYBER_DOCK", name: "Cyber Dock", icon: cyberdock},
-  neuralzk: {id: "NEURAL_ZK", name: "Neural ZK", icon: neuralplaceholder}
-}
+import { SERVICES } from '../CyborgContext'
 
 function useService() {
   const location = useLocation().pathname
 
-  let service = services.noService
+  let service = SERVICES.NO_SERVICE;
 
   if(location.includes('cyberdock')) {
-    service = services.cyberdock
-  } else if(location.includes('neuralzk')) {
-    service = services.neuralzk
+    service = SERVICES.CYBER_DOCK;
+  } else if(location.includes('neurozk')) {
+    service = SERVICES.NEURO_ZK;
   }
 
   return service

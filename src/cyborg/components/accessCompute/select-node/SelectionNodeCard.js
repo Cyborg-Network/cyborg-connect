@@ -44,16 +44,16 @@ const SelectionNodeCard = ({ node, onClick, isSelected }) => {
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'CPU'}</div>
             <div className="text-gray-400 text-sm">
-              {node.specs.cpu / 1000} Cores
+              {node.specs.cpu} Cores
             </div>
           </div>
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'Storage'}</div>
-            <div className="text-gray-400 text-sm">{node.specs.storage}</div>
+            <div className="text-gray-400 text-sm">{(parseInt(node.specs.storage.replace(/,/g, '')) / 1024 / 1024 / 1024).toFixed(2)} GB</div>
           </div>
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'Memory'}</div>
-            <div className="text-gray-400 text-sm">{node.specs.ram}</div>
+            <div className="text-gray-400 text-sm">{Math.round(parseInt(node.specs.ram.replace(/,/g, '', )) / 1024 / 1024)} MB</div>
           </div>
         </div>
       </div>

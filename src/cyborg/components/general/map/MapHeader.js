@@ -7,7 +7,7 @@ const MapHeader = ({ country, service }) => {
       <div className="flex items-center gap-3">
         <img src={service.icon} />
         <div>
-          <div className="text-white text-3xl font-bold">{service.name}</div>
+          <div className="text-white text-2xl font-bold">{service.name}</div>
           <div className="text-cb-green text-lg">Zigbee</div>
         </div>
       </div>

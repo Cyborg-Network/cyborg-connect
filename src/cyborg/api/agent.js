@@ -6,7 +6,7 @@ export const constructAgentApiRequest = (target_ip, requestType) => {
   console.log(target_ip);
   
   const request = JSON.stringify({
-    target_ip: "138.2.181.77",
+    target_ip: target_ip,
     endpoint: "Request",
     request_type: requestType,
   })
@@ -15,15 +15,12 @@ export const constructAgentApiRequest = (target_ip, requestType) => {
 }
 
 export const constructAgentAuthRequest = async (target_ip, ephemeral_public_key) => {
-  console.log(target_ip);
 
   await sodium.ready;
   const { signedTimestamp, signature } = await signMessageWithWallet();
 
-
-
   const request = JSON.stringify({
-    target_ip: "138.2.181.77",
+    target_ip: target_ip,
     endpoint: "Auth",
     signed_timestamp: signedTimestamp,
     signed_timestamp_signature: signature,

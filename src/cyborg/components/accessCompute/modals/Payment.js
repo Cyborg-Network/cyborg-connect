@@ -46,8 +46,8 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
   //  if(service.id === 'CYBER_DOCK'){
   //    navigate(ROUTES.CYBERDOCK_DASHBOARD);
   //  }
-  // if(service.id === 'NEURAL_ZK'){
-  //   navigate(ROUTES.NEURAL_ZK_DASHBOARD);
+  // if(service.id === 'NEURO_ZK'){
+  //   navigate(ROUTES.NEURO_ZK_DASHBOARD);
   //  }
   //}
   // from upload docker modal

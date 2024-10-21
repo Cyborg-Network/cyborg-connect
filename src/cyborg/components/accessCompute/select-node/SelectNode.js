@@ -1,4 +1,3 @@
-import cyberiot from '../../../../../public/assets/icons/cyber-iot.svg'
 import React, { useEffect, useState } from 'react'
 import Button from '../../general/buttons/Button'
 import { toast } from 'react-hot-toast'
@@ -14,6 +13,7 @@ import {
 } from '../../../CyborgContext'
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
+import useService from '../../../hooks/useService'
 
 const DEPLOYMENT_STAGES = {
   INIT: 'INIT',
@@ -23,6 +23,7 @@ const DEPLOYMENT_STAGES = {
 }
 
 function SelectNodePage() {
+  const service = useService();
   const { workersWithLastTasks } = useCyborg()
   const { serviceStatus } = useCyborgState()
 
@@ -126,9 +127,11 @@ function SelectNodePage() {
       <div className="text-white bg-transparent p-0 flex flex-col gap-4 2xl:w-full xl:w-4/5 lg:w-5/6 sm:w-4/5 w-11/12 self-center justify-self-center my-24">
         <div className="flex justify-between bg-cb-gray-600 p-3 sm:p-8 rounded-lg">
           <div className="flex gap-2">
-            <img className="w-16 h-16 items-center" src={cyberiot} />
+            <div className='w-16 h-16 p-2 rounded-full bg-cb-gray-500'>
+              <img className='h-full aspect-square' src={service.icon} />
+            </div>
             <div className="flex flex-col justify-center">
-              <div className="font-bold text-xl">Cyber Dock</div>
+              <div className="font-bold text-xl">{service.name}</div>
               <div className="text-cb-green text-lg">Zigbee</div>
             </div>
           </div>

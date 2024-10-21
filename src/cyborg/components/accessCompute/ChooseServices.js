@@ -1,6 +1,4 @@
 import React from 'react'
-import cyberdock from '../../../../public/assets/icons/cyberdock.png'
-import comingsoon from '../../../../public/assets/icons/comingsoon.png'
 import ServiceCard from './ServiceCard'
 import { useCyborg, SERVICES } from '../../CyborgContext'
 import { useNavigate } from 'react-router-dom'
@@ -20,13 +18,13 @@ function ChooseServices() {
       <h1 className="text-white">Choose Services</h1>
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row gap-4 p-2">
         <ServiceCard 
-          logo={SERVICES.NEURAL_ZK.icon} 
-          title={SERVICES.NEURAL_ZK.name}
+          logo={SERVICES.NEURO_ZK.icon} 
+          title={SERVICES.NEURO_ZK.name}
           description="(placeholder)"
-          onClick={() => handleSelectService(SERVICES.NEURAL_ZK, ROUTES.NEURAL_ZK_MAP)}
+          onClick={() => handleSelectService(SERVICES.NEURO_ZK, ROUTES.NEURO_ZK_MAP)}
         />
         <ServiceCard
-          logo={cyberdock}
+          logo={SERVICES.CYBER_DOCK.icon}
           title="Cyber Dock"
           description="(deploy docker images at ease)"
           onClick={() => handleSelectService(SERVICES.CYBER_DOCK, ROUTES.CYBERDOCK_MAP)}
@@ -35,13 +33,13 @@ function ChooseServices() {
         />
         <ServiceCard
           additionalClasses="sm:col-span-2 sm:justify-self-center"
-          logo={comingsoon}
+          logo={SERVICES.NO_SERVICE.icon}
           title="Coming Soon..."
         />
       </div>
       <div className="flex sm:flex-row flex-col gap-4 p-3">
-        <ServiceCard logo={comingsoon} title="Coming Soon..." />
-        <ServiceCard logo={comingsoon} title="Coming Soon..." />
+        <ServiceCard logo={SERVICES.NO_SERVICE.icon} title="Coming Soon..." />
+        <ServiceCard logo={SERVICES.NO_SERVICE.icon} title="Coming Soon..." />
       </div>
     </div>
   )

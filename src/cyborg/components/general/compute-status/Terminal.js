@@ -3,7 +3,7 @@ import widget from '../../../../../public/assets/icons/widget.png'
 import { PiMouseScrollLight } from 'react-icons/pi'
 import { useState } from 'react'
 
-export function Terminal({ link, taskId }) {
+export function Terminal({ link, taskId, logs }) {
   const [scrollIsAutomated, setScrollIsAutomated] = useState(true)
 
   console.log('terminal task: ', taskId)
@@ -29,6 +29,7 @@ export function Terminal({ link, taskId }) {
         {/* <li className='flex justify-between'><p>Last Login:</p><p>Fri June 04, 01:34:00</p></li> */}
         <GetLogs
           scrollIsAutomated={scrollIsAutomated}
+          logs={logs}
           link={link}
           taskId={taskId}
         />
