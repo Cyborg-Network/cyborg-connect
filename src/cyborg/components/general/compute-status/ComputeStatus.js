@@ -91,6 +91,10 @@ export default function ComputeStatus({ perspective }) {
     }
   });
 
+  useEffect(() => {
+    console.log(logs)
+  }, [logs])
+
   const transformUsageDataToChartData = (usageType) => {
     console.log(`Transforming data for ${usageType}`)
     let truncatedUsageData;
@@ -166,7 +170,7 @@ export default function ComputeStatus({ perspective }) {
   const authenticateWithAgent = () => {
     const sendAuthMessage = async () => {
       try{
-        const message =  await constructAgentAuthRequest(metadata.api.domain.split(':')[0], keys.publicKey);
+        const message =  await constructAgentAuthRequest(metadata.api.domain.split(':')[0], metadata.lastTask, keys.publicKey);
         sendMessage(message);
         setLockState({...lockState, isLoading: true})
       } catch(e) {
@@ -281,7 +285,7 @@ export default function ComputeStatus({ perspective }) {
             id={metadata.id}
             domain={metadata.api.domain}
             status="active"
-            lastCheck="96, 21:45:00"
+            lastCheck="96, 21:45:39"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
             {perspective === 'provider' ? (

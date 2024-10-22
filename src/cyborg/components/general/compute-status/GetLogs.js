@@ -126,7 +126,9 @@ export function GetLogs({ link, taskId, scrollIsAutomated, logs }) {
           ''
         )}
         <div>{`[${link}][TaskID: ${taskId}] Logs: ${
-          logs ? logs : 'Pending.....'
+          logs ?
+          logs.join(' ')
+          : 'Pending.....'
         }`}</div>
       </div>
     </code>
