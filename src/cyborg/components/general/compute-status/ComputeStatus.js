@@ -5,7 +5,7 @@ import GaugeDisplay from './GaugeDisplay'
 import MetaDataHeader from './MetaDataHeader'
 import axios from 'axios'
 import { data1, data2, data3 } from '../../../data/MockData'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useCyborg } from '../../../CyborgContext'
 import { NodeInformation } from './NodeInformation'
 import { ServerSpecs } from './ServerSpecs'
@@ -26,6 +26,8 @@ export default function ComputeStatus({ perspective }) {
   const { sidebarIsActive } = useUi()
 
   const { domain } = useParams()
+
+  const navigate = useNavigate();
 
   // const { taskMetadata } = useCyborgState()
   // const [taskId, setTaskId] = useState(taskMetadata && taskMetadata.taskId? taskMetadata.taskId : "");
@@ -84,10 +86,24 @@ export default function ComputeStatus({ perspective }) {
           console.warn("Received test message from cyborg-agent.");
           break;
         }
+        case "Error": {
+          if(messageData.error_type && messageData.error_type === "Auth"){
+            toast(`${messageData.error_message} Returning to dashboard.`);
+            setTimeout(() => navigate(-1), 3000);
+          } else {
+            const errorJson = await decryptMessage(messageData.encrypted_data_hex, messageData.nonce_hex, diffieHellmanSecret);
+            const error = JSON.parse(errorJson);
+            toast(error.error_message);
+          }
+          break;
+        }
         default: {
           console.warn("Recieved unknown message from cyborg-agent.")
         }
       }
+    },
+    onError: () => {
+      toast("This nodes agent encountered an unrecoverable error. Closing the lock...")
     }
   });
 
