@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import CloseButton from '../../general/buttons/CloseButton'
 import { Separator } from '../../general/Separator'
 import Modal from '../../general/modals/Modal'
-import borg from '../../../../../public/assets/icons/dockdeploy.png'
+//import borg from '../../../../../public/assets/icons/dockdeploy.png'
 import crypto from '../../../../../public/assets/icons/crypto.svg'
 import fiat from '../../../../../public/assets/icons/fiat-currencty.svg'
 import Button from '../../general/buttons/Button'
@@ -15,14 +15,15 @@ import {
 } from '../../../util/serviceDeployment'
 import { getAccount } from '../../../util/getAccount'
 import { useSubstrateState } from '../../../../substrate-lib'
+import robo from '../../../../../public/assets/icons/robo.png'
 //import { useNavigate } from 'react-router-dom'
 //import { ROUTES } from '../../../../index'
 //import useService from '../../../hooks/useService'
 
 const PAYMENT_OPTIONS = [
-  { name: 'BORGs', icon: borg, isAvailable: true },
-  { name: 'Crypto', icon: crypto, isAvailable: false },
-  { name: '', icon: fiat, isAvailable: false },
+  { name: 'ENTT', icon: robo, isAvailable: true, testnet: true },
+  { name: 'Crypto', icon: crypto, isAvailable: false, testnet: false },
+  { name: '', icon: fiat, isAvailable: false, testnet: false },
 ]
 
 
@@ -78,9 +79,8 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
     const fromAcct = await getAccount(currentAccount)
     if (fromAcct) {
       selectService(SERVICES.CYBER_DOCK)
-      const containerTask = api.tx.taskManagement.taskScheduler(
-        /*url*/'hello-world' /*, nodeId.owner, nodeId.id*/
-      )
+      //        /*url*/'hello-world' /*, nodeId.owner, nodeId.id*/
+      const containerTask = api.tx.taskManagement.taskScheduler('bafybeic5sgq6obgfg6xine6cf4qpv7xrvnzst5ufyxnzbnzvcafuif56j4/ipfs_test')
       await containerTask
         .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
           //setTaskStatus(DEPLOY_STATUS.PENDING)
@@ -163,7 +163,15 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
             >
               <div className="flex justify-center items-center gap-2">
                 <img className="h-10 aspect-square" src={option.icon} />
-                <div>{option.name}</div>
+                <div className='relative'>
+                  {option.name}
+                  {option.testnet ?
+                    <div className="absolute top-3/4 text-xs text-gray-400">
+                      Testnet
+                    </div>
+                    : <></>
+                  }
+                </div>
                 {!option.isAvailable ? (
                   <div className="rounded-full bg-cb-gray-400 text-xs px-2 py-1">
                     COMING SOON

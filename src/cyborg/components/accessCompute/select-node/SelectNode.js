@@ -10,10 +10,12 @@ import {
   useCyborg,
   DEPLOY_STATUS,
   useCyborgState,
+  SERVICES,
 } from '../../../CyborgContext'
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import useService from '../../../hooks/useService'
+import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
   INIT: 'INIT',
@@ -132,7 +134,7 @@ function SelectNodePage() {
             </div>
             <div className="flex flex-col justify-center">
               <div className="font-bold text-xl">{service.name}</div>
-              <div className="text-cb-green text-lg">Zigbee</div>
+              <div className="text-cb-green text-lg">Cyborg Miner</div>
             </div>
           </div>
         </div>
@@ -174,7 +176,7 @@ function SelectNodePage() {
       ) : (
         <></>
       )}
-      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT ? (
+      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && service.id === SERVICES.CYBER_DOCK.id ? (
         <UploadDockerImgURL
           onCancel={cancelTransaction}
           nodeIds={selectedNodes}
@@ -182,6 +184,14 @@ function SelectNodePage() {
       ) : (
         <></>
       )}
+      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && service.id === SERVICES.NEURO_ZK.id
+        ? <NeuroZkUpload
+            onCancel={cancelTransaction}
+            nodeIds={selectedNodes}
+          />
+          :
+        <></>
+      }
       {serviceStatus.deployTask === DEPLOY_STATUS.PENDING ? (
         <LoadingModal text={'Deploying your container securely!'} />
       ) : (
