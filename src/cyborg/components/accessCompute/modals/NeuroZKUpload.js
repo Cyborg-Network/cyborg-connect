@@ -16,6 +16,7 @@ import useService from '../../../hooks/useService'
 import { DEPLOY_STATUS } from '../../../CyborgContext'
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { useState } from 'react'
+import axios from 'axios'
 
 function NeuroZkUpload({ setService, onCancel, nodeIds }) {
   const navigate = useNavigate()
@@ -35,6 +36,28 @@ function NeuroZkUpload({ setService, onCancel, nodeIds }) {
   //const handleUrlChange = e => {
    // setUrl(e.target.value)
   //}
+  const uploadFiles = async () => {
+    
+
+    const formData = new FormData();
+
+    formData.append("file1", zkFiles.file1);
+    formData.append("file2", zkFiles.file2);
+    formData.append("file3", zkFiles.file3);
+
+    try {
+      const response = await axios.post('https://www.server.cyborgnetwork.io:8081/upload', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      })
+
+      console.log(response)
+      return response
+    } catch (error) {
+      console.log("Error uploading the zk files", error)
+    }
+  }
 
   const navigateToDashboard = () => {
     if(service.id === 'CYBER_DOCK'){
@@ -106,7 +129,13 @@ function NeuroZkUpload({ setService, onCancel, nodeIds }) {
     }
   }
 */
-  const handleMockPayment = () => {
+  const handleMockPayment = async () => {
+    if(!zkFiles.file1 || !zkFiles.file2 || !zkFiles.file3){
+      toast("Please provide all three files for zk proof generation!")
+      return
+    }
+    const response = await uploadFiles();
+    console.log(response)
     console.log(zkFiles);
     setTaskStatus(DEPLOY_STATUS.PENDING)
     setTimeout(() => {

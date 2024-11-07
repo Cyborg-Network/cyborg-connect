@@ -79,8 +79,12 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
     const fromAcct = await getAccount(currentAccount)
     if (fromAcct) {
       selectService(SERVICES.CYBER_DOCK)
-      //        /*url*/'hello-world' /*, nodeId.owner, nodeId.id*/
-      const containerTask = api.tx.taskManagement.taskScheduler('bafybeic5sgq6obgfg6xine6cf4qpv7xrvnzst5ufyxnzbnzvcafuif56j4/ipfs_test')
+              ///*url*/'hello-world' , nodeId.owner, nodeIds[0].
+      const containerTask = api.tx.taskManagement.taskScheduler(
+        'bafybeic5sgq6obgfg6xine6cf4qpv7xrvnzst5ufyxnzbnzvcafuif56j4/ipfs_test',
+        //'5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
+        //0
+      )
       await containerTask
         .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
           //setTaskStatus(DEPLOY_STATUS.PENDING)
