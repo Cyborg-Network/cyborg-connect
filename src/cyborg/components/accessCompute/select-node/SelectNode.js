@@ -36,6 +36,7 @@ function SelectNodePage() {
   const [nearbyNodes, setNearbyNodes] = useState([])
   const [selectedNodes, setSelectedNodes] = useState([])
   const [deploymentStage, setDeploymentStage] = useState(DEPLOYMENT_STAGES.INIT)
+  const [hoursSelected, setHoursSelected] = useState(0)
 
   useEffect(() => {
     if (preSelectedNode)
@@ -99,7 +100,17 @@ function SelectNodePage() {
       return
     }
 
+    if(!isPositiveInteger(hoursSelected)){
+      toast('Please select a valid number of hours (positive integer)');
+      return
+    }
+
     setDeploymentStage(DEPLOYMENT_STAGES.PAYMENT)
+  }
+
+  function isPositiveInteger(input) {
+    const positiveIntegerPattern = /^[1-9]\d*$/;
+    return positiveIntegerPattern.test(input);
   }
 
   const cancelTransaction = () => {
@@ -158,18 +169,28 @@ function SelectNodePage() {
               />
             ))}
           </div>
+          <div className='text-xl self-start'>Select Amount of Hours and Pay</div>
+          <div className='flex gap-4 w-full'>
+          <input
+              type='text'
+              className="flex-grow bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded"
+              placeholder='Purchase compute hours...'
+              onChange={e => setHoursSelected(e.target.value)}
+          />
           <Button onClick={startTransaction} variation="primary">
             <div className="flex items-center gap-2">
               <div>Select Payment Method</div>
               <TiArrowRight />
             </div>
           </Button>
+          </div>
         </div>
       </div>
       {deploymentStage === DEPLOYMENT_STAGES.PAYMENT ? (
         <PaymentModal
           onCancel={cancelTransaction}
           onConfirm={confirmPaymentMethod}
+          hoursSelected={Number(hoursSelected)}
           //get rid of that
           nodeIds={selectedNodes}
         />
@@ -187,13 +208,13 @@ function SelectNodePage() {
       {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && service.id === SERVICES.NEURO_ZK.id
         ? <NeuroZkUpload
             onCancel={cancelTransaction}
-            nodeIds={selectedNodes}
+            nodes={selectedNodes}
           />
           :
         <></>
       }
       {serviceStatus.deployTask === DEPLOY_STATUS.PENDING ? (
-        <LoadingModal text={'Deploying your container securely!'} />
+        <LoadingModal text={'Deploying and executing your ZK Task!'} />
       ) : (
         <></>
       )}

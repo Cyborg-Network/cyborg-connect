@@ -42,7 +42,7 @@ export default function ComputeStatus({ perspective }) {
     data: data1,
   }) //"CPU || "RAM" || "DISK"
   const [agentSpecs, setAgentSpecs] = useState(null);
-  const [usageData, setUsageData] = useState({CPU: [], RAM: [], DISK: [], timestamp: []});
+  const [usageData, setUsageData] = useState({CPU: [], RAM: [], DISK: [], timestamp: [], zkStage: 0});
   const [logs, setLogs] = useState("");
 
   //TODO store in a real location
@@ -66,7 +66,8 @@ export default function ComputeStatus({ perspective }) {
             CPU: [...prev.CPU, usage.cpu_usage], 
             RAM: [...prev.RAM, usage.mem_usage], // in bytes
             DISK: [...prev.DISK, usage.disk_usage], // in bytes
-            timestamp: [...prev.timestamp, now]
+            timestamp: [...prev.timestamp, now],
+            zkStage: usage.zk_stage
           }))
           setLogs(prev => [...prev, ...usage.recent_logs])
           break;

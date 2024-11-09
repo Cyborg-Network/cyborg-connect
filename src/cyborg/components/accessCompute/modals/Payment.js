@@ -8,7 +8,6 @@ import fiat from '../../../../../public/assets/icons/fiat-currencty.svg'
 import Button from '../../general/buttons/Button'
 import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
-import { SERVICES, DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
 import {
   handleDispatchError,
   handleStatusEvents,
@@ -16,6 +15,7 @@ import {
 import { getAccount } from '../../../util/getAccount'
 import { useSubstrateState } from '../../../../substrate-lib'
 import robo from '../../../../../public/assets/icons/robo.png'
+import LoadingModal from '../../general/modals/Loading'
 //import { useNavigate } from 'react-router-dom'
 //import { ROUTES } from '../../../../index'
 //import useService from '../../../hooks/useService'
@@ -26,13 +26,12 @@ const PAYMENT_OPTIONS = [
   { name: '', icon: fiat, isAvailable: false, testnet: false },
 ]
 
+const HOURLY_RATE = 10;
 
-
-function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
+function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
   // from updoad docker modal
    //const navigate = useNavigate()
 
-  const { selectService, setTaskStatus, setTaskMetadata, addUserTask } = useCyborg()
   const { api, currentAccount } = useSubstrateState()
   //const service = useService()
 
@@ -55,6 +54,7 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
 
   const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const startTransaction = () => {
     if (!termsAreAccepted) {
@@ -78,23 +78,19 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
 
     const fromAcct = await getAccount(currentAccount)
     if (fromAcct) {
-      selectService(SERVICES.CYBER_DOCK)
-              ///*url*/'hello-world' , nodeId.owner, nodeIds[0].
-      const containerTask = api.tx.taskManagement.taskScheduler(
-        'bafybeic5sgq6obgfg6xine6cf4qpv7xrvnzst5ufyxnzbnzvcafuif56j4/ipfs_test',
-        //'5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
-        //0
+      const paymentTask = api.tx.payment.purchaseComputeHours(
+        hoursSelected
       )
-      await containerTask
+      
+      await paymentTask
         .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
+          setLoading(true);
           //setTaskStatus(DEPLOY_STATUS.PENDING)
           // status would still be set, but in the case of error we can shortcut
           // to just check it (so an error would indicate InBlock or Finalized)
-          onConfirm()
           if (dispatchError) {
             handleDispatchError(api, dispatchError)
-            setTaskStatus(DEPLOY_STATUS.FAILED)
-            setService(null)
+            toast("Payment failed...")
           }
 
           if (status.isInBlock || status.isFinalized) {
@@ -103,22 +99,21 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
               events
             )
 
+            setLoading(false)
+            onConfirm()
+
             if (hasErrored) {
-              setTaskStatus(DEPLOY_STATUS.FAILED)
-              setService(null)
+              toast("Payment failed...")
             } else if (successfulEvents) {
               //setTaskStatus(DEPLOY_STATUS.READY)
-              const taskEvent = successfulEvents[0].toJSON().event.data
-              console.log('Extrinsic Success: ', taskEvent)
+              const paymentEvent = successfulEvents[0].toJSON().event.data
+              console.log('Extrinsic Success: ', paymentEvent)
 
-              const [taskExecutor, , taskId] = taskEvent
-              const [workerAddress, workerId] = taskExecutor
-              setTaskMetadata(workerAddress, workerId.toString(), taskId)
-              addUserTask(taskId)
 
               //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
               if (status.isInBlock && !onIsInBlockWasCalled) {
                 setOnIsInBlockWasCalled(true)
+
                 //toast.success(
                 //  `Task executing in node ${nodeIds[0].owner} / ${nodeIds[0].id}`
                 //)
@@ -130,7 +125,7 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
         .catch(error => {
           console.error('Other Errors', error)
           toast.error(error.toString())
-          setTaskStatus(DEPLOY_STATUS.FAILED)
+          
           setService(null)
         })
     }
@@ -138,6 +133,11 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
 
 
   return (
+    <>
+    {
+    loading ?
+    <LoadingModal text={"Processing your payment, please wait..."} />
+    :
     <Modal
       onOutsideClick={onCancel}
       additionalClasses={
@@ -190,13 +190,13 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
         <Separator colorClass={'bg-cb-gray-400'} />
         <div className="text-xl font-bold">Fixed Pricing</div>
         <div className="flex justify-between">
-          <div>Subtotal:</div>
-          <div className="text-right">$835.00 USD / month</div>
+          <div>Hourly Rate:</div>
+          <div className="text-right">{HOURLY_RATE} ENTT / hour</div>
         </div>
         <Separator colorClass={'bg-cb-gray-400'} />
         <div className="flex justify-between text-xl font-bold">
           <div>Total:</div>
-          <div>$825.00 USD</div>
+          <div>{HOURLY_RATE * hoursSelected} ENTT</div>
         </div>
         <div className="flex gap-2 items-center">
           <input
@@ -220,13 +220,15 @@ function PaymentModal({ onCancel, onConfirm, nodeIds, setService}) {
             onClick={startTransaction}
           >
             <div className="flex gap-2 justify-center">
-              <div>Proceed to Upload</div>
+              <div>Confirm Payment and Proceed to Upload</div>
               <TiArrowRight />
             </div>
           </Button>
         </div>
       </div>
     </Modal>
+    }
+    </>
   )
 }
 
