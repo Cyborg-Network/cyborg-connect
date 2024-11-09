@@ -18,8 +18,9 @@ import { decryptMessage } from '../../../util/non-bc-crypto/decryptMessage'
 import { generateX25519KeyPair } from '../../../util/non-bc-crypto/generateX25519KeyPair'
 import { constructAgentApiRequest, constructAgentAuthRequest } from '../../../api/agent'
 import SigntoUnlockModal from '../modals/SignToUnlock'
+import { Stepper, Step } from 'react-form-stepper';
 
-const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io';
+const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io/ws/';
 
 export default function ComputeStatus({ perspective }) {
   const { workersWithLastTasks } = useCyborg()
@@ -304,6 +305,30 @@ export default function ComputeStatus({ perspective }) {
             status="active"
             lastCheck="96, 21:45:39"
           />
+          <div className='text-white w-full bg-cb-gray-600 flex rounded-lg gap-4 items-center'>
+            <div className='pl-24 text-white text-lg w-fit'>ZK Progress</div> 
+            <div className='flex-grow'>
+              <Stepper activeStep={usageData.zkStage} 
+                  connectorStateColors={true}
+                  connectorStyleConfig={{
+                    activeColor: "#15e84c",
+                    completedColor: "#32b054",
+                    disabledColor: "#343735",
+                  }}
+                  styleConfig={{
+                    activeBgColor: "#15e84c",
+                    completedBgColor: "#32b054",
+                    inactiveBgColor: "#343735",
+                    activeTextColor: "#ffffff"
+                  }}
+              >
+                <Step label="Setup Complete" />
+                <Step label="Proof Generated" />
+                <Step label="Proof Submitted" />
+                <Step label="Proof Verified" />
+              </Stepper>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
             {perspective === 'provider' ? (
               <div className="col-span-1">

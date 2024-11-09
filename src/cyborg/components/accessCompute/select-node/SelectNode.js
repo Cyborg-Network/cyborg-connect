@@ -169,12 +169,12 @@ function SelectNodePage() {
               />
             ))}
           </div>
-          <div className='text-xl self-start'>Select Amount of Hours and Pay</div>
+          <div className='text-2xl self-start'>Purchase Compute Hours</div>
           <div className='flex gap-4 w-full'>
           <input
               type='text'
               className="flex-grow bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded"
-              placeholder='Purchase compute hours...'
+              placeholder='Select amount of hours'
               onChange={e => setHoursSelected(e.target.value)}
           />
           <Button onClick={startTransaction} variation="primary">

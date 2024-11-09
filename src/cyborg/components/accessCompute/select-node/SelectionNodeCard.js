@@ -30,7 +30,7 @@ const SelectionNodeCard = ({ node, onClick, isSelected }) => {
             </div>
             <div className="flex gap-2">
               <div className="text-xl font-bold text-white">
-                {`${'40'}`}
+                {`${'10'}`}
                 <span className="text-gray-400 text-base">ENTT</span>
               </div>
               <div className="bg-white rounded-lg px-1 py-0.5 text-cb-gray-700 text-xs h-fit w-fit self-center">
