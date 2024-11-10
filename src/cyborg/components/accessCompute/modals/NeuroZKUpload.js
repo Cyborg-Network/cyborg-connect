@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DEPLOY_STATUS, useCyborg } from '../../../CyborgContext'
 import { useSubstrateState } from '../../../../substrate-lib'
 import toast from 'react-hot-toast'
@@ -16,6 +16,8 @@ import useService from '../../../hooks/useService'
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import axios from 'axios'
 import LoadingModal from '../../general/modals/Loading'
+import { ReactComponent as ZkPublicInputs } from '../../../../../public/assets/icons/zk_public_inputs.svg'
+import { ReactComponent as ZkCircuit } from '../../../../../public/assets/icons/zk_circuit.svg'
 
 function NeuroZkUpload({ setService, onCancel, nodes }) {
   const navigate = useNavigate()
@@ -24,8 +26,8 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
   const { api, currentAccount } = useSubstrateState()
   const service = useService()
   const [zkFiles, setZkFiles] = useState({
-    file1: null,
-    file2: null,
+    zk_public_input: null,
+    zk_circuit: null,
   })
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,8 +43,8 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
 
     const formData = new FormData();
 
-    formData.append("zk_public_input.json", zkFiles.file1);
-    formData.append("zk_circuit.circom", zkFiles.file2);
+    formData.append("zk_public_input.json", zkFiles.zk_public_input);
+    formData.append("zk_circuit.circom", zkFiles.zk_circuit);
 
     try {
       const response = await axios.post('https://www.server.cyborgnetwork.io:8081/upload', formData, {
@@ -139,8 +141,8 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
 
 
   const handleTaskExecution = async () => {
-    if(!zkFiles.file1 || !zkFiles.file2){
-      toast("Please provide all three files for zk proof generation!")
+    if(!zkFiles.zk_public_input || !zkFiles.zk_circuit){
+      toast("Please provide both files for zk proof generation!")
       return
     }
 
@@ -156,30 +158,46 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
+    console.log(e.target)
     setZkFiles((prevState) => ({
       ...prevState,
       [name]: files[0],
     }));
   }
 
-  const FileUploadElement = ({name, infoText}) => {
+  useEffect(() => {
+    console.log(zkFiles)
+  }, [zkFiles])
+
+  const FileUploadElement = ({name, infoText, icon, label}) => {
 
     const [infoTextDisplayed, setInfoTextDisplayed] = useState(false);
 
     const InfoTextContainer = ({infoText}) => {
       return(
-        <div className='absolute min-w-80 top-full left-full rounded-lg border border-white bg-black bg-opacity-90 p-4 z-50'>
+        <div className='absolute min-w-80 top-full left-full rounded-lg border border-cb-gray-400 bg-black bg-opacity-90 p-4 z-50 text-white'>
           {infoText}
         </div>
       )
     }
 
     return (
-      <div className='relative aspect-square grid justify-center items-center border border-white rounded-lg'>
+      <div className='relative aspect-square grid justify-center items-center border border-gray-500 rounded-lg'>
+        <label
+          htmlFor={`fileInput-${name}`}
+          className={`flex flex-col items-center justify-center w-32 h-32 rounded-lg cursor-pointer transition-colors
+          ${zkFiles[name] ? 'border-green-500 bg-cb-gray-500' : 'border-gray-500 bg-cb-gray-700'}
+          hover:border-blue-500`}
+        >
+          <div className='bg-cb-gray-400 rounded-full p-3 aspect-square grid justify-center items-center'>
+            {icon}
+          </div>
+          <div>{label}</div> 
+        </label>
         <div 
           onMouseEnter={() => setInfoTextDisplayed(true)}
           onMouseLeave={() => setInfoTextDisplayed(false)}
-          className='absolute top-2 right-2 text-white'>
+          className='absolute top-2 right-2 text-gray-500'>
           <IoMdInformationCircleOutline size={18}/>
           {infoTextDisplayed
             ? <InfoTextContainer infoText={infoText}/>
@@ -187,10 +205,11 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
           }
         </div>
         <input
+          id={`fileInput-${name}`}
           type="file"
           name={name}
           onChange={(e) => handleFileChange(e)}
-          className='w-full text-white file:bg-indigo-50 file:border-0 file:py-2 file:px-4 file:rounded-full file:text-sm file:text-indigo-600 file:cursor-pointer'
+          className='hidden'
         />
       </div>
     )
@@ -217,13 +236,13 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
             name="url"
             placeholder="IPFS CID..."
             onChange={e => handleUrlChange(e)}
-            className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+            className="flex-grow bg-cb-gray-700 text-white border border-gray-500 focus:border-cb-green focus:bg-cb-gray-500 focus:outline-none py-2 px-3 w-full rounded"
           />
         </div>
-        <h5 className='flex'>Upload ZK Files</h5>
-        <div className='flex gap-4 justify-evenly mb-4'>
-          <FileUploadElement name={'file1'} infoText={'Here we display some info about the ZK File that we are uploading.'} />
-          <FileUploadElement name={'file2'} infoText={'info text'} />
+        <h5 className='flex mb-6'>Upload ZK Files</h5>
+        <div className='flex gap-4 justify-evenly mb-6'>
+          <FileUploadElement label="Public Input" icon={<ZkPublicInputs />} name='zk_public_input' infoText='A public input file, required for the generation of a zero knowledge proof.' />
+          <FileUploadElement label="Circuit" icon={<ZkCircuit />} name='zk_circuit' infoText='A circuit file, required for the generation of a zero knowledge proof.' />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className=" flex items-center justify-between">

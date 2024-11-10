@@ -70,7 +70,9 @@ export default function ComputeStatus({ perspective }) {
             timestamp: [...prev.timestamp, now],
             zkStage: usage.zk_stage
           }))
-          setLogs(prev => [...prev, ...usage.recent_logs])
+          if(usage.recent_logs && !usage.recent_logs === ""){
+            setLogs(usage.recent_logs);
+          }
           break;
         }
         case "Init": {
