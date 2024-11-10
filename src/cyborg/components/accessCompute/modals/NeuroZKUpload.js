@@ -147,10 +147,11 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
     setIsLoading(true);
     setTaskStatus(DEPLOY_STATUS.PENDING)
     const response = await uploadFiles();
-    console.log(response)
+    const data = response.data
+    console.log(data)
     console.log(zkFiles);
 
-    handleSubmit(response);
+    handleSubmit(data);
   }
 
   const handleFileChange = (e) => {
