@@ -10,7 +10,7 @@ import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
 import {
   handleDispatchError,
-  handleStatusEvents,
+  handlePaymentStatusEvents,
 } from '../../../util/serviceDeployment'
 import { getAccount } from '../../../util/getAccount'
 import { useSubstrateState } from '../../../../substrate-lib'
@@ -91,19 +91,20 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
           if (dispatchError) {
             handleDispatchError(api, dispatchError)
             toast("Payment failed...")
+            setLoading(false)
           }
 
           if (status.isInBlock || status.isFinalized) {
-            const { hasErrored, successfulEvents } = handleStatusEvents(
+            const { hasErrored, successfulEvents } = handlePaymentStatusEvents(
               api,
               events
             )
 
-            setLoading(false)
-            onConfirm()
+
 
             if (hasErrored) {
               toast("Payment failed...")
+              setLoading(false)
             } else if (successfulEvents) {
               //setTaskStatus(DEPLOY_STATUS.READY)
               const paymentEvent = successfulEvents[0].toJSON().event.data
@@ -113,7 +114,8 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
               //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
               if (status.isInBlock && !onIsInBlockWasCalled) {
                 setOnIsInBlockWasCalled(true)
-
+                setLoading(false)
+                onConfirm()
                 //toast.success(
                 //  `Task executing in node ${nodeIds[0].owner} / ${nodeIds[0].id}`
                 //)
@@ -125,8 +127,8 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
         .catch(error => {
           console.error('Other Errors', error)
           toast.error(error.toString())
-          
-          setService(null)
+          setLoading(false) 
+          //setService(null)
         })
     }
   }
