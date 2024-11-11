@@ -213,7 +213,7 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
           </div>
         </div>
         <div className="flex flex-col-reverse justify-center gap-4">
-          <Button variation="secondary" additionalClasses="w-full">
+          <Button onClick={onCancel} variation="secondary" additionalClasses="w-full">
             Cancel
           </Button>
           <Button

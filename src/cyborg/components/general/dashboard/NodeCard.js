@@ -72,7 +72,7 @@ const NodeCard = ({ item, lastTask }) => {
           >
             <SPAN>Status:</SPAN>
             <span className="flex gap-2">
-              {item.lastTask ? `taskId: ${item.lastTask}` : 'idle'}
+              {item.lastTask ? `taskId: ${item.lastTask}` : 'Active'}
               <p
                 className={`font-bold ${
                   lastTask === item.lastTask
@@ -80,7 +80,7 @@ const NodeCard = ({ item, lastTask }) => {
                     : 'hidden'
                 }`}
               >
-                Task Executed
+                Task Executing...
               </p>
             </span>
           </LI>
