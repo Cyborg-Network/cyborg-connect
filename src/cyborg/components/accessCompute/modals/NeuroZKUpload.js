@@ -73,7 +73,7 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
     const handleSubmit = async (zkCid) => {
     //event.preventDefault()
 
-    toast(`Scheduling task for node ${nodes[0].owner} / ${nodes[0].id}`)
+    toast(`Scheduling task...`)
 
     console.log(url, zkCid, nodes[0].owner, nodes[0].id, 1);
 
