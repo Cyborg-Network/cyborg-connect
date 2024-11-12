@@ -17,7 +17,6 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 import axios from 'axios'
 import LoadingModal from '../../general/modals/Loading'
 import { ReactComponent as ZkPublicInputs } from '../../../../../public/assets/icons/zk_public_inputs.svg'
-import { ReactComponent as ZkCircuit } from '../../../../../public/assets/icons/zk_circuit.svg'
 
 function NeuroZkUpload({ setService, onCancel, nodes }) {
   const navigate = useNavigate()
@@ -141,7 +140,7 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
 
 
   const handleTaskExecution = async () => {
-    if(!zkFiles.zk_public_input || !zkFiles.zk_circuit){
+    if(!zkFiles.zk_public_input){
       toast("Please provide both files for zk proof generation!")
       return
     }
@@ -242,7 +241,6 @@ function NeuroZkUpload({ setService, onCancel, nodes }) {
         <h5 className='flex mb-6'>Upload ZK Files</h5>
         <div className='flex gap-4 justify-evenly mb-6'>
           <FileUploadElement label="Public Input" icon={<ZkPublicInputs />} name='zk_public_input' infoText='A public input file, required for the generation of a zero knowledge proof.' />
-          <FileUploadElement label="Circuit" icon={<ZkCircuit />} name='zk_circuit' infoText='A circuit file, required for the generation of a zero knowledge proof.' />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className=" flex items-center justify-between">
