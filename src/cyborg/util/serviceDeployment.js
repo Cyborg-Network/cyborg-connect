@@ -57,6 +57,47 @@ export const handleStatusEvents = (api, events) => {
   return { hasErrored, successfulEvents }
 }
 
+export const handlePaymentStatusEvents = (api, events) => {
+  let hasErrored = false
+  let successfulEvents = null
+
+  events
+    // find/filter for failed events
+    .filter(({ event }) => api.events.system.ExtrinsicFailed.is(event))
+    // we know that data for system.ExtrinsicFailed is
+    // (DispatchError, DispatchInfo)
+    .forEach(
+      ({
+        event: {
+          data: [error, info],
+        },
+      }) => {
+        error = true
+        if (error.isModule) {
+          // for module errors, we have the section indexed, lookup
+          const decoded = api.registry.findMetaError(error.asModule)
+          const { docs, method, section } = decoded
+          toast.error(`${section}.${method}: ${docs.join(' ')}`)
+          console.error(`${section}.${method}: ${docs.join(' ')}`)
+        } else {
+          // Other, CannotLookup, BadOrigin, no extra info
+          toast.error(error.toString())
+          console.error(error.toString())
+        }
+      }
+    )
+
+  const successfulEventArray = events.filter(({ event }) =>
+    api.events.payment.HoursPurchased.is(event)
+  )
+
+  if (successfulEventArray.length > 0) {
+    successfulEvents = successfulEventArray
+  }
+
+  return { hasErrored, successfulEvents }
+}
+
 export const handleTaskSuccess = (successEvents, workerList) => {
   toast.success(`Task Scheduled`)
   const taskEvent = successEvents[0].toJSON().event.data

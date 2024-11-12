@@ -1,8 +1,8 @@
 import React from 'react'
 import dockdeploy from '../../../../../public/assets/icons/dockdeploy.gif'
-import Modal from '../../general/Modal'
+import Modal from './Modal'
 
-function LoadDeployCyberDock() {
+function LoadingModal({text}) {
   return (
     //Modal doesn't have an outside click function, user has to wait until container is deployed
     <Modal alignment={undefined}>
@@ -10,10 +10,10 @@ function LoadDeployCyberDock() {
         <a className="relative flex">
           <img height={75} width={75} src={dockdeploy} />
         </a>
-        <p>Deploying your container securely!</p>
+        <p>{text}</p>
       </div>
     </Modal>
   )
 }
 
-export default LoadDeployCyberDock
+export default LoadingModal

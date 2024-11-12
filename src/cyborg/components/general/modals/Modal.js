@@ -2,7 +2,7 @@ export default function Modal({ children, onOutsideClick, additionalClasses }) {
   //alignment should be either 'items-center' or undefined, this will be better with ts
   return (
     <div
-      className="fixed bg-gray-400 backdrop-blur-lg bg-opacity-5 h-full w-full left-0 top-0 z-50 grid justify-center items-center"
+      className="fixed bg-gray-400 backdrop-blur-lg bg-opacity-5 h-full w-full left-0 top-0 z-50 grid justify-center items-center overflow-y-auto"
       onClick={onOutsideClick}
     >
       <div

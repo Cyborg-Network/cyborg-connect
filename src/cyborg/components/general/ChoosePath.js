@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Button from './Button'
+import Button from './buttons/Button'
 import { ROUTES } from '../../../index'
 
 function ChoosePath() {
@@ -9,7 +9,6 @@ function ChoosePath() {
   const navigate = useNavigate()
 
   const handleClick = () => {
-    console.log('click')
     if (path === 'provide-compute') {
       navigate(ROUTES.PROVIDE_COMPUTE)
     } else if (path === 'access-compute') {
@@ -18,22 +17,29 @@ function ChoosePath() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h1 className="text-white">Choose Your Path</h1>
-      <div className="flex">
+    <div className="flex flex-col gap-4 items-center justify-center">
+      <div className="text-white text-3xl font-bold mb-2">Choose Your Path</div>
+      <div className="flex gap-4">
         <Button
           onClick={() => {
-            return /*setPath('provide-compute')*/
+            return /* setPath('provide-compute') */
           }}
+          selectable
+          isSelected={path === 'provide-compute' ? true : false}
           variation="inactive"
-          additionalClasses={'relative'}
+          additionalClasses={'relative py-6'}
         >
           <div className="font-bold">Provide Compute</div>
           <div className="text-xs absolute bottom-2 left-1/2 transform -translate-x-1/2">
             Coming Soon
           </div>
         </Button>
-        <Button onClick={() => setPath('access-compute')} variation="secondary">
+        <Button
+          onClick={() => setPath('access-compute')}
+          selectable
+          isSelected={path === 'access-compute' ? true : false}
+          variation="secondary"
+        >
           Access Compute
         </Button>
       </div>

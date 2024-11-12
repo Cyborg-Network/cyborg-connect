@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      boxShadow: {
+        'glass-shadow': '0 4px 30px rgba(0, 0, 0, 0.1);'
+      },
       colors: {
         'cb-green': 'var(--cb-green)',
         'cb-gray-400': 'var(--cb-gray-400)',
@@ -29,7 +32,7 @@ module.exports = {
         shiftSidebarButton: {
           '0%': { left: '5rem' },
           '100%': { left: '70rem' },
-        }
+        },
       },
       spacing: {
         'burger-btn-offset': 'var(--burger-btn-offset)'

@@ -1,6 +1,7 @@
 import Chart from '../Chart'
 
 function RenderChart({ metric, data, color }) {
+
   return (
     <div className="bg-cb-gray-600 rounded-lg w-full">
       <div className="flex justify-between pt-6 px-6">

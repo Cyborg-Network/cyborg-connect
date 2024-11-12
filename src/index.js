@@ -14,16 +14,24 @@ import ChoosePath from './cyborg/components/general/ChoosePath'
 import { AccountContextProvider } from './cyborg/context/AccountContext';
 import ComputeStatus from './cyborg/components/general/compute-status/ComputeStatus';
 import PageNotFound from './cyborg/components/general/PageNotFound';
-import PageWrapper from './cyborg/components/general/layouts/PageWrapper';
+import PageWrapper from './cyborg/components/general/layouts/page-wrapper/PageWrapper';
 import { UiContextProvider } from './cyborg/context/UiContext';
+import MapInteractor from './cyborg/components/general/map/MapInteractor';
+import SelectNodePage from './cyborg/components/accessCompute/select-node/SelectNode';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
   PROVIDE_COMPUTE: "/provide-compute",
   ACCESS_COMPUTE: "/access-compute",
-  DASHBOARD: "/access-compute/dashboard",
-  COMPUTE_STATUS: "/access-compute/dashboard/compute-status",
+  CYBERDOCK_DASHBOARD: "/access-compute/cyberdock/dashboard",
+  NEURO_ZK_DASHBOARD: "/access-compute/neurozk/dashboard",
+  CYBERDOCK_COMPUTE_STATUS: "/access-compute/cyberdock/dashboard/compute-status",
+  NEURO_ZK_COMPUTE_STATUS: "/access-compute/neurozk/dashboard/compute-status",
   DEV_MODE: "/dev-mode",
+  CYBERDOCK_MAP: "/access-compute/cyberdock/map",
+  NEURO_ZK_MAP: "/access-compute/neurozk/map",
+  CYBERDOCK_MODAL_NODES: "/access-compute/cyberdock/modal-nodes",
+  NEURO_ZK_MODAL_NODES: "/access-compute/neurozk/modal-nodes",
 }
 
 const GlobalLayout = () => {
@@ -86,13 +94,37 @@ const router = createBrowserRouter([
                 element: <Dashboard />,
               },
               {
-                path: ROUTES.DASHBOARD,
+                path: ROUTES.CYBERDOCK_DASHBOARD,
                 element: <Dashboard />,
               },
               {
-                path: `${ROUTES.COMPUTE_STATUS}/:domain`,
+                path: `${ROUTES.CYBERDOCK_COMPUTE_STATUS}/:domain`,
                 element: <ComputeStatus />,
               },
+              {
+                path: `${ROUTES.CYBERDOCK_MAP}`,
+                element: <MapInteractor />,
+              },
+              {
+                path: `${ROUTES.CYBERDOCK_MODAL_NODES}`,
+                element: <SelectNodePage />,
+              },
+              {
+                path: ROUTES.NEURO_ZK_DASHBOARD,
+                element: <Dashboard />,
+              },
+              {
+                path: `${ROUTES.NEURO_ZK_COMPUTE_STATUS}/:domain`,
+                element: <ComputeStatus />,
+              },
+              {
+                path: `${ROUTES.NEURO_ZK_MAP}`,
+                element: <MapInteractor />,
+              },
+              {
+                path: `${ROUTES.NEURO_ZK_MODAL_NODES}`,
+                element: <SelectNodePage />,
+              }
             ]
           },
         ]
@@ -118,6 +150,13 @@ ReactDOM.render(
           <Toaster
             position="top-center"
             reverseOrder={false}
+            toastOptions={{
+                style: {
+                  background: 'var(--cb-gray-600)',
+                  color: 'white',
+                  border: '1px solid var(--cb-green)'
+                }
+              }}
           />
           <RouterProvider router={router} />
           </UiContextProvider>

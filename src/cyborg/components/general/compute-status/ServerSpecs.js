@@ -1,22 +1,25 @@
 import { toast } from 'react-hot-toast'
 
-export function ServerSpecs({ spec, metric }) {
+export function ServerSpecs({ specs, metric, uptime }) {
   return (
     <div className="bg-cb-gray-600 rounded-lg w-full h-full">
-      <div className="bg-gradient-to-b from-cb-gray-400 p-6 rounded-lg">
-        <h4 className="font-thin">Server Specifications</h4>
+      <div className="flex items-center justify-between bg-gradient-to-b from-cb-gray-400 p-6 rounded-lg">
+        <div className="font-thin">Server Specifications</div>
+        <div className="rounded-full bg-cb-gray-400 border border-gray-500 py-1 px-3 flex items-center">
+          {`Uptime: ${uptime}%`}
+        </div>
       </div>
 
       <ul className="px-6 py-3 h-auto">
         <li className="flex justify-between">
           <p>OS:</p>
-          <p>{spec ? spec.operatingSystem.Description : null}</p>
+          <p>{specs ? specs.specs.os : null}</p>
         </li>
         <li
           className="flex justify-between gap-4"
           onClick={
-            spec
-              ? () => toast(spec.cpuInformation.ModelName)
+            specs
+              ? () => toast(specs.specs.cpus[0])
               : () => {
                   return
                 }
@@ -24,26 +27,26 @@ export function ServerSpecs({ spec, metric }) {
         >
           <p>CPU:</p>
           <p className="truncate">
-            {spec ? spec.cpuInformation.ModelName : null}
+            {specs ? specs.specs.cpus[0] : null}
           </p>
         </li>
         <li className="flex justify-between">
           <p>Memory:</p>
           <p>
-            {metric && metric.memoryUsage ? metric.memoryUsage.total : null}
+            {specs ? `~${Math.round(specs.specs.memory / (1024 * 1024))} MB` : null}
           </p>
         </li>
         <li className="flex justify-between">
           <p>Storage:</p>
           <p>
-            {metric && metric.diskUsage ? metric.diskUsage[0]['size'] : null}
+            {specs ? `~${Math.round(specs.specs.disk / 1073741824)} GB` : null}
           </p>
         </li>
         <li className="flex justify-between">
           <p>Location:</p>
           <p>
-            {spec
-              ? `${spec.localeInformation.city}, ${spec.localeInformation.country}`
+            {specs
+              ? `${specs.location.coordinates[0]}, ${specs.location.coordinates[1]}`
               : null}
           </p>
         </li>

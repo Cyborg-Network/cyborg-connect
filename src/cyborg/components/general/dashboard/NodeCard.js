@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
 import cyberdock from '../../../../../public/assets/icons/cyberdockDash.png'
 import { Separator } from '../Separator'
+import useService from '../../../hooks/useService'
 
 const NodeCard = ({ item, lastTask }) => {
   const navigate = useNavigate()
+  const service = useService()
 
   //li with exactly these specs needed a lot here, sets parent up for responsiveness
   const LI = ({ children, additionalClasses }) => (
@@ -14,23 +16,28 @@ const NodeCard = ({ item, lastTask }) => {
     </li>
   )
 
+  const navigateToComputeScreen = () => {
+    if(service.id === "CYBER_DOCK"){
+      navigate(`${ROUTES.CYBERDOCK_COMPUTE_STATUS}/${item.api.domain}`, {
+          state: item,
+      })
+    }
+    if(service.id === "NEURO_ZK"){
+      navigate(`${ROUTES.NEURO_ZK_COMPUTE_STATUS}/${item.api.domain}`, {
+          state: item,
+      })
+    }
+  }
+
   //span with exactly these specs needed a lot here, sets parent up for responsiveness
   const SPAN = ({ children }) => <span className="lg:hidden">{children}</span>
 
   return (
     <div
-      onClick={() =>
-        navigate(`${ROUTES.COMPUTE_STATUS}/${item.api.domain}`, {
-          state: item,
-        })
-      }
-      className={`hover:text-cb-green hover:font-bold hover:cursor-pointer rounded-lg lg:rounded-none ${
-        lastTask === item.lastTask
-          ? 'p-1 border border-transparent bg-gradient-to-r from-cb-green via-yellow-500 to-cb-green bg-clip-border animated-border'
-          : ''
-      }`}
+      onClick={() => navigateToComputeScreen()}
+      className={`hover:text-cb-green hover:font-bold hover:cursor-pointer rounded-lg lg:rounded-none`}
     >
-      <div className="lg:w-full items-center py-4 px-5 bg-cb-gray-400 rounded-lg lg:rounded-none">
+      <div className="lg:w-full items-center py-4 px-5 bg-cb-gray-400 rounded-lg">
         <ul className="w-full flex flex-col gap-2 items-center lg:grid lg:gap-0 lg:grid-cols-4 lg:grid-rows-1">
           <li className="flex items-center gap-3]">
             <a>
@@ -65,7 +72,7 @@ const NodeCard = ({ item, lastTask }) => {
           >
             <SPAN>Status:</SPAN>
             <span className="flex gap-2">
-              {item.lastTask ? `taskId: ${item.lastTask}` : 'idle'}
+              {item.lastTask ? `taskId: ${item.lastTask}` : 'Active'}
               <p
                 className={`font-bold ${
                   lastTask === item.lastTask
@@ -73,7 +80,7 @@ const NodeCard = ({ item, lastTask }) => {
                     : 'hidden'
                 }`}
               >
-                Task Executed
+                Task Executing...
               </p>
             </span>
           </LI>

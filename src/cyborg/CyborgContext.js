@@ -6,9 +6,16 @@ import React, {
   useMemo,
 } from 'react'
 import { useSubstrateState } from '../substrate-lib'
+import { i32CoordinateToFloatCoordinate } from './util/coordinateConversion'
+import comingsoon from '../../public/assets/icons/comingsoon.svg'
+import cyberdock from '../../public/assets/icons/cyberdock.svg'
+import neurozk from '../../public/assets/icons/neuro-zk.svg'
+import { getAccount } from './util/getAccount'
 
 export const SERVICES = {
-  CYBER_DOCK: 'CYBER_DOCK',
+  NO_SERVICE: {id: "0", name: "No service selected", icon: comingsoon},
+  CYBER_DOCK: {id: "CYBER_DOCK", name: "Cyber Dock", icon: cyberdock},
+  NEURO_ZK: {id: "NEURO_ZK", name: "Neuro ZK", icon: neurozk}
 }
 
 export const DEPLOY_STATUS = {
@@ -30,6 +37,7 @@ const initialState = {
   workerList: null,
   taskList: null,
   taskMetadata: null,
+  userTasks: null,
 }
 
 ///
@@ -40,6 +48,7 @@ const ACTIONS = {
   LIST_WORKERS: 'LIST_WORKERS',
   LIST_TASKS: 'LIST_TASKS',
   SET_TASK_METADATA: 'SET_TASK_METADATA',
+  SET_USER_TASKS: 'SET_USER_TASKS',
 }
 
 ///
@@ -59,6 +68,8 @@ const reducer = (state, action) => {
       return { ...state, taskList: action.payload }
     case ACTIONS.SET_TASK_METADATA:
       return { ...state, taskMetadata: action.payload }
+    case ACTIONS.SET_USER_TASKS:
+      return {...state, userTasks: action.payload }
     default:
       throw new Error(`Unknown type: ${action.type}`)
   }
@@ -68,11 +79,37 @@ const CyborgContext = React.createContext()
 
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const { api, apiState } = useSubstrateState()
+  const { api, apiState, currentAccount } = useSubstrateState()
   const [tasks, setTasks] = useState(undefined)
   const [workers, setWorkers] = useState(undefined)
   const [reloadWorkers, setReloadWorkers] = useState(false)
   const { taskMetadata } = state
+
+  // Get tasks owned by user
+  useEffect(() => {
+    const getUserOwnedTasks = async () => {
+      try{
+        const allTasks = await api.query.taskManagement.taskOwners.entries()
+        const userAccount = await getAccount(currentAccount);
+        const userAddress = userAccount[0];
+        const userOwnedTasks = allTasks
+          .map(([key, value]) => {
+            const currentTaskOwner = value.toHuman();
+
+            if(currentTaskOwner === userAddress){
+              return parseInt(key.toHuman()[0]);
+            }
+        })
+        setUserTasks(userOwnedTasks)
+        console.log(userOwnedTasks)
+      } catch(error){
+        console.log("Something went wrong when getting users tasks", error)
+      }
+    }
+    if (currentAccount && api && apiState === 'READY') {
+      getUserOwnedTasks()
+    }
+  }, [api, apiState, currentAccount, reloadWorkers])
 
   // Get tasks and workers from the chain
   useEffect(() => {
@@ -117,6 +154,17 @@ const CyborgContextProvider = props => {
     if (workers && tasks) {
       // console.log("task with workers: ", workers,tasks)
       return workers.map(worker => {
+        if (
+          isNaN(worker.location.latitue) &&
+          isNaN(worker.location.longitude)
+        ) {
+          worker.location.latitude = i32CoordinateToFloatCoordinate(
+            worker.location.latitude
+          )
+          worker.location.longitude = i32CoordinateToFloatCoordinate(
+            worker.location.longitude
+          )
+        }
         // tasks are iterated through reverse order to find the most recent task for a worker
         for (let i = tasks.length - 1; i >= 0; i--) {
           const { taskExecutor, workerId } = tasks[i]
@@ -239,11 +287,26 @@ const CyborgContextProvider = props => {
     dispatch({ type: ACTIONS.LIST_WORKERS, payload: list })
   }
 
+  const setUserTasks = userTasks => {
+    dispatch({ type: ACTIONS.SET_USER_TASKS, payload: userTasks })
+  }
+
+  const addUserTask = taskId => {
+    let currentUserTasks;
+    if(state.userTasks){
+      currentUserTasks = [...state.userTasks, taskId]
+    }else{
+      currentUserTasks = [taskId];
+    }
+    dispatch({ type: ACTIONS.SET_USER_TASKS, payload: currentUserTasks})
+  }
+
   return (
     <CyborgContext.Provider
       value={{
         state,
         selectService,
+        addUserTask,
         setTaskStatus,
         setTaskMetadata,
         setDeployComputeStatus,

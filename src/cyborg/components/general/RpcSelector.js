@@ -6,8 +6,7 @@ import {
 import { SlArrowUp } from 'react-icons/sl'
 
 function RpcSelector() {
-  const { setCyborgProvider, setLocalProvider } =
-    useSubstrate()
+  const { setCyborgProvider, setLocalProvider } = useSubstrate()
   const { chain } = useSubstrateState()
 
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false)

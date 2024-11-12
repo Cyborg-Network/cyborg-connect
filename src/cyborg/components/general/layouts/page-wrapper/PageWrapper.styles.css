@@ -1,0 +1,212 @@
+.background-1 {
+  background-image: radial-gradient(#064137 1%, var(--cb-gray-700));
+  animation: bg1 120s linear reverse infinite;
+}
+
+.background-2 {
+  background-image: radial-gradient(#064137 1%, var(--cb-gray-700));
+  animation: bg2 170s linear infinite;
+}
+
+.background-3 {
+  background-image: radial-gradient(#0c5e4c 1%, var(--cb-gray-700));
+  animation: bg3 180s linear reverse infinite;
+}
+
+.background-4 {
+  background-image: radial-gradient(#085142 1%, var(--cb-gray-700));
+  animation: bg4 150s linear infinite;
+}
+
+.background-5 {
+  background-image: radial-gradient(#085142 1%, var(--cb-gray-700));
+  animation: bg5 190s linear reverse infinite;
+}
+
+.background-6 {
+  background-image: radial-gradient(#0c5e4c 1%, var(--cb-gray-700));
+  animation: bg6 100s linear infinite;
+}
+
+@keyframes bg1 {
+  0% {
+    top: 30%;
+    left: -50%;
+    scale: 0.05;
+  }
+  20% {
+    top: 40%;
+    left: -40%;
+    scale: 0.3;
+  }
+  40% {
+    top: 10%;
+    left: -20%;
+    scale: 0.8;
+  }
+  60% {
+    top: 60%;
+    left: 20%;
+    scale: 0.2;
+  }
+  80% {
+    top: 80%;
+    left: 70%;
+    scale: 0.01;
+  }
+  100% {
+    top: 30%;
+    left: -50%;
+    scale: 0.05;
+  }
+}
+
+@keyframes bg2 {
+  0% {
+    top: -30%;
+    left: 120%;
+    scale: 0.8;
+  }
+  25% {
+    top: -10%;
+    left: 100%;
+    scale: 0.5;
+  }
+  50% {
+    top: 30%;
+    left: 80%;
+    scale: 0.1;
+  }
+  75% {
+    top: 50%;
+    left: 60%;
+    scale: 0.3;
+  }
+  100% {
+    top: -30%;
+    left: 120%;
+    scale: 0.8;
+  }
+}
+
+@keyframes bg3 {
+  0% {
+    top: 0%;
+    left: 50%;
+    scale: 0;
+  }
+  20% {
+    top: -20%;
+    left: 60%;
+    scale: 0.5;
+  }
+  40% {
+    top: 10%;
+    left: 80%;
+    scale: 0.6;
+  }
+  60% {
+    top: -10%;
+    left: 100%;
+    scale: 0.3;
+  }
+  80% {
+    top: -30%;
+    left: 120%;
+    scale: 0.1;
+  }
+  100% {
+    top: 0%;
+    left: 50%;
+    scale: 0;
+  }
+}
+
+@keyframes bg4 {
+  0% {
+    top: 35%;
+    left: -30%;
+    scale: 1.1;
+  }
+  25% {
+    top: 25%;
+    left: -20%;
+    scale: 0.9;
+  }
+  50% {
+    top: 0%;
+    left: 0%;
+    scale: 0.5;
+  }
+  75% {
+    top: 20%;
+    left: 30%;
+    scale: 0.2;
+  }
+  100% {
+    top: 35%;
+    left: -30%;
+    scale: 1.1;
+  }
+}
+
+@keyframes bg5 {
+  0% {
+    top: 10%;
+    left: 70%;
+    scale: 0.4;
+  }
+  25% {
+    top: 5%;
+    left: 60%;
+    scale: 0.3;
+  }
+  50% {
+    top: -5%;
+    left: 50%;
+    scale: 0.1;
+  }
+  75% {
+    top: 20%;
+    left: 40%;
+    scale: 0.2;
+  }
+  100% {
+    top: 10%;
+    left: 70%;
+    scale: 0.4;
+  }
+}
+
+@keyframes bg6 {
+  0% {
+    top: -50%;
+    left: 60%;
+    scale: 0.2;
+  }
+  20% {
+    top: -30%;
+    left: 70%;
+    scale: 0.3;
+  }
+  40% {
+    top: -10%;
+    left: 80%;
+    scale: 0.4;
+  }
+  60% {
+    top: 10%;
+    left: 90%;
+    scale: 0.5;
+  }
+  80% {
+    top: -20%;
+    left: 100%;
+    scale: 0.1;
+  }
+  100% {
+    top: -50%;
+    left: 60%;
+    scale: 0.2;
+  }
+}
