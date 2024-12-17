@@ -22,8 +22,8 @@ const NodeCard = ({ item, lastTask }) => {
           state: item,
       })
     }
-    if(service.id === "NEURO_ZK"){
-      navigate(`${ROUTES.NEURO_ZK_COMPUTE_STATUS}/${item.api.domain}`, {
+    if(service.id === "EXECUTABLE"){
+      navigate(`${ROUTES.EXECUTABLE_COMPUTE_STATUS}/${item.api.domain}`, {
           state: item,
       })
     }
@@ -59,7 +59,7 @@ const NodeCard = ({ item, lastTask }) => {
           />
           <LI>
             <SPAN>IP / URL:</SPAN>
-            <span>{`${item.api.domain}`}</span>
+            <span>{/*`${item.api.domain}`*/'16.171.249.42'}</span>
           </LI>
           <Separator
             colorClass={'bg-gray-500'}

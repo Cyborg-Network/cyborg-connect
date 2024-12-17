@@ -16,8 +16,8 @@ const FlexContainer = ({ children }) => {
 }
 
 export function MetaDataHeader({ owner, id, domain, status, lastCheck }) {
-  const isOnline = status === 'active' || status === 'busy' ? true : false
-  const isBusy = status === 'busy' || status !== 'active' ? true : false
+  const isOnline = status === "Active" || status === 'busy' ? true : false
+  const isBusy = status === "Inactive" || status !== 'active' ? true : false
 
   const { sidebarIsActive } = useUi();
   const service = useService();
@@ -63,7 +63,7 @@ export function MetaDataHeader({ owner, id, domain, status, lastCheck }) {
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">
           <div className="text-opacity-50 text-white">
             IP Address:{' '}
-            <span className="text-white text-opacity-100">{domain}</span>
+            <span className="text-white text-opacity-100">{/*{domain}*/'16.171.249.42'}</span>
           </div>
           <div className="bg-cb-gray-600 w-fit text-md rounded-full text-white">
             <div

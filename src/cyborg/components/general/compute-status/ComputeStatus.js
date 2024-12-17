@@ -18,12 +18,17 @@ import { decryptMessage } from '../../../util/non-bc-crypto/decryptMessage'
 import { generateX25519KeyPair } from '../../../util/non-bc-crypto/generateX25519KeyPair'
 import { constructAgentApiRequest, constructAgentAuthRequest } from '../../../api/agent'
 import SigntoUnlockModal from '../modals/SignToUnlock'
-import { Stepper, Step } from 'react-form-stepper';
+//import { Stepper, Step } from 'react-form-stepper';
+import useService from '../../../hooks/useService'
+import { returnCorrectWorkers } from '../../../util/returnCorrectWorkers'
 
-const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io/ws/';
+//const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io/ws/';
+const CYBORG_SERVER_URL = 'ws://127.0.0.1:8081';
+
 
 export default function ComputeStatus({ perspective }) {
-  const { workersWithLastTasks } = useCyborg()
+  const service = useService();
+  const workersWithLastTasks = returnCorrectWorkers(useCyborg().workersWithLastTasks, service);
   const { sidebarIsActive } = useUi()
 
   const { domain } = useParams()
@@ -63,6 +68,7 @@ export default function ComputeStatus({ perspective }) {
           const usageJson = await decryptMessage(messageData.encrypted_data_hex, messageData.nonce_hex, diffieHellmanSecret) 
           const usage = JSON.parse(usageJson);
           const now = new Date().toLocaleString();
+          console.log(usage);
           setUsageData(prev => ({
             CPU: [...prev.CPU, usage.cpu_usage], 
             RAM: [...prev.RAM, usage.mem_usage], // in bytes
@@ -70,9 +76,7 @@ export default function ComputeStatus({ perspective }) {
             timestamp: [...prev.timestamp, now],
             zkStage: usage.zk_stage
           }))
-          if(usage.recent_logs && !usage.recent_logs === ""){
-            setLogs(usage.recent_logs);
-          }
+          setLogs(usage.recent_logs.split("\n"));
           break;
         }
         case "Init": {
@@ -304,13 +308,14 @@ export default function ComputeStatus({ perspective }) {
             owner={metadata.owner}
             id={metadata.id}
             domain={metadata.api.domain}
-            status="active"
-            lastCheck="96, 21:45:39"
+            status={metadata.status}
+            lastCheck={metadata.statusLastUpdated}
           />
           <div className='text-white w-full bg-cb-gray-600 flex rounded-lg gap-4 items-center'>
+            {/*
             <div className='pl-24 text-white text-lg w-fit'>ZK Progress</div> 
             <div className='flex-grow'>
-              <Stepper activeStep={usageData.zkStage} 
+              <Stepper activeStep={usageData.zkStage-1} 
                   connectorStateColors={true}
                   connectorStyleConfig={{
                     activeColor: "#15e84c",
@@ -330,6 +335,7 @@ export default function ComputeStatus({ perspective }) {
                 <Step label="Proof Verified" />
               </Stepper>
             </div>
+          */}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
             {perspective === 'provider' ? (

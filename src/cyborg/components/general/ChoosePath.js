@@ -21,18 +21,13 @@ function ChoosePath() {
       <div className="text-white text-3xl font-bold mb-2">Choose Your Path</div>
       <div className="flex gap-4">
         <Button
-          onClick={() => {
-            return /* setPath('provide-compute') */
-          }}
+          onClick={() => {setPath('provide-compute')}}
           selectable
           isSelected={path === 'provide-compute' ? true : false}
-          variation="inactive"
+          variation="secondary"
           additionalClasses={'relative py-6'}
         >
-          <div className="font-bold">Provide Compute</div>
-          <div className="text-xs absolute bottom-2 left-1/2 transform -translate-x-1/2">
-            Coming Soon
-          </div>
+          Provide Compute
         </Button>
         <Button
           onClick={() => setPath('access-compute')}

@@ -13,9 +13,9 @@ import neurozk from '../../public/assets/icons/neuro-zk.svg'
 import { getAccount } from './util/getAccount'
 
 export const SERVICES = {
-  NO_SERVICE: {id: "0", name: "No service selected", icon: comingsoon},
-  CYBER_DOCK: {id: "CYBER_DOCK", name: "Cyber Dock", icon: cyberdock},
-  NEURO_ZK: {id: "NEURO_ZK", name: "Neuro ZK", icon: neurozk}
+  NO_SERVICE: {id: "0", name: "No service selected", icon: comingsoon, substrateEnumValue: null},
+  CYBER_DOCK: {id: "CYBER_DOCK", name: "Cyber Dock", icon: cyberdock, substrateEnumValue: "docker"},
+  EXECUTABLE: {id: "EXECUTABLE", name: "Executable", icon: neurozk, substrateEnumValue: "executable"}
 }
 
 export const DEPLOY_STATUS = {
@@ -81,7 +81,7 @@ const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const { api, apiState, currentAccount } = useSubstrateState()
   const [tasks, setTasks] = useState(undefined)
-  const [workers, setWorkers] = useState(undefined)
+  const [workers, setWorkers] = useState({workerClusters: [], executableWorkers: []})
   const [reloadWorkers, setReloadWorkers] = useState(false)
   const { taskMetadata } = state
 
@@ -136,13 +136,21 @@ const CyborgContextProvider = props => {
 
   useEffect(() => {
     const getRegisteredWorkers = async () => {
-      const entries = await api.query.edgeConnect.workerClusters.entries()
+      const worker_cluster_entries = await api.query.edgeConnect.workerClusters.entries()
       // Extract and process the worker clusters
-      const workerClusters = entries.map(([key, value]) => {
+      const workerClusters = worker_cluster_entries.map(([key, value]) => {
         return { ...value.toHuman(), lastTask: null }
       })
-      console.log('WORKERS RETREIVED:: ', workerClusters)
-      setWorkers(workerClusters)
+      console.log('WORKER_CLUSTERS RETREIVED:: ', workerClusters)
+      setWorkers({...workers, workerClusters: workerClusters})
+      const executbale_worker_entries = await api.query.edgeConnect.executableWorkers.entries()
+      // Extract and process the worker clusters
+      const executableWorkers = executbale_worker_entries.map(([key, value]) => {
+        return { ...value.toHuman(), lastTask: null }
+      })
+      console.log('EXECUTABLE_WORKERS RETREIVED:: ', workerClusters)
+      setWorkers({...workers, executableWorkers: executableWorkers})
+
     }
     if ((api && apiState === 'READY') || reloadWorkers) {
       getRegisteredWorkers()
@@ -151,9 +159,12 @@ const CyborgContextProvider = props => {
   }, [api, apiState, reloadWorkers])
 
   const workersWithLastTasks = useMemo(() => {
-    if (workers && tasks) {
+    let workerClusters = undefined;
+    let executableWorkers = undefined;
+
+    if (workers.workerClusters && tasks) {
       // console.log("task with workers: ", workers,tasks)
-      return workers.map(worker => {
+      workerClusters = workers.workerClusters.map(worker => {
         if (
           isNaN(worker.location.latitue) &&
           isNaN(worker.location.longitude)
@@ -179,6 +190,36 @@ const CyborgContextProvider = props => {
         return worker // no tasks assigned to this worker
       })
     }
+
+    if (workers.executableWorkers && tasks) {
+      // console.log("task with workers: ", workers,tasks)
+      executableWorkers = workers.executableWorkers.map(worker => {
+        if (
+          isNaN(worker.location.latitue) &&
+          isNaN(worker.location.longitude)
+        ) {
+          worker.location.latitude = i32CoordinateToFloatCoordinate(
+            worker.location.latitude
+          )
+          worker.location.longitude = i32CoordinateToFloatCoordinate(
+            worker.location.longitude
+          )
+        }
+        // tasks are iterated through reverse order to find the most recent task for a worker
+        for (let i = tasks.length - 1; i >= 0; i--) {
+          const { taskExecutor, workerId } = tasks[i]
+          // find a match from registered worker's address and id to the task assignee's address and id
+          if (worker.owner === taskExecutor && worker.id === workerId) {
+            return {
+              ...worker,
+              lastTask: i,
+            }
+          }
+        }
+        return worker // no tasks assigned to this worker
+      })
+    }
+    return {workerClusters, executableWorkers}
   }, [workers, tasks])
   console.log('Workers with tasks: ', workersWithLastTasks)
 

@@ -13,8 +13,13 @@ function AddNodeModal({onCancel}) {
 
     const [deployIP, setDeployIP] = useState("");
     const [copyToClipboardWasClicked, setCopyToClipboardWasClicked] = useState(false);
+    const [nodeLocation, setNodeLocation] = useState({latitude: undefined, longitude: undefined});
+    const [nodeSpecs, setNodeSpecs] = useState({ram: undefined, storage: undefined, cpu: undefined});
+    const [nodeType, setNodeType] = useState(undefined);
     const { api, currentAccount } = useSubstrateState();
 
+    /*
+    //TODO: Might be a good idea to figure out a way to perform a node availability check beforehand to not have to rely on the oracle
     const returnMasterNodeURL = (masterNodeIpAndPort) => `http://${masterNodeIpAndPort}/cluster-status`;
 
     const returnWorkerClusterIsReachable = async (url, timeout = 5000) => {
@@ -34,6 +39,7 @@ function AddNodeModal({onCancel}) {
             return false;
         }
     }
+    */
 
     const handleDispatchError = (dispatchError) => {
         if (dispatchError) {
@@ -80,27 +86,32 @@ function AddNodeModal({onCancel}) {
 
     const handleAddNode = async (clickEvent) => {
 
-        clickEvent.preventDefault();
+      clickEvent.preventDefault();
 
-        //setNodeStatus("waiting")
+      //setNodeStatus("waiting")
 
-        if(await returnWorkerClusterIsReachable(returnMasterNodeURL(deployIP), 5000)){
     
-            const fromAcct = await getAccount(currentAccount);
+      const fromAcct = await getAccount(currentAccount);
 
-            await api.tx.edgeConnect.registerWorker(undefined, deployIP)
-                .signAndSend(...fromAcct,({ status, events, dispatchError }) => {
-                    handleDispatchError(dispatchError);
-                    findModuleErrorsInBlock(status, events);
-                    //setNodeStatus("deployed");
-                    //setTimeout(() => setNodeStatus(""), 2000);
-                }).catch((error) => {
-                    console.error("Other Errors", error);
-                    toast.error(error.toString());
-                });
-        }else{
-            //setNodeStatus("")
-        }
+      await api.tx.edgeConnect.registerWorker(
+        nodeType, 
+        deployIP, 
+        nodeLocation.latitude, 
+        nodeLocation.longitude,
+        nodeSpecs.ram,
+        nodeSpecs.storage,
+        nodeSpecs.cpu
+      )
+        .signAndSend(...fromAcct,({ status, events, dispatchError }) => {
+          handleDispatchError(dispatchError);
+          findModuleErrorsInBlock(status, events);
+          //setNodeStatus("deployed");
+          //setTimeout(() => setNodeStatus(""), 2000);
+          }).catch((error) => {
+            console.error("Other Errors", error);
+            toast.error(error.toString());
+          });
+          //setNodeStatus("")
     }
 
     const handleCopyToClipboardClick = () => {
@@ -113,10 +124,28 @@ function AddNodeModal({onCancel}) {
             <CloseButton additionalClasses='absolute top-6 right-6' onClick={() => onCancel()} />
             <div className="text-2xl">Deploy Master Node</div>
             <Separator colorClass={'bg-cb-gray-500'}/>
+            <div className="flex w-full justify-center gap-4">
+              <Button
+                selectable
+                variation="secondary"
+                onClick={() => setNodeType("docker")}
+                isSelected={nodeType === "docker"}
+              >
+                Docker
+              </Button>
+              <Button
+                selectable
+                variation="secondary"
+                onClick={() => setNodeType("executable")}
+                isSelected={nodeType === "executable"}
+              >
+                Executable
+              </Button>
+            </div>
             <div className='relative h-fit'>
                 <input 
                     type='text'
-                    placeholder='Insert the public IP address of your node...'
+                    placeholder='Public IP Address'
                     onChange={(e) => {setDeployIP(e.target.value)}}
                     className='w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none' 
                     required
@@ -124,6 +153,45 @@ function AddNodeModal({onCancel}) {
                 <CopyToClipboard text={deployIP}>
                     <button onClick={() => handleCopyToClipboardClick()} className={`absolute rounded-lg bg-cb-gray-400 right-2 top-1/2 -translate-y-1/2 ${copyToClipboardWasClicked ? 'text-cb-green' : 'text-white'}`}><IoMdCopy size={25}/></button>
                 </CopyToClipboard>
+            </div>
+            <div className="flex gap-4">
+            <input 
+              type='text'
+              placeholder='Latitude'
+              onChange={(e) => setNodeLocation({...nodeLocation, latitude: e.target.value})}
+              className='w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none' 
+              required
+            />
+            <input 
+              type='text'
+              placeholder='Longitude'
+              onChange={(e) => setNodeLocation({...nodeLocation, longitude: e.target.value})}
+              className='w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none' 
+              required
+            />
+            </div>
+            <div className="flex gap-4">
+            <input 
+              type='text'
+              placeholder='RAM in Bytes'
+              onChange={(e) => setNodeSpecs({...nodeSpecs, ram: e.target.value})}
+              className='w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none' 
+              required
+            />
+            <input 
+              type='text'
+              placeholder='Storage in Bytes'
+              onChange={(e) => setNodeSpecs({...nodeSpecs, storage: e.target.value})}
+              className='w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none' 
+              required
+            />
+            <input 
+              type='text'
+              placeholder='Number of CPU Cores'
+              onChange={(e) => setNodeSpecs({...nodeSpecs, cpu: e.target.value})}
+              className='w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none' 
+              required
+            />
             </div>
             <Separator colorClass={'bg-cb-gray-500'}/>
             <Button variation='primary' additionalClasses='w-full' onClick={(e)=> handleAddNode(e)} 

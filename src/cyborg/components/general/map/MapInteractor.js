@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
 import { useCyborg } from '../../../CyborgContext'
 import useService from '../../../hooks/useService'
+import { returnCorrectWorkers } from '../../../util/returnCorrectWorkers'
 const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
@@ -41,8 +42,8 @@ const getNodeCountry = node => {
 const MapInteractor = () => {
   const navigate = useNavigate()
 
-  const { workersWithLastTasks } = useCyborg()
   const service = useService();
+  const workersWithCorrectType = returnCorrectWorkers(useCyborg().workersWithLastTasks, service);
 
   const [userLocation, setUserLocation] = useState(null)
   const [selectedNode, setSelectedNode] = useState(null)
@@ -97,11 +98,11 @@ const MapInteractor = () => {
       )
     }
   }
-
+  
   useEffect(() => {
-    if (userLocation && workersWithLastTasks)
-    if (workersWithLastTasks.length > 0) {
-      const nodeData = getNearestNode(userLocation, workersWithLastTasks)
+    if (userLocation && workersWithCorrectType)
+    if (workersWithCorrectType.length > 0) {
+      const nodeData = getNearestNode(userLocation, workersWithCorrectType)
 
       setNearestNode({
         ...nodeData.node,
@@ -137,8 +138,8 @@ const MapInteractor = () => {
       state: { userLocation: userLocation, preSelectedNode: selectedNode },
     })
 
-    if(service.id === 'NEURO_ZK')
-    navigate(ROUTES.NEURO_ZK_MODAL_NODES, {
+    if(service.id === 'EXECUTABLE')
+    navigate(ROUTES.EXECUTABLE_MODAL_NODES, {
       state: { userLocation: userLocation, preSelectedNode: selectedNode },
     })
   }
@@ -156,7 +157,7 @@ const MapInteractor = () => {
         )}
         <div className="h-full rounded-lg bg-cb-gray-600">
           <Map
-            nodes={workersWithLastTasks}
+            nodes={workersWithCorrectType}
             userCoordinates={userLocation}
             handleSelectNode={handleSelectNode}
             selectedNode={selectedNode}

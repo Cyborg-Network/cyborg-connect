@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import nondeployed from '../../../../../public/assets/icons/nondeployed.png'
 import deploymentsTab from '../../../../../public/assets/icons/deployment-logo.png'
 import { FiPlusCircle } from 'react-icons/fi'
@@ -11,6 +11,9 @@ import { useLocation } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
 import AddNodeModal from '../../provideCompute/modals/AddNode'
 import FirstNodeDeployModal from '../../provideCompute/modals/FirstNodeDeploy'
+import { getAccount } from '../../../util/getAccount'
+import { useSubstrateState } from '../../../../substrate-lib'
+import { toast } from 'react-hot-toast'
 
 function PlaceholderIfNoNodes({ addNode }) {
   return (
@@ -34,10 +37,16 @@ function Dashboard() {
 
   const [addNodeModalIsActive, setAddNodeModalIsActive] = useState(false);
   const [firstDeployModalIsActive, setFirstDeployModalIsActive] = useState(false);
+  const [listedWorkers, setListedWorkers] = useState(undefined);
 
   const { taskMetadata, userTasks } = useCyborgState()
   const { workersWithLastTasks, setReloadWorkers } = useCyborg()
+  const { currentAccount } = useSubstrateState()
   const { sidebarIsActive } = useUi()
+
+  useEffect(async () => {
+    setListedWorkers(await handleReturnWorkers())
+  }, [workersWithLastTasks])
 
   console.log('workerList: ', workersWithLastTasks)
 
@@ -55,12 +64,44 @@ function Dashboard() {
   }
 
   // TODO: The whole way of getting to this point is not optimal, but the root of this issue is in the task-management / edge-connect pallet and we should start fixing it there
-  const handleReturnWorkers = () => {
+  const handleReturnWorkers = async () => {
     console.warn(userTasks);
     console.warn(workersWithLastTasks);
-    const userWorkers = workersWithLastTasks.filter(worker => {
-      return userTasks.includes(worker.lastTask);
-    })
+    let userWorkers = [];
+    if(isProvider){
+      try{
+        const userAccount = await getAccount(currentAccount); 
+        console.warn(userAccount)
+        let userWorkers = [];
+        if(workersWithLastTasks.workerClusters)
+        workersWithLastTasks.workerClusters.filter(worker => {
+          if(userAccount[0] == worker.owner){
+            userWorkers.push(worker);
+          }
+        })
+        if(workersWithLastTasks.executableWorkers)
+        workersWithLastTasks.executableWorkers.filter(worker => {
+          if(userAccount[0] == worker.owner){
+            userWorkers.push(worker);
+          }
+        })
+      } catch(error){
+        toast("Error Retrieving the Workers...")
+      }
+    }else{
+      if(workersWithLastTasks.workerClusters)
+      workersWithLastTasks.workerClusters.filter(worker => {
+        if(userTasks.includes(worker.lastTask)){
+          userWorkers.push(worker);
+        }
+      })
+      if(workersWithLastTasks.executableWorkers)
+      workersWithLastTasks.executableWorkers.filter(worker => {
+        if(userTasks.includes(worker.lastTask)){
+          userWorkers.push(worker);
+        }
+      })
+    }
     return userWorkers
   }
 
@@ -98,10 +139,10 @@ function Dashboard() {
             )}
           </div>
         </div>
-        {(workersWithLastTasks && userTasks &&
-          workersWithLastTasks.length > 0 &&
+        {((listedWorkers) && userTasks &&
+          (workersWithLastTasks.executableWorkers.length > 0 || workersWithLastTasks.workerClusters.length > 0) &&
           taskMetadata) ? (
-          <NodeList nodes={handleReturnWorkers()} taskMetadata={taskMetadata} />
+          <NodeList nodes={listedWorkers} taskMetadata={taskMetadata} />
         ) : (
           <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
         )}

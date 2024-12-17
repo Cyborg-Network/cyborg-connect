@@ -28,7 +28,7 @@ const ServiceCard = ({
         <p className="text-white opacity-50 text-center text-sm">
           {description}
         </p>
-        <div className={`text-gray-400 grid justify-center items-center text-lg font-bold bg-cb-gray-400 w-full h-14 ${isHovered ? 'bg-cb-green text-cb-gray-400' : ''}`}>
+        <div className={`text-gray-400 grid justify-center items-center text-lg font-bold bg-cb-gray-400 w-full h-14 ${isHovered ? 'bg-cb-green text-white' : ''}`}>
           Deploy Now
         </div>
       </div>

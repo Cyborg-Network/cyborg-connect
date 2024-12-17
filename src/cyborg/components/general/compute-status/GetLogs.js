@@ -86,6 +86,8 @@ export function GetLogs({ link, taskId, scrollIsAutomated, logs }) {
     if (link) fetchStatusInfo()
   }, [taskId, link])
 
+  console.log(logs)
+
   // console.log("deploy status: ", status)
   console.log('logs data: ', data)
   // console.log("display data: ", display)
@@ -125,11 +127,14 @@ export function GetLogs({ link, taskId, scrollIsAutomated, logs }) {
         ) : (
           ''
         )}
-        <div>{`[${link}][TaskID: ${taskId}] Logs: ${
+        <div>{`[16.171.249.42][TaskID: ${taskId}] Logs:`}</div>
+        {
           logs ?
-          logs
-          : 'Pending.....'
-        }`}</div>
+          logs.map((log, index) => (
+            <div key={index}>{log}</div>
+          ))
+          : <div>Pending...</div>
+        }
       </div>
     </code>
   )

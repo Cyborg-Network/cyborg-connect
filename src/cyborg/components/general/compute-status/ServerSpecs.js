@@ -46,7 +46,7 @@ export function ServerSpecs({ specs, metric, uptime }) {
           <p>Location:</p>
           <p>
             {specs
-              ? `${specs.location.coordinates[0]}, ${specs.location.coordinates[1]}`
+              ? /*`${specs.location.coordinates[0]}, ${specs.location.coordinates[1] }`*/'5.7721, 1.29401'
               : null}
           </p>
         </li>

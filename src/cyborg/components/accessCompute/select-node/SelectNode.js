@@ -3,7 +3,7 @@ import Button from '../../general/buttons/Button'
 import { toast } from 'react-hot-toast'
 import { TiArrowRight } from 'react-icons/ti'
 import PaymentModal from './../modals/Payment'
-import UploadDockerImgURL from './../modals/UploadDockerImgURL'
+import SimpleTaskUpload from './../modals/SimpleTaskUpload'
 import haversineDistance from 'haversine-distance'
 import { useLocation } from 'react-router-dom'
 import {
@@ -15,7 +15,8 @@ import {
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import useService from '../../../hooks/useService'
-import NeuroZkUpload from '../modals/NeuroZKUpload'
+import { returnCorrectWorkers } from '../../../util/returnCorrectWorkers'
+//import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
   INIT: 'INIT',
@@ -26,7 +27,7 @@ const DEPLOYMENT_STAGES = {
 
 function SelectNodePage() {
   const service = useService();
-  const { workersWithLastTasks } = useCyborg()
+  const workersWithLastTasks = returnCorrectWorkers(useCyborg().workersWithLastTasks, service);
   const { serviceStatus } = useCyborgState()
 
   const location = useLocation()
@@ -45,6 +46,10 @@ function SelectNodePage() {
         ...selectedNodes,
       ])
   }, [])
+
+  useEffect(() => {
+    console.log(selectedNodes);
+  }, [selectedNodes])
 
   useEffect(() => {
     const getOtherNearbyNodes = () => {
@@ -197,14 +202,15 @@ function SelectNodePage() {
       ) : (
         <></>
       )}
-      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && service.id === SERVICES.CYBER_DOCK.id ? (
-        <UploadDockerImgURL
+      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && (service.id === SERVICES.CYBER_DOCK.id || service.id === SERVICES.EXECUTABLE.id) ? (
+        <SimpleTaskUpload
           onCancel={cancelTransaction}
-          nodeIds={selectedNodes}
+          nodes={selectedNodes}
         />
       ) : (
         <></>
       )}
+      {/*
       {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && service.id === SERVICES.NEURO_ZK.id
         ? <NeuroZkUpload
             onCancel={cancelTransaction}
@@ -213,6 +219,7 @@ function SelectNodePage() {
           :
         <></>
       }
+      */}
       {serviceStatus.deployTask === DEPLOY_STATUS.PENDING ? (
         <LoadingModal text={'Deploying and executing your ZK Task!'} />
       ) : (

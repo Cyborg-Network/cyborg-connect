@@ -24,14 +24,14 @@ export const ROUTES = {
   PROVIDE_COMPUTE: "/provide-compute",
   ACCESS_COMPUTE: "/access-compute",
   CYBERDOCK_DASHBOARD: "/access-compute/cyberdock/dashboard",
-  NEURO_ZK_DASHBOARD: "/access-compute/neurozk/dashboard",
+  EXECUTABLE_DASHBOARD: "/access-compute/executable/dashboard",
   CYBERDOCK_COMPUTE_STATUS: "/access-compute/cyberdock/dashboard/compute-status",
-  NEURO_ZK_COMPUTE_STATUS: "/access-compute/neurozk/dashboard/compute-status",
+  EXECUTABLE_COMPUTE_STATUS: "/access-compute/executable/dashboard/compute-status",
   DEV_MODE: "/dev-mode",
   CYBERDOCK_MAP: "/access-compute/cyberdock/map",
-  NEURO_ZK_MAP: "/access-compute/neurozk/map",
+  EXECUTABLE_MAP: "/access-compute/executable/map",
   CYBERDOCK_MODAL_NODES: "/access-compute/cyberdock/modal-nodes",
-  NEURO_ZK_MODAL_NODES: "/access-compute/neurozk/modal-nodes",
+  EXECUTABLE_MODAL_NODES: "/access-compute/executable/modal-nodes",
 }
 
 const GlobalLayout = () => {
@@ -110,19 +110,19 @@ const router = createBrowserRouter([
                 element: <SelectNodePage />,
               },
               {
-                path: ROUTES.NEURO_ZK_DASHBOARD,
+                path: ROUTES.EXECUTABLE_DASHBOARD,
                 element: <Dashboard />,
               },
               {
-                path: `${ROUTES.NEURO_ZK_COMPUTE_STATUS}/:domain`,
+                path: `${ROUTES.EXECUTABLE_COMPUTE_STATUS}/:domain`,
                 element: <ComputeStatus />,
               },
               {
-                path: `${ROUTES.NEURO_ZK_MAP}`,
+                path: `${ROUTES.EXECUTABLE_MAP}`,
                 element: <MapInteractor />,
               },
               {
-                path: `${ROUTES.NEURO_ZK_MODAL_NODES}`,
+                path: `${ROUTES.EXECUTABLE_MODAL_NODES}`,
                 element: <SelectNodePage />,
               }
             ]

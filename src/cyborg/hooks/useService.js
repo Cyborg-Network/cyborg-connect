@@ -8,8 +8,8 @@ function useService() {
 
   if(location.includes('cyberdock')) {
     service = SERVICES.CYBER_DOCK;
-  } else if(location.includes('neurozk')) {
-    service = SERVICES.NEURO_ZK;
+  } else if(location.includes('executable')) {
+    service = SERVICES.EXECUTABLE;
   }
 
   return service
