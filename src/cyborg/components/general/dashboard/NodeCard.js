@@ -1,13 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
 import cyberdock from '../../../../../public/assets/icons/cyberdockDash.png'
 import { Separator } from '../Separator'
 import useService from '../../../hooks/useService'
+import { FaRegTrashAlt } from "react-icons/fa";
+import RemoveNodeModal from '../../provideCompute/modals/RemoveNode'
 
-const NodeCard = ({ item, lastTask }) => {
+const NodeCard = ({ item, lastTask, isProvider }) => {
   const navigate = useNavigate()
   const service = useService()
+
+  const [removeNodeModalIsActive, setRemoveNodeModalIsActive] = useState(false)
 
   //li with exactly these specs needed a lot here, sets parent up for responsiveness
   const LI = ({ children, additionalClasses }) => (
@@ -33,9 +37,10 @@ const NodeCard = ({ item, lastTask }) => {
   const SPAN = ({ children }) => <span className="lg:hidden">{children}</span>
 
   return (
+    <>
     <div
       onClick={() => navigateToComputeScreen()}
-      className={`hover:text-cb-green hover:font-bold hover:cursor-pointer rounded-lg lg:rounded-none`}
+      className={`hover:text-cb-green hover:font-bold hover:cursor-pointer rounded-lg lg:rounded-none relative`}
     >
       <div className="lg:w-full items-center py-4 px-5 bg-cb-gray-400 rounded-lg">
         <ul className="w-full flex flex-col gap-2 items-center lg:grid lg:gap-0 lg:grid-cols-4 lg:grid-rows-1">
@@ -84,9 +89,26 @@ const NodeCard = ({ item, lastTask }) => {
               </p>
             </span>
           </LI>
+          {
+          isProvider
+          ?
+          <div 
+            className='absolute text-gray-400 top-4 right-4 lg:right-12 lg:top-1/2 lg:-translate-y-1/2 hover:text-red-800'
+            onClick={() => setRemoveNodeModalIsActive(true)}
+          >
+            <FaRegTrashAlt size={20} />
+          </div>
+          :<></>
+          }
         </ul>
       </div>
     </div>
+    {
+      removeNodeModalIsActive
+      ? <RemoveNodeModal nodeInfo={{owner: item.owner, id: item.id, workerType: item.workerType}} onCancel={() => setRemoveNodeModalIsActive(false)}/>
+      : <></>
+    }
+    </>
   )
 }
 

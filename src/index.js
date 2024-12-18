@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider, Outlet, Link, useLocation } from '
 import { SubstrateContextProvider } from './substrate-lib'
 import { CyborgContextProvider } from './cyborg/CyborgContext'
 import { Toaster } from 'react-hot-toast'
-import RpcSelector from './cyborg/components/general/RpcSelector'
+//import RpcSelector from './cyborg/components/general/RpcSelector'
 import Dashboard from './cyborg/components/general/dashboard/Dashboard'
 import SideBar from './cyborg/components/general/layouts/SideBar'
 import ChooseServices from './cyborg/components/accessCompute/ChooseServices'
@@ -51,7 +51,7 @@ const GlobalLayout = () => {
   return (
     <>
       <Outlet />
-      <div className='fixed bottom-2 left-2 md:left-1/2 transform md:-translate-x-1/2 z-30'><RpcSelector /></div>
+      {/*<div className='fixed bottom-2 left-2 md:left-1/2 transform md:-translate-x-1/2 z-30'><RpcSelector /></div>*/}
       <Link to={linkProperties.route}>
         <button className='fixed rounded-lg p-4 bottom-2 right-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
       </Link>

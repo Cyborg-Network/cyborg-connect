@@ -2,14 +2,7 @@ import { FaRegClock } from 'react-icons/fa6'
 import { FaCheck } from 'react-icons/fa6'
 import { useUi } from '../../../context/UiContext'
 import useService from '../../../hooks/useService'
-
-const truncateAddress = address => {
-  if (window.innerWidth < 600) {
-    return `${address.slice(0, 6)}...${address.slice(-6)}`
-  } else {
-    return address
-  }
-}
+import { truncateAddress } from '../../../util/truncateAddress'
 
 const FlexContainer = ({ children }) => {
   return <div className="flex items-center gap-1">{children}</div>
@@ -57,7 +50,7 @@ export function MetaDataHeader({ owner, id, domain, status, lastCheck }) {
         <div className="flex items-center gap-2 lg:text-xl justify-end">
           <div className="text-lg">Node Name: </div>
           <div className="text-cb-green">
-            {truncateAddress(owner)}:{id}
+            {truncateAddress(owner, 600)}:{id}
           </div>
         </div>
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">

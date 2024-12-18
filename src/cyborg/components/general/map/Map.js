@@ -8,6 +8,18 @@ import {
 } from 'react-simple-maps'
 import topoJson from '../../../../map-data/countries-1-to-50m-scale.json'
 
+const calculateZoom = (screenSize) => {
+  const clampedScreenSize = Math.max(300, Math.min(screenSize, 2000));
+  const output = 5 - (4 * (clampedScreenSize - 300) / (2000 - 300));
+  return parseFloat(output.toFixed(2));
+}
+
+const calculateMapHeight = (screenSize) => {
+  const clampedScreenSize = Math.max(300, Math.min(screenSize, 2000));
+  const output = 600 + (2000 * (2000 - clampedScreenSize) / (2000 - 300));
+  return Math.round(output);
+}
+
 const Map = ({ userCoordinates, nodes, handleSelectNode, selectedNode }) => {
   const [zoom, setZoom] = useState(1)
 
@@ -15,10 +27,11 @@ const Map = ({ userCoordinates, nodes, handleSelectNode, selectedNode }) => {
     <ComposableMap
       projection="geoMercator"
       projectionConfig={{ rotate: [0, 0, 0], center: [0, 0], scale: 100 }}
+      height={calculateMapHeight(window.innerWidth)}
     >
       <ZoomableGroup
         center={[0, 0]}
-        zoom={1}
+        zoom={calculateZoom(window.innerWidth)}
         maxZoom={50}
         onMove={postition => setZoom(postition.zoom)}
       >

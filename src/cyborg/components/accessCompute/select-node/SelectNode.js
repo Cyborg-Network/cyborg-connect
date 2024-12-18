@@ -141,8 +141,8 @@ function SelectNodePage() {
   }
 
   return (
-    <>
-      <div className="text-white bg-transparent p-0 flex flex-col gap-4 2xl:w-full xl:w-4/5 lg:w-5/6 sm:w-4/5 w-11/12 self-center justify-self-center my-24">
+    <div className='h-screen w-screen grid'>
+      <div className="text-white bg-transparent p-0 flex flex-col gap-4 2xl:w-2/5 xl:w-3/5 lg:w-4/6 sm:w-4/5 w-11/12 self-center justify-self-center my-24">
         <div className="flex justify-between bg-cb-gray-600 p-3 sm:p-8 rounded-lg">
           <div className="flex gap-2">
             <div className='w-16 h-16 p-2 rounded-full bg-cb-gray-500'>
@@ -159,7 +159,7 @@ function SelectNodePage() {
             <div className="text-4xl">Other Nearby Nodes</div>
             <div className="absolute left-full bottom-0 text-cb-green w-full ml-2">{`${selectedNodes.length} Selected`}</div>
           </div>
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {nearbyNodes.map(node => (
               <SelectionNodeCard
                 node={node}
@@ -178,8 +178,8 @@ function SelectNodePage() {
           <div className='flex gap-4 w-full'>
           <input
               type='text'
-              className="flex-grow bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded"
-              placeholder='Select amount of hours'
+              className="bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded w-16 sm:w-auto"
+              placeholder='Number of Hours'
               onChange={e => setHoursSelected(e.target.value)}
           />
           <Button onClick={startTransaction} variation="primary">
@@ -225,7 +225,7 @@ function SelectNodePage() {
       ) : (
         <></>
       )}
-    </>
+    </div>
   )
 }
 

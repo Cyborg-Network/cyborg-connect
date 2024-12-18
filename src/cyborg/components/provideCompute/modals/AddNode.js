@@ -8,15 +8,22 @@ import Modal from "../../general/modals/Modal";
 import CloseButton from "../../general/buttons/CloseButton";
 import Button from "../../general/buttons/Button";
 import {Separator} from "../../general/Separator";
+import LoadingModal from "../../general/modals/Loading";
+import { useCyborg } from "../../../CyborgContext";
 
 function AddNodeModal({onCancel}) {
+
+    const { api, currentAccount } = useSubstrateState();
+    const { setReloadWorkers } = useCyborg()
 
     const [deployIP, setDeployIP] = useState("");
     const [copyToClipboardWasClicked, setCopyToClipboardWasClicked] = useState(false);
     const [nodeLocation, setNodeLocation] = useState({latitude: undefined, longitude: undefined});
     const [nodeSpecs, setNodeSpecs] = useState({ram: undefined, storage: undefined, cpu: undefined});
     const [nodeType, setNodeType] = useState(undefined);
-    const { api, currentAccount } = useSubstrateState();
+
+    const [isLoading, setIsLoading] = useState(false);
+
 
     /*
     //TODO: Might be a good idea to figure out a way to perform a node availability check beforehand to not have to rely on the oracle
@@ -76,10 +83,13 @@ function AddNodeModal({onCancel}) {
                 }
             });
             const success = events.filter(({ event }) =>
-                api.events.taskManagement.TaskScheduled.is(event)
+                api.events.edgeConnect.WorkerRegistered.is(event)
             )
             if ( success.length > 0 ) {
                 console.log(success)
+                setIsLoading(false);
+                onCancel()
+                setReloadWorkers(true) 
             }
         }
     }
@@ -88,8 +98,7 @@ function AddNodeModal({onCancel}) {
 
       clickEvent.preventDefault();
 
-      //setNodeStatus("waiting")
-
+      setIsLoading(true);
     
       const fromAcct = await getAccount(currentAccount);
 
@@ -111,7 +120,6 @@ function AddNodeModal({onCancel}) {
             console.error("Other Errors", error);
             toast.error(error.toString());
           });
-          //setNodeStatus("")
     }
 
     const handleCopyToClipboardClick = () => {
@@ -120,6 +128,10 @@ function AddNodeModal({onCancel}) {
     }
 
     return(
+      <>
+        {
+        !isLoading
+        ?
         <Modal additionalClasses='flex flex-col gap-6'>
             <CloseButton additionalClasses='absolute top-6 right-6' onClick={() => onCancel()} />
             <div className="text-2xl">Deploy Master Node</div>
@@ -200,6 +212,10 @@ function AddNodeModal({onCancel}) {
                 Deploy
             </Button>
         </Modal>
+        :
+        <LoadingModal text={"Deploying your Worker!"} />
+      }
+      </>
     )
 }
 

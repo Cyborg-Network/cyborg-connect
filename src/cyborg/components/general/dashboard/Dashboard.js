@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import nondeployed from '../../../../../public/assets/icons/nondeployed.png'
 import deploymentsTab from '../../../../../public/assets/icons/deployment-logo.png'
-import { FiPlusCircle } from 'react-icons/fi'
+//import { FiPlusCircle } from 'react-icons/fi'
 import { useCyborg, useCyborgState } from '../../../CyborgContext'
 import Button from '../buttons/Button'
 import { TbRefresh } from 'react-icons/tb'
@@ -45,8 +45,13 @@ function Dashboard() {
   const { sidebarIsActive } = useUi()
 
   useEffect(async () => {
+    if(currentAccount)
     setListedWorkers(await handleReturnWorkers())
-  }, [workersWithLastTasks])
+  }, [workersWithLastTasks, currentAccount, userTasks])
+
+  useEffect(() => {
+    console.warn(listedWorkers)
+  }, [listedWorkers])
 
   console.log('workerList: ', workersWithLastTasks)
 
@@ -72,17 +77,19 @@ function Dashboard() {
       try{
         const userAccount = await getAccount(currentAccount); 
         console.warn(userAccount)
-        let userWorkers = [];
         if(workersWithLastTasks.workerClusters)
         workersWithLastTasks.workerClusters.filter(worker => {
           if(userAccount[0] == worker.owner){
-            userWorkers.push(worker);
+            userWorkers.push({...worker, workerType: "docker"});
           }
         })
         if(workersWithLastTasks.executableWorkers)
         workersWithLastTasks.executableWorkers.filter(worker => {
+          console.warn(worker)
+          console.warn(userAccount[0])
           if(userAccount[0] == worker.owner){
-            userWorkers.push(worker);
+            console.warn("TRUE");
+            userWorkers.push({...worker, workerType: "executable"});
           }
         })
       } catch(error){
@@ -91,17 +98,20 @@ function Dashboard() {
     }else{
       if(workersWithLastTasks.workerClusters)
       workersWithLastTasks.workerClusters.filter(worker => {
+        if(userTasks)
         if(userTasks.includes(worker.lastTask)){
           userWorkers.push(worker);
         }
       })
       if(workersWithLastTasks.executableWorkers)
       workersWithLastTasks.executableWorkers.filter(worker => {
+        if(userTasks)
         if(userTasks.includes(worker.lastTask)){
           userWorkers.push(worker);
         }
       })
     }
+    console.warn(userWorkers)
     return userWorkers
   }
 
@@ -130,19 +140,19 @@ function Dashboard() {
             <Button variation={'secondary'} onClick={() => setReloadWorkers(true)}>
               <TbRefresh />
             </Button>
-            {isProvider ? (
+            {/*{isProvider ? (
               <Button additionalClasses={'flex gap-2 items-center'} variation={'primary'} onClick={handleAddNodeButtonClick} >
                 <FiPlusCircle size={18} /> Add Node
               </Button>
             ) : (
               <></>
-            )}
+            )}*/}
           </div>
         </div>
         {((listedWorkers) && userTasks &&
           (workersWithLastTasks.executableWorkers.length > 0 || workersWithLastTasks.workerClusters.length > 0) &&
           taskMetadata) ? (
-          <NodeList nodes={listedWorkers} taskMetadata={taskMetadata} />
+          <NodeList nodes={listedWorkers} taskMetadata={taskMetadata} isProvider={isProvider} />
         ) : (
           <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
         )}

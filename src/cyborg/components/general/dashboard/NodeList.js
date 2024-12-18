@@ -1,6 +1,6 @@
 import NodeCard from './NodeCard'
 
-export function NodeList({ nodes, taskMetadata }) {
+export function NodeList({ nodes, taskMetadata, isProvider }) {
   const lastTask = taskMetadata.taskId
 
   console.log('nodes: in list: ', nodes)
@@ -25,6 +25,7 @@ export function NodeList({ nodes, taskMetadata }) {
               key={item.owner + item.id}
               item={item}
               lastTask={lastTask}
+              isProvider={isProvider}
             />
           ))}
       </div>
