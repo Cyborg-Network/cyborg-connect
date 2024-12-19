@@ -47,11 +47,11 @@ function Dashboard() {
   useEffect(async () => {
     if(currentAccount)
     setListedWorkers(await handleReturnWorkers())
-  }, [workersWithLastTasks, currentAccount, userTasks])
+  }, [workersWithLastTasks, currentAccount, userTasks, taskMetadata])
 
   useEffect(() => {
-    console.warn(listedWorkers)
-  }, [listedWorkers])
+    setReloadWorkers(true)
+  }, [userTasks, taskMetadata, setReloadWorkers])
 
   console.log('workerList: ', workersWithLastTasks)
 

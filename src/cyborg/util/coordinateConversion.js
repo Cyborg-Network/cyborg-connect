@@ -1,4 +1,4 @@
-const SCALE_FACTOR = 10000000
+const SCALE_FACTOR = 1000000
 
 export function floatCoordinateToI32Coordinate(value) {
   if (typeof value !== 'number') {

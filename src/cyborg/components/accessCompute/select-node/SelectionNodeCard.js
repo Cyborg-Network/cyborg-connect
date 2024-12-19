@@ -2,8 +2,19 @@ import { Separator } from '../../general/Separator'
 import { FaCheck } from 'react-icons/fa6'
 import Button from '../../general/buttons/Button'
 import server from '../../../../../public/assets/icons/server.svg'
+import { useEffect, useState } from 'react'
+import { getComputeHourPrice } from '../../../util/getComputeHourPrice'
+import { useSubstrateState } from '../../../../substrate-lib'
 
 const SelectionNodeCard = ({ node, onClick, isSelected }) => {
+
+  const { api } = useSubstrateState()
+  const [currentPrice, setCurrentPrice] = useState(0);
+
+  useEffect(async() => {
+    setCurrentPrice(await getComputeHourPrice(api))
+  }, [])
+
   return (
     <Button
       additionalClasses={'px-10 py-10 relative flex items-start rounded-xl'}
@@ -30,7 +41,7 @@ const SelectionNodeCard = ({ node, onClick, isSelected }) => {
             </div>
             <div className="flex gap-2">
               <div className="text-xl font-bold text-white">
-                {`${'10'}`}
+                {`${currentPrice}`}
                 <span className="text-gray-400 text-base">ENTT</span>
               </div>
               <div className="bg-white rounded-lg px-1 py-0.5 text-cb-gray-700 text-xs h-fit w-fit self-center">
