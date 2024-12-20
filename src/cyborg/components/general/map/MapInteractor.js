@@ -59,6 +59,16 @@ const MapInteractor = () => {
     setSelectedNode({ ...node, ['country']: getNodeCountry(node) })
   }
 
+  const handleManualSelection = (id, owner) => {
+    const node = workersWithCorrectType.find(node => node.owner === owner && node.id === id)
+
+    if(node){
+      setSelectedNode({...node, ['country']: getNodeCountry(node) })
+    } else {
+      toast("This node does not exist")
+    }
+  }
+
   const getUserLocation = () => {
     const success = position => {
       setUserLocation({
@@ -169,6 +179,7 @@ const MapInteractor = () => {
             distance={distance}
             returntoNearestNode={handleReturnToNearestNode}
             onNavigate={navigateToNearestNodesSelection}
+            handleManualSelection={handleManualSelection}
           />
         ) : (
           <></>
