@@ -48,9 +48,9 @@
     "libsodium-wrappers": "^0.7.15",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "prop-types": "^15.8.1",
-    "react": "^17.0.2",
+    "react": "^18.3.1",
     "react-copy-to-clipboard": "^5.0.4",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.3.1",
     "react-form-stepper": "^2.0.3",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.2.0",
@@ -68,11 +68,26 @@
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.4.0",
     "eslint-config-react-app": "^7.0.0",
-    "gh-pages": "^3.2.3",
+    "gh-pages": "^6.3.0",
     "prettier": "2.5.1",
     "react-app-rewired": "^2.2.1",
     "semistandard": "^16.0.1",
     "tailwindcss": "^3.4.3"
+  },
+  "overrides": {
+    "react-simple-maps": {
+      "d3-geo": "^3.1.0",
+      "d3-selection": "^3.0.0",
+      "d3-zoom": "^3.0.0",
+      "d3-color": "^3.1.0"
+    },
+    "svgo": {
+      "nth-check": ">=2.0.2"
+    },
+    "react-scripts": {
+      "postcss": ">=8.4.31",
+      "workbox-webpack-plugin": ">=7.1.0"
+    }
   },
   "resolutions": {
     "eslint-plugin-jsx-a11y": "6.5.1"
