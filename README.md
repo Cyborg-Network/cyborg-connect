@@ -4,6 +4,9 @@ This front-end application is developed on a fork of [substrate-front-end-templa
 
 Access the hosted version of the application here: https://cyborg-network.github.io/cyborg-connect/
 
+## ⚠️ Note
+For testing the whole network, please refer to [Local Testing](https://github.com/Cyborg-Network/cyborg-parachain/blob/master/Local%20Testing.md#local-setup)
+
 ### Installation
 
 ```bash
