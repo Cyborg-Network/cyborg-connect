@@ -7,7 +7,6 @@ import SimpleTaskUpload from './../modals/SimpleTaskUpload'
 import haversineDistance from 'haversine-distance'
 import { useLocation } from 'react-router-dom'
 import {
-  useCyborg,
   DEPLOY_STATUS,
   useCyborgState,
   SERVICES,
@@ -15,7 +14,7 @@ import {
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import useService from '../../../hooks/useService'
-import { returnCorrectWorkers } from '../../../util/returnCorrectWorkers'
+import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 //import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
@@ -27,12 +26,17 @@ const DEPLOYMENT_STAGES = {
 
 function SelectNodePage() {
   const service = useService();
-  const workersWithLastTasks = returnCorrectWorkers(useCyborg().workersWithLastTasks, service);
   const { serviceStatus } = useCyborgState()
 
   const location = useLocation()
 
   const { userLocation, preSelectedNode } = location.state || {}
+
+  const {
+    data: workers,
+    //isLoading: workersIsLoading,
+    //error: workersError
+  } = useWorkersQuery(service.workerType)
 
   const [nearbyNodes, setNearbyNodes] = useState([])
   const [selectedNodes, setSelectedNodes] = useState([])
@@ -41,11 +45,11 @@ function SelectNodePage() {
 
   useEffect(() => {
     if (preSelectedNode)
-      setSelectedNodes([
+      setSelectedNodes(prev => [
         { owner: preSelectedNode.owner, id: preSelectedNode.id },
-        ...selectedNodes,
+        ...prev,
       ])
-  }, [])
+  }, [preSelectedNode])
 
   useEffect(() => {
     console.log(selectedNodes);
@@ -64,7 +68,7 @@ function SelectNodePage() {
         longitude: userLocation.lon,
       }
 
-      workersWithLastTasks.forEach(currentNode => {
+      workers.forEach(currentNode => {
         if (fourNearest.length < 4 && currentNode.id !== preSelectedNode.id) {
           fourNearest.push(currentNode)
           return
@@ -81,7 +85,7 @@ function SelectNodePage() {
           if (currentNode.id !== preSelectedNode.id) {
             fourNearest[index] = {
               ...currentNode,
-              ['haversine']: currentHaversine,
+              haversine: currentHaversine,
             }
             return
           }
@@ -96,8 +100,8 @@ function SelectNodePage() {
       })
       setNearbyNodes(fourNearest)
     }
-    if (userLocation && workersWithLastTasks) getOtherNearbyNodes()
-  }, [workersWithLastTasks, userLocation])
+    if (userLocation && workers) getOtherNearbyNodes()
+  }, [workers, userLocation, preSelectedNode])
 
   const startTransaction = () => {
     if (selectedNodes.length <= 0) {
@@ -146,7 +150,7 @@ function SelectNodePage() {
         <div className="flex justify-between bg-cb-gray-600 p-3 sm:p-8 rounded-lg">
           <div className="flex gap-2">
             <div className='w-16 h-16 p-2 rounded-full bg-cb-gray-500'>
-              <img className='h-full aspect-square' src={service.icon} />
+              <img className='h-full aspect-square' alt='Service' src={service.icon} />
             </div>
             <div className="flex flex-col justify-center">
               <div className="font-bold text-xl">{service.name}</div>
@@ -163,6 +167,7 @@ function SelectNodePage() {
             {nearbyNodes.map(node => (
               <SelectionNodeCard
                 node={node}
+                key={node.id}
                 onClick={() =>
                   toggleNodeSelection({ owner: node.owner, id: node.id })
                 }
@@ -221,7 +226,7 @@ function SelectNodePage() {
       }
       */}
       {serviceStatus.deployTask === DEPLOY_STATUS.PENDING ? (
-        <LoadingModal text={'Deploying and executing your ZK Task!'} />
+        <LoadingModal text={'Deploying your Model!'} />
       ) : (
         <></>
       )}

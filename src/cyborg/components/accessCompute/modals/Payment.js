@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import CloseButton from '../../general/buttons/CloseButton'
 import { Separator } from '../../general/Separator'
 import Modal from '../../general/modals/Modal'
@@ -16,7 +16,7 @@ import { getAccount } from '../../../util/getAccount'
 import { useSubstrateState } from '../../../../substrate-lib'
 import robo from '../../../../../public/assets/icons/robo.png'
 import LoadingModal from '../../general/modals/Loading'
-import { getComputeHourPrice } from '../../../util/getComputeHourPrice'
+import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
 //import { useNavigate } from 'react-router-dom'
 //import { ROUTES } from '../../../../index'
 //import useService from '../../../hooks/useService'
@@ -36,7 +36,6 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
 
   //const [url, setUrl] = useState('')
   const [onIsInBlockWasCalled, setOnIsInBlockWasCalled] = useState(false)
-  const [currentPrice, setCurrentPrice] = useState(0)
 
   //const handleUrlChange = e => {
   //  setUrl(e.target.value)
@@ -53,9 +52,11 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
   // from upload docker modal
   //
 
-  useEffect(async() => {
-    setCurrentPrice(await getComputeHourPrice(api)) 
-  }, [])
+  const {
+    data: computeHourPrice,
+    //isLoading: computeHourPriceIsLoading,
+    //error: computeHourPriceError 
+  } = usePriceQuery();
 
   const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
@@ -198,12 +199,12 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
         <div className="text-xl font-bold">Fixed Pricing</div>
         <div className="flex justify-between">
           <div>Hourly Rate:</div>
-          <div className="text-right">{`${currentPrice} ENTT / hour`}</div>
+          <div className="text-right">{`${computeHourPrice} ENTT / hour`}</div>
         </div>
         <Separator colorClass={'bg-cb-gray-400'} />
         <div className="flex justify-between text-xl font-bold">
           <div>Total:</div>
-          <div>{currentPrice * hoursSelected} ENTT</div>
+          <div>{computeHourPrice * hoursSelected} ENTT</div>
         </div>
         <div className="flex gap-2 items-center">
           <input

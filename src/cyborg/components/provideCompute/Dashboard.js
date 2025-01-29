@@ -188,44 +188,24 @@ function Dashboard() {
   const [node, addNode] = useState(false)
   const [refresh, setRefresh] = useState(false)
   const { taskMetadata } = useCyborgState()
-  const { workersWithLastTasks } = useCyborg()
-  const { currentAccount } = useSubstrateState()
-  console.log('workerList: ', workersWithLastTasks)
-
-  const isWaitingForNode = false
-  const deploySuccessful = false
 
   useEffect(() => {
     console.log(node)
   }, [node])
 
-  // TODO: The whole way of getting to this point is not optimal, but the root of this issue is in the task-management / edge-connect pallet and we should start fixing it there
-  const handleReturnWorkers = async () => {
-    try{
-      const userAccount = await getAccount(currentAccount); 
-      console.warn(userAccount)
-      console.warn(userTasks);
-      console.warn(workersWithLastTasks);
-      let userWorkers = [];
-      if(workersWithLastTasks.workerClusters)
-      workersWithLastTasks.workerClusters.filter(worker => {
-        if(userAccount[0] == worker.owner){
-          userWorkers.push(worker);
-        }
-      })
-      if(workersWithLastTasks.executableWorkers)
-      workersWithLastTasks.executableWorkers.filter(worker => {
-        if(userAccount[0] == worker.owner){
-          userWorkers.push(worker);
-        }
-      })
-      return userWorkers
-    } catch(error){
-      toast("Error Retrieving the Workers...")
-      return []
-    }
-  }
+  const {
+    data: userWorkerClusters,
+    refetch: refetchWorkerClusters,
+    //isLoading: computeHourPriceIsLoading,
+    //error: computeHourPriceError 
+  } = useUserWorkersQuery(isProvider, "workerClusters");
 
+  const {
+    data: userExecutableWorkers,
+    refetch: refetchExecutableWorkers,
+    //isLoading: computeHourPriceIsLoading,
+    //error: computeHourPriceError 
+  } = useUserWorkersQuery(isProvider, "executableWorkers");
 
   return (
     <div className="h-screen bg-cb-gray-700 flex flex-col ">
@@ -244,8 +224,8 @@ function Dashboard() {
           <AddNodeButton addNode={addNode} />
         </div>
       </div>
-      {node || (workersWithLastTasks && workersWithLastTasks.executableWorkers.length > 0) ? (
-        <NodeList nodes={handleReturnWorkers()} taskMetadata={taskMetadata} />
+      {node || (userWorkerClusters && userWorkerClusters.lenth > 0 && userExecutableWorkers && userExecutableWorkers.length > 0 ) ? (
+        <NodeList nodes={[...userExecutableWorkers, ...userWorkerClusters]} taskMetadata={taskMetadata} />
       ) : (
         <NoNodes addNode={addNode} />
       )}

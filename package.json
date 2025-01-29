@@ -40,6 +40,7 @@
     "@polkadot/ui-settings": "^3.3.1",
     "@polkadot/util": "^12.1.2",
     "@polkadot/util-crypto": "^12.1.2",
+    "@tanstack/react-query": "^5.65.1",
     "axios": "^1.6.8",
     "bn.js": "^5.2.1",
     "country-reverse-geocoding": "^0.2.2",

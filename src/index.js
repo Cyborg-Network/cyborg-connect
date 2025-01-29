@@ -18,6 +18,7 @@ import PageWrapper from './cyborg/components/general/layouts/page-wrapper/PageWr
 import { UiContextProvider } from './cyborg/context/UiContext';
 import MapInteractor from './cyborg/components/general/map/MapInteractor';
 import SelectNodePage from './cyborg/components/accessCompute/select-node/SelectNode';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -141,8 +142,18 @@ const router = createBrowserRouter([
   }
 ]);
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60,
+      retry: 3,
+    }
+  }
+})
+
 ReactDOM.render(
   <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
     <SubstrateContextProvider>
       <AccountContextProvider>
         <CyborgContextProvider>
@@ -163,6 +174,7 @@ ReactDOM.render(
         </CyborgContextProvider>
       </AccountContextProvider>
     </SubstrateContextProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

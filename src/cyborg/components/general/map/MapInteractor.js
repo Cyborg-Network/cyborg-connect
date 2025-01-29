@@ -9,9 +9,8 @@ import Modal from '../modals/Modal'
 import InfoBox from '../InfoBox'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
-import { useCyborg } from '../../../CyborgContext'
 import useService from '../../../hooks/useService'
-import { returnCorrectWorkers } from '../../../util/returnCorrectWorkers'
+import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
@@ -43,7 +42,11 @@ const MapInteractor = () => {
   const navigate = useNavigate()
 
   const service = useService();
-  const workersWithCorrectType = returnCorrectWorkers(useCyborg().workersWithLastTasks, service);
+  const {
+    data: workers,
+    //isLoading: workersIsLoading,
+    //error: workersError
+  } = useWorkersQuery(service.workerType);
 
   const [userLocation, setUserLocation] = useState(null)
   const [selectedNode, setSelectedNode] = useState(null)
@@ -56,14 +59,14 @@ const MapInteractor = () => {
   }
 
   const handleSelectNode = node => {
-    setSelectedNode({ ...node, ['country']: getNodeCountry(node) })
+    setSelectedNode({ ...node, country: getNodeCountry(node) })
   }
 
   const handleManualSelection = (id, owner) => {
-    const node = workersWithCorrectType.find(node => node.owner === owner && node.id === id)
+    const node = workers.find(node => node.owner === owner && node.id === id)
 
     if(node){
-      setSelectedNode({...node, ['country']: getNodeCountry(node) })
+      setSelectedNode({...node, country: getNodeCountry(node) })
     } else {
       toast("This node does not exist")
     }
@@ -97,6 +100,10 @@ const MapInteractor = () => {
             'An unknown error occurred, please enter your location manually.'
           )
           break
+        default:
+          toast(
+            'An unknown error occurred, please enter your location manually.'
+          )
       }
     }
 
@@ -110,18 +117,18 @@ const MapInteractor = () => {
   }
   
   useEffect(() => {
-    if (userLocation && workersWithCorrectType)
-    if (workersWithCorrectType.length > 0) {
-      const nodeData = getNearestNode(userLocation, workersWithCorrectType)
+    if (userLocation && workers)
+    if (workers.length > 0) {
+      const nodeData = getNearestNode(userLocation, workers)
 
       setNearestNode({
         ...nodeData.node,
-        ['country']: getNodeCountry(nodeData.node),
+        country: getNodeCountry(nodeData.node),
       })
       handleSelectNode(nodeData.node)
       setDistance(nodeData.distance)
     }
-  }, [userLocation])
+  }, [userLocation, workers])
 
   useEffect(() => {
     if (selectedNode && userLocation) {
@@ -167,7 +174,7 @@ const MapInteractor = () => {
         )}
         <div className="h-full rounded-lg bg-cb-gray-600">
           <Map
-            nodes={workersWithCorrectType}
+            nodes={workers}
             userCoordinates={userLocation}
             handleSelectNode={handleSelectNode}
             selectedNode={selectedNode}

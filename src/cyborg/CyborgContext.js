@@ -3,19 +3,33 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useMemo,
 } from 'react'
-import { useSubstrateState } from '../substrate-lib'
-import { i32CoordinateToFloatCoordinate } from './util/coordinateConversion'
 import comingsoon from '../../public/assets/icons/comingsoon.svg'
 import cyberdock from '../../public/assets/icons/cyberdock.svg'
 import neurozk from '../../public/assets/icons/neuro-zk.svg'
-import { getAccount } from './util/getAccount'
 
 export const SERVICES = {
-  NO_SERVICE: {id: "0", name: "No service selected", icon: comingsoon, substrateEnumValue: null},
-  CYBER_DOCK: {id: "CYBER_DOCK", name: "Cyber Dock", icon: cyberdock, substrateEnumValue: "docker"},
-  EXECUTABLE: {id: "EXECUTABLE", name: "Executable", icon: neurozk, substrateEnumValue: "executable"}
+  NO_SERVICE: {
+    id: null, 
+    name: null, 
+    icon: comingsoon, 
+    substrateEnumValue: null,
+    workerType: null
+  },
+  CYBER_DOCK: {
+    id: "CYBER_DOCK", 
+    name: "Cyber Dock", 
+    icon: cyberdock, 
+    substrateEnumValue: "docker",
+    workerType: "workerClusters"
+  },
+  EXECUTABLE: {
+    id: "EXECUTABLE", 
+    name: "Executable", 
+    icon: neurozk, 
+    substrateEnumValue: "executable",
+    workerType: "executableWorkers"
+  }
 }
 
 export const DEPLOY_STATUS = {
@@ -79,149 +93,8 @@ const CyborgContext = React.createContext()
 
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const { api, apiState, currentAccount } = useSubstrateState()
   const [tasks, setTasks] = useState(undefined)
-  const [workers, setWorkers] = useState({workerClusters: [], executableWorkers: []})
-  const [reloadWorkers, setReloadWorkers] = useState(false)
   const { taskMetadata } = state
-
-  // Get tasks owned by user
-  useEffect(() => {
-    const getUserOwnedTasks = async () => {
-      try{
-        const allTasks = await api.query.taskManagement.taskOwners.entries()
-        const userAccount = await getAccount(currentAccount);
-        const userAddress = userAccount[0];
-        const userOwnedTasks = allTasks
-          .map(([key, value]) => {
-            const currentTaskOwner = value.toHuman();
-
-            if(currentTaskOwner === userAddress){
-              return parseInt(key.toHuman()[0]);
-            }
-        })
-        setUserTasks(userOwnedTasks)
-        console.log(userOwnedTasks)
-      } catch(error){
-        console.log("Something went wrong when getting users tasks", error)
-      }
-    }
-    if (currentAccount && api && apiState === 'READY') {
-      getUserOwnedTasks()
-    }
-  }, [api, apiState, currentAccount, reloadWorkers])
-
-  // Get tasks and workers from the chain
-  useEffect(() => {
-    console.log('reload workers: ', reloadWorkers)
-    const getTaskAllocations = async () => {
-      const entries = await api.query.taskManagement.taskAllocations.entries()
-      const assignees = entries
-        .map(([key, value]) => {
-          const [taskExecutor, workerId] = value.toHuman()
-          return {
-            taskExecutor,
-            workerId,
-            taskId: Number(key.toHuman()[0]),
-          }
-        })
-        .sort((a, b) => a.taskId - b.taskId)
-      console.log('assignees: ', assignees)
-      setTasks(assignees)
-    }
-    if (api && apiState === 'READY') {
-      getTaskAllocations()
-    }
-  }, [api, apiState])
-
-  useEffect(() => {
-    const getRegisteredWorkers = async () => {
-      const worker_cluster_entries = await api.query.edgeConnect.workerClusters.entries()
-      // Extract and process the worker clusters
-      const workerClusters = worker_cluster_entries.map(([key, value]) => {
-        return { ...value.toHuman(), lastTask: null }
-      })
-      console.log('WORKER_CLUSTERS RETREIVED:: ', workerClusters)
-      setWorkers({...workers, workerClusters: workerClusters})
-      const executbale_worker_entries = await api.query.edgeConnect.executableWorkers.entries()
-      // Extract and process the worker clusters
-      const executableWorkers = executbale_worker_entries.map(([key, value]) => {
-        return { ...value.toHuman(), lastTask: null }
-      })
-      console.log('EXECUTABLE_WORKERS RETREIVED:: ', workerClusters)
-      setWorkers({...workers, executableWorkers: executableWorkers})
-
-    }
-    if ((api && apiState === 'READY') || reloadWorkers) {
-      getRegisteredWorkers()
-      setReloadWorkers(false)
-    }
-  }, [api, apiState, reloadWorkers])
-
-  const workersWithLastTasks = useMemo(() => {
-    let workerClusters = undefined;
-    let executableWorkers = undefined;
-
-    if (workers.workerClusters && tasks) {
-      // console.log("task with workers: ", workers,tasks)
-      workerClusters = workers.workerClusters.map(worker => {
-        if (
-          isNaN(worker.location.latitue) &&
-          isNaN(worker.location.longitude)
-        ) {
-          worker.location.latitude = i32CoordinateToFloatCoordinate(
-            worker.location.latitude
-          )
-          worker.location.longitude = i32CoordinateToFloatCoordinate(
-            worker.location.longitude
-          )
-        }
-        // tasks are iterated through reverse order to find the most recent task for a worker
-        for (let i = tasks.length - 1; i >= 0; i--) {
-          const { taskExecutor, workerId } = tasks[i]
-          // find a match from registered worker's address and id to the task assignee's address and id
-          if (worker.owner === taskExecutor && worker.id === workerId) {
-            return {
-              ...worker,
-              lastTask: i,
-            }
-          }
-        }
-        return worker // no tasks assigned to this worker
-      })
-    }
-
-    if (workers.executableWorkers && tasks) {
-      // console.log("task with workers: ", workers,tasks)
-      executableWorkers = workers.executableWorkers.map(worker => {
-        if (
-          isNaN(worker.location.latitue) &&
-          isNaN(worker.location.longitude)
-        ) {
-          worker.location.latitude = i32CoordinateToFloatCoordinate(
-            worker.location.latitude
-          )
-          worker.location.longitude = i32CoordinateToFloatCoordinate(
-            worker.location.longitude
-          )
-        }
-        // tasks are iterated through reverse order to find the most recent task for a worker
-        for (let i = tasks.length - 1; i >= 0; i--) {
-          const { taskExecutor, workerId } = tasks[i]
-          // find a match from registered worker's address and id to the task assignee's address and id
-          if (worker.owner === taskExecutor && worker.id === workerId) {
-            return {
-              ...worker,
-              lastTask: i,
-            }
-          }
-        }
-        return worker // no tasks assigned to this worker
-      })
-    }
-    return {workerClusters, executableWorkers}
-  }, [workers, tasks])
-  console.log('Workers with tasks: ', workersWithLastTasks)
 
   // keep last executed task info in storage if not present
   useEffect(() => {
@@ -238,6 +111,7 @@ const CyborgContextProvider = props => {
     }
   }, [taskMetadata, tasks])
 
+  /*
   useEffect(() => {
     if (api && api.query.system) {
       const subscribeToEvents = async () => {
@@ -280,6 +154,7 @@ const CyborgContextProvider = props => {
       }
     }
   }, [api])
+  */
 
   const selectService = service => {
     dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
@@ -328,9 +203,11 @@ const CyborgContextProvider = props => {
     dispatch({ type: ACTIONS.LIST_WORKERS, payload: list })
   }
 
+  /*
   const setUserTasks = userTasks => {
     dispatch({ type: ACTIONS.SET_USER_TASKS, payload: userTasks })
   }
+  */
 
   const addUserTask = taskId => {
     let currentUserTasks;
@@ -352,8 +229,6 @@ const CyborgContextProvider = props => {
         setTaskMetadata,
         setDeployComputeStatus,
         listWorkers,
-        workersWithLastTasks,
-        setReloadWorkers,
       }}
     >
       {props.children}

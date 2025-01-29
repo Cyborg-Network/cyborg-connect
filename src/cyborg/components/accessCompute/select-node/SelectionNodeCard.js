@@ -2,18 +2,15 @@ import { Separator } from '../../general/Separator'
 import { FaCheck } from 'react-icons/fa6'
 import Button from '../../general/buttons/Button'
 import server from '../../../../../public/assets/icons/server.svg'
-import { useEffect, useState } from 'react'
-import { getComputeHourPrice } from '../../../util/getComputeHourPrice'
-import { useSubstrateState } from '../../../../substrate-lib'
+import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
 
 const SelectionNodeCard = ({ node, onClick, isSelected }) => {
 
-  const { api } = useSubstrateState()
-  const [currentPrice, setCurrentPrice] = useState(0);
-
-  useEffect(async() => {
-    setCurrentPrice(await getComputeHourPrice(api))
-  }, [])
+  const {
+    data: computeHourPrice,
+    //isLoading: computeHourPriceIsLoading,
+    //error: computeHourPriceError 
+  } = usePriceQuery();
 
   return (
     <Button
@@ -41,7 +38,7 @@ const SelectionNodeCard = ({ node, onClick, isSelected }) => {
             </div>
             <div className="flex gap-2">
               <div className="text-xl font-bold text-white">
-                {`${currentPrice}`}
+                {`${computeHourPrice}`}
                 <span className="text-gray-400 text-base">ENTT</span>
               </div>
               <div className="bg-white rounded-lg px-1 py-0.5 text-cb-gray-700 text-xs h-fit w-fit self-center">
