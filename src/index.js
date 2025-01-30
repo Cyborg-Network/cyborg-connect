@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import './index.css' 
 import { Main } from './App'
 import { createBrowserRouter, RouterProvider, Outlet, Link, useLocation } from 'react-router-dom';
@@ -151,7 +151,10 @@ const queryClient = new QueryClient({
   }
 })
 
-ReactDOM.render(
+const domNode = document.getElementById('root');
+const root = createRoot(domNode);
+
+root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
     <SubstrateContextProvider>
@@ -175,6 +178,5 @@ ReactDOM.render(
       </AccountContextProvider>
     </SubstrateContextProvider>
     </QueryClientProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 )
