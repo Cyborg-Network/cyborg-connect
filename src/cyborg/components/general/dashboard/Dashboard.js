@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import nondeployed from '../../../../../public/assets/icons/nondeployed.png'
 import deploymentsTab from '../../../../../public/assets/icons/deployment-logo.png'
-import { useCyborgState } from '../../../CyborgContext'
 import Button from '../buttons/Button'
 import { TbRefresh } from 'react-icons/tb'
 import { NodeList } from './NodeList'

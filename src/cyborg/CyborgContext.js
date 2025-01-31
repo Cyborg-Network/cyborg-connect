@@ -1,12 +1,12 @@
 import React, {
   useReducer,
-  useState,
   useContext,
-  useEffect,
 } from 'react'
 import comingsoon from '../../public/assets/icons/comingsoon.svg'
 import cyberdock from '../../public/assets/icons/cyberdock.svg'
 import neurozk from '../../public/assets/icons/neuro-zk.svg'
+
+//TODO: Currently most of this is not used. However the functionality is still there, because it might be needed with future parachain updates (eg. for keeping track of deployed tasks in the background via event subscription), but Zustand might be a better lib for that
 
 export const SERVICES = {
   NO_SERVICE: {
@@ -48,9 +48,6 @@ const initialState = {
     deployCompute: null,
     deployTask: null,
   },
-  workerList: null,
-  taskList: null,
-  taskMetadata: null,
   userTasks: null,
 }
 
@@ -59,9 +56,6 @@ const initialState = {
 const ACTIONS = {
   SELECT_SERVICE: 'SELECT_SERVICE',
   DEPLOY_SERVICE: 'DEPLOY_SERVICE',
-  LIST_WORKERS: 'LIST_WORKERS',
-  LIST_TASKS: 'LIST_TASKS',
-  SET_TASK_METADATA: 'SET_TASK_METADATA',
   SET_USER_TASKS: 'SET_USER_TASKS',
 }
 
@@ -76,12 +70,6 @@ const reducer = (state, action) => {
       return { ...state, service: action.payload }
     case ACTIONS.DEPLOY_SERVICE:
       return { ...state, serviceStatus: action.payload }
-    case ACTIONS.LIST_WORKERS:
-      return { ...state, workerList: action.payload }
-    case ACTIONS.LIST_TASKS:
-      return { ...state, taskList: action.payload }
-    case ACTIONS.SET_TASK_METADATA:
-      return { ...state, taskMetadata: action.payload }
     case ACTIONS.SET_USER_TASKS:
       return {...state, userTasks: action.payload }
     default:
@@ -93,7 +81,6 @@ const CyborgContext = React.createContext()
 
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const [tasks, setTasks] = useState(undefined)
 
   /*
   useEffect(() => {
@@ -158,16 +145,6 @@ const CyborgContextProvider = props => {
     })
   }
 
-  const listWorkers = list => {
-    dispatch({ type: ACTIONS.LIST_WORKERS, payload: list })
-  }
-
-  /*
-  const setUserTasks = userTasks => {
-    dispatch({ type: ACTIONS.SET_USER_TASKS, payload: userTasks })
-  }
-  */
-
   const addUserTask = taskId => {
     let currentUserTasks;
     if(state.userTasks){
@@ -185,9 +162,7 @@ const CyborgContextProvider = props => {
         selectService,
         addUserTask,
         setTaskStatus,
-        setTaskMetadata,
         setDeployComputeStatus,
-        listWorkers,
       }}
     >
       {props.children}
