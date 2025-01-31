@@ -7,7 +7,7 @@ import { getAccount } from '../../util/getAccount';
 const getWorkers = async (api, workerType) => {
       const workerEntries = await api.query.edgeConnect[workerType].entries()
 
-      const workers = workerEntries.map(([key, value]) => {
+      const workers = workerEntries.map(([_key, value]) => {
         const data = value.toHuman()
 
         return { 
@@ -16,7 +16,9 @@ const getWorkers = async (api, workerType) => {
             latitude: i32CoordinateToFloatCoordinate(data.location.latitude),
             longitude: i32CoordinateToFloatCoordinate(data.location.longitude)
           }, 
-          lastTask: null }
+          lastTask: null,
+          workerType: workerType
+        }
       })
 
       return workers;
@@ -26,10 +28,11 @@ const getWorkers = async (api, workerType) => {
 // workerType can be "executableWorkers" or "workerClusters"
 const getUserWorkers = async (api, currentAccount, isProvider, workerType) => {
   if(isProvider){
-    const workers = getWorkers(api, workerType);
-    const userAccount = getAccount(currentAccount)
+    const workers = await getWorkers(api, workerType);
+    const userAccount = await getAccount(currentAccount);
+    const userAddress = userAccount[0];
 
-    return workers.filter(worker => worker.owner === userAccount)
+    return workers.filter(worker => worker.owner === userAddress)
   }
   //TODO: This whole next block is wildly inefficient, but a more efficient approach 
   // requires a fix on the parachain side
@@ -78,6 +81,8 @@ const getUserWorkers = async (api, currentAccount, isProvider, workerType) => {
         userWorkers.push(worker);
       }
     })
+
+    console.log(userWorkers);
 
     return userWorkers;
   }

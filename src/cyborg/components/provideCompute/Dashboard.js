@@ -8,6 +8,9 @@ import { Button } from 'semantic-ui-react'
 import { TbRefresh } from 'react-icons/tb'
 import { useSubstrateState } from '../../../substrate-lib'
 import { getAccount } from '../../util/getAccount'
+
+//TODO: Component not in use right now. Might be necessary in the future in case the abstract one (in /general) doesn't make sense anymore
+
 function AddNodeButton({ addNode }) {
   return (
     <button

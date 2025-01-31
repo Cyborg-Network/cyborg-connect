@@ -16,6 +16,7 @@ const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
 // (specs will be interesting to user because there might be a willingness to pay more for a node with better reputation even though it may be more powerful than what is needed )
 
+//TODO: Here again will proably be a better way to do this, but will depend on the parachain implementation (eg. geohashes)
 const getNearestNode = (originLocation, nodes) => {
   const currentNearest = { distance: null, node: null }
 

@@ -14,7 +14,8 @@ function GaugeDisplay({
     setAsSelectedGauge(name, fill)
   }
 
-  console.log(percentage, fill, name)
+  //console.log(percentage, fill, name)
+
   return (
     //Using mousedown events instead of onclick events on "unimportant" clicks, as feedback is immediate => better UX
     <div
@@ -58,7 +59,7 @@ function GaugeDisplay({
         } w-full flex gap-2 text-lg justify-center items-center h-12 rounded-b-lg`}
       >
         <div>View Details</div>
-        <img src={name === selectedGauge.name ? arrowUp : arrowDown} />
+        <img alt='Gauge Details' src={name === selectedGauge.name ? arrowUp : arrowDown} />
       </div>
     </div>
   )

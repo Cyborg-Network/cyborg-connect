@@ -17,7 +17,6 @@ export const decryptMessage = async (encryptedDataHex, nonceHex, diffieHellmanSe
 
       const decryptedText = new TextDecoder().decode(decryptedMessage);
 
-
       return decryptedText
     } catch (error) {
       console.error('Decryption failed: ', error)

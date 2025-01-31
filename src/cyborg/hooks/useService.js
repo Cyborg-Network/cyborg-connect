@@ -1,6 +1,8 @@
 import { useLocation } from 'react-router-dom'
 import { SERVICES } from '../CyborgContext'
 
+//TODO: Temporary band-aid, when moving to TS / other routing options (rec: @tanstack/router, requires vite) this should be replaced and probably be put in the URL
+
 function useService() {
   const location = useLocation().pathname
 

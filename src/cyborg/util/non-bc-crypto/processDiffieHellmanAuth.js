@@ -1,6 +1,6 @@
 import sodium from 'libsodium-wrappers'
 
-  export const processAuthMessage = async (nodePubKeyHex, privateKey) => {
+  export const processDiffieHellmanAuth = async (nodePubKeyHex, privateKey) => {
     await sodium.ready;
 
     const nodePubKey = sodium.from_hex(nodePubKeyHex);

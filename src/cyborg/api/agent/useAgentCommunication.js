@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useWebSocket } from "react-use-websocket/dist/lib/use-websocket";
-import { constructAgentApiRequest, constructAgentAuthRequest } from "../api/agent";
-import { decryptMessage } from "../util/non-bc-crypto/decryptMessage";
-import { generateX25519KeyPair } from "../util/non-bc-crypto/generateX25519KeyPair";
-import { processAuthMessage } from "../util/non-bc-crypto/processAuthMessage";
+import { constructAgentApiRequest, constructAgentAuthRequest } from "./agent";
+import { decryptMessage } from "../../util/non-bc-crypto/decryptMessage";
+import { generateX25519KeyPair } from "../../util/non-bc-crypto/generateX25519KeyPair";
+import { processDiffieHellmanAuth } from "../../util/non-bc-crypto/processDiffieHellmanAuth";
 
 //const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io/ws/';
 const CYBORG_SERVER_URL = 'ws://127.0.0.1:8081';
@@ -22,9 +22,13 @@ export const useAgentCommunication = (metadata) => {
 
   const [lockState, setLockState] = useState({isLocked: true, isLoading: false});
 
+  const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   const { sendMessage } = useWebSocket(CYBORG_SERVER_URL, {
     onOpen: () => {
-      console.log("Connection established")
+      console.log("Connection with cyborg-agent established")
     },
     onMessage: async (message) => {
 
@@ -35,7 +39,6 @@ export const useAgentCommunication = (metadata) => {
           const usageJson = await decryptMessage(messageData.encrypted_data_hex, messageData.nonce_hex, diffieHellmanSecret) 
           const usage = JSON.parse(usageJson);
           const now = new Date().toLocaleString();
-          console.log(usage);
           setUsageData(prev => ({
             CPU: [...prev.CPU, usage.cpu_usage], 
             RAM: [...prev.RAM, usage.mem_usage], // in bytes
@@ -53,7 +56,7 @@ export const useAgentCommunication = (metadata) => {
           break;
         }
         case "Auth": {
-          const decryptionKey = await processAuthMessage(messageData.node_public_key, keys.privateKey);
+          const decryptionKey = await processDiffieHellmanAuth(messageData.node_public_key, keys.privateKey);
           setDiffieHellmanSecret(decryptionKey);
           break;
         }
@@ -63,6 +66,16 @@ export const useAgentCommunication = (metadata) => {
         }
         case "Error": {
           if(messageData.error_type && messageData.error_type === "Auth"){
+            for(let i = 0; i < 8; i++){
+              if(diffieHellmanSecret){
+                return
+              }
+              await sleep(5000);
+              if(diffieHellmanSecret){
+                return
+              }
+              authenticateWithAgent()
+            }
             toast(`${messageData.error_message} Returning to dashboard.`);
             setTimeout(() => navigate(-1), 3000);
           } else {

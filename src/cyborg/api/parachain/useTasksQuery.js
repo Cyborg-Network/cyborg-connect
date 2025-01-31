@@ -15,6 +15,8 @@ const getUserTasks = async (api, currentAccount) => {
             }
       })
 
+      console.log(userOwnedTasks);
+
       return userOwnedTasks
 }
 

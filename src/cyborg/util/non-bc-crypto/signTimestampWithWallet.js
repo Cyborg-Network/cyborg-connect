@@ -2,7 +2,7 @@ import { web3FromAddress, web3Enable, web3Accounts } from '@polkadot/extension-d
 import { stringToU8a, u8aToHex } from '@polkadot/util'
 import { toast } from 'react-hot-toast'
 
-export const signMessageWithWallet = async () => {
+export const signTimestampWithWallet = async () => {
   try{
     const extensions = await web3Enable('Your App Name');
     

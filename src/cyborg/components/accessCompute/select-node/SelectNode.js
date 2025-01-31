@@ -15,6 +15,7 @@ import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import useService from '../../../hooks/useService'
 import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
+import { isPositiveInteger } from '../../../util/checkIsPositiveInt'
 //import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
@@ -51,10 +52,7 @@ function SelectNodePage() {
       ])
   }, [preSelectedNode])
 
-  useEffect(() => {
-    console.log(selectedNodes);
-  }, [selectedNodes])
-
+  //TODO: This is another thing that should be fixed from the parachain side, perhaps with geohashes
   useEffect(() => {
     const getOtherNearbyNodes = () => {
       const fourNearest = []
@@ -115,11 +113,6 @@ function SelectNodePage() {
     }
 
     setDeploymentStage(DEPLOYMENT_STAGES.PAYMENT)
-  }
-
-  function isPositiveInteger(input) {
-    const positiveIntegerPattern = /^[1-9]\d*$/;
-    return positiveIntegerPattern.test(input);
   }
 
   const cancelTransaction = () => {
@@ -207,14 +200,15 @@ function SelectNodePage() {
       ) : (
         <></>
       )}
-      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && (service.id === SERVICES.CYBER_DOCK.id || service.id === SERVICES.EXECUTABLE.id) ? (
-        <SimpleTaskUpload
-          onCancel={cancelTransaction}
-          nodes={selectedNodes}
-        />
-      ) : (
-        <></>
-      )}
+      {
+        (deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT) && 
+        (service.id === SERVICES.CYBER_DOCK.id || service.id === SERVICES.EXECUTABLE.id)
+        ? <SimpleTaskUpload
+            onCancel={cancelTransaction}
+            nodes={selectedNodes}
+          />
+        : <></>
+      }
       {/*
       {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && service.id === SERVICES.NEURO_ZK.id
         ? <NeuroZkUpload

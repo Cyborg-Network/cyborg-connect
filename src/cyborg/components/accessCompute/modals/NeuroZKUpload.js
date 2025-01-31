@@ -18,6 +18,7 @@ import axios from 'axios'
 import LoadingModal from '../../general/modals/Loading'
 import { ReactComponent as ZkPublicInputs } from '../../../../../public/assets/icons/zk_public_inputs.svg'
 
+//TODO: This file will become relevant again when the new AI/ZK miners roll out, at this point it should be adjusted to work in a similar way to SimpleTaskUpload.js
 function NeuroZkUpload({ setService, onCancel, nodes }) {
   const navigate = useNavigate()
 

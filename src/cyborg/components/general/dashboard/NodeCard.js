@@ -64,7 +64,7 @@ const NodeCard = ({ item, lastTask, isProvider }) => {
           />
           <LI>
             <SPAN>IP / URL:</SPAN>
-            <span>{/*`${item.api.domain}`*/'16.171.249.42'}</span>
+            <span>{`${item.api.domain}`}</span>
           </LI>
           <Separator
             colorClass={'bg-gray-500'}
@@ -94,7 +94,7 @@ const NodeCard = ({ item, lastTask, isProvider }) => {
           ?
           <div 
             className='absolute text-gray-400 top-4 right-4 lg:right-12 lg:top-1/2 lg:-translate-y-1/2 hover:text-red-800'
-            onClick={() => setRemoveNodeModalIsActive(true)}
+            onClick={() => {setRemoveNodeModalIsActive(true); console.log(item)}}
           >
             <FaRegTrashAlt size={20} />
           </div>
@@ -105,7 +105,10 @@ const NodeCard = ({ item, lastTask, isProvider }) => {
     </div>
     {
       removeNodeModalIsActive
-      ? <RemoveNodeModal nodeInfo={{owner: item.owner, id: item.id, workerType: item.workerType}} onCancel={() => setRemoveNodeModalIsActive(false)}/>
+      ? <RemoveNodeModal 
+          nodeInfo={{owner: item.owner, id: item.id, workerType: item.workerType}} 
+          onCancel={() => setRemoveNodeModalIsActive(false)}
+        />
       : <></>
     }
     </>

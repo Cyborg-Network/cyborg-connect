@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react'
 import { useSubstrateState, useSubstrate } from '../../substrate-lib'
 
+//TODO: Not in use right now, as SubstrateContext provides the same functionality. This is here in case we want to move off of the substrate-frontend-template in the future
+
 const AccountContext = React.createContext()
 
 const AccountContextProvider = props => {
@@ -30,7 +32,7 @@ const AccountContextProvider = props => {
         initialAddress.length > 0 &&
         setCurrentAccount(keyring.getPair(initialAddress))
     }
-  }, [currentAccount, setCurrentAccount, keyring])
+  }, [currentAccount, setCurrentAccount, keyring, keyringState])
 
   return (
     <AccountContext.Provider value={{}}>

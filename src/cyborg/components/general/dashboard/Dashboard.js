@@ -33,9 +33,7 @@ function Dashboard() {
   const [addNodeModalIsActive, setAddNodeModalIsActive] = useState(false);
   const [firstDeployModalIsActive, setFirstDeployModalIsActive] = useState(false);
 
-  const { taskMetadata, userTasks } = useCyborgState()
   const { sidebarIsActive } = useUi()
-
 
   const {
     data: userWorkerClusters,
@@ -103,18 +101,21 @@ function Dashboard() {
             )}*/}
           </div>
         </div>
-        {(userTasks && userWorkerClusters && userExecutableWorkers &&
-          (userWorkerClusters.length > 0 || userExecutableWorkers.length > 0) &&
-          taskMetadata) ? (
-          <NodeList nodes={[...userExecutableWorkers, ...userWorkerClusters]} taskMetadata={taskMetadata} isProvider={isProvider} />
-        ) : (
-          <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
-        )}
-        {addNodeModalIsActive
+        {
+          (userWorkerClusters?.lenght > 0 || userExecutableWorkers?.length > 0) 
+          ? <NodeList 
+              nodes={[...userExecutableWorkers, ...userWorkerClusters]} 
+              isProvider={isProvider} 
+            />
+          : <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
+        }
+        {
+          addNodeModalIsActive
           ? <AddNodeModal onCancel={() => setAddNodeModalIsActive(false)}/>
           : <></>
         }
-        {firstDeployModalIsActive
+        {
+          firstDeployModalIsActive
           ? <FirstNodeDeployModal onProceed={() => handleDismissFirstNodeModal()} onCancel={() => setFirstDeployModalIsActive(false)}/>
           : <></>
         }

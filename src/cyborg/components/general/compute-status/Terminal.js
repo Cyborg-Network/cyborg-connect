@@ -6,13 +6,14 @@ import { useState } from 'react'
 export function Terminal({ link, taskId, logs }) {
   const [scrollIsAutomated, setScrollIsAutomated] = useState(true)
 
-  console.log('terminal task: ', taskId)
+  //console.log('terminal task: ', taskId)
+
   return (
     <div className="bg-white bg-opacity-15 relative rounded-lg flex flex-col">
       <div className="absolute top-5 left-5">
-        <a>
-          <img src={widget} />
-        </a>
+        <div>
+          <img alt='Terminal Decoration' src={widget} />
+        </div>
       </div>
       <div className="bg-gradient-to-b from-cb-gray-400 to-cb-gray-600 p-6 rounded-t-lg">
         <h4 className="flex justify-center font-thin">Terminal</h4>

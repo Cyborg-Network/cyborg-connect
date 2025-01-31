@@ -94,22 +94,6 @@ const CyborgContext = React.createContext()
 const CyborgContextProvider = props => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [tasks, setTasks] = useState(undefined)
-  const { taskMetadata } = state
-
-  // keep last executed task info in storage if not present
-  useEffect(() => {
-    if (
-      (!taskMetadata && tasks) ||
-      (taskMetadata && tasks && taskMetadata.taskId < tasks.length - 1)
-    ) {
-      dispatch({
-        type: ACTIONS.SET_TASK_METADATA,
-        payload: {
-          ...tasks[tasks.length - 1],
-        },
-      })
-    }
-  }, [taskMetadata, tasks])
 
   /*
   useEffect(() => {
@@ -164,31 +148,6 @@ const CyborgContextProvider = props => {
     dispatch({
       type: ACTIONS.DEPLOY_SERVICE,
       payload: { ...state.serviceStatus, deployTask },
-    })
-  }
-
-  const setTaskMetadata = (taskExecutor, workerId, taskId) => {
-    setTasks([
-      ...tasks,
-      {
-        taskExecutor,
-        workerId,
-        taskId,
-      },
-    ])
-    console.log('new Tasks: ', tasks)
-    console.log('task metadata: ', {
-      taskExecutor,
-      workerId,
-      taskId,
-    })
-    dispatch({
-      type: ACTIONS.SET_TASK_METADATA,
-      payload: {
-        taskExecutor,
-        workerId,
-        taskId,
-      },
     })
   }
 

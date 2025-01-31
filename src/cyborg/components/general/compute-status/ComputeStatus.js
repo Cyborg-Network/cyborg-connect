@@ -9,7 +9,7 @@ import { ServerSpecs } from './ServerSpecs'
 import { Terminal } from './Terminal'
 import { useUi } from '../../../context/UiContext'
 import SigntoUnlockModal from '../modals/SignToUnlock'
-import { useAgentCommunication } from '../../../hooks/useAgentCommunication'
+import { useAgentCommunication } from '../../../api/agent/useAgentCommunication'
 import { parseGaugeMetric } from './util'
 import { useUserWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 
@@ -45,7 +45,6 @@ export default function ComputeStatus({ perspective }) {
   } = useUserWorkersQuery(false, "workerClusters");
   
   const transformUsageDataToChartData = (usageType) => {
-    console.log(`Transforming data for ${usageType}`)
     let truncatedUsageData;
 
     const truncateUsageData = (usageTypeArray) => {

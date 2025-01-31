@@ -1,10 +1,6 @@
 import NodeCard from './NodeCard'
 
-export function NodeList({ nodes, taskMetadata, isProvider }) {
-  const lastTask = taskMetadata.taskId
-
-  console.log('nodes: in list: ', nodes)
-  console.log('lastTask: ', lastTask)
+export function NodeList({ nodes, isProvider }) {
 
   return (
     <div className="flex flex-col w-full text-white text-opacity-70 ">
@@ -24,7 +20,7 @@ export function NodeList({ nodes, taskMetadata, isProvider }) {
             <NodeCard
               key={item.owner + item.id}
               item={item}
-              lastTask={lastTask}
+              lastTask={item.lastTask}
               isProvider={isProvider}
             />
           ))}

@@ -2,24 +2,16 @@ import React, { useState } from 'react'
 import CloseButton from '../../general/buttons/CloseButton'
 import { Separator } from '../../general/Separator'
 import Modal from '../../general/modals/Modal'
-//import borg from '../../../../../public/assets/icons/dockdeploy.png'
 import crypto from '../../../../../public/assets/icons/crypto.svg'
 import fiat from '../../../../../public/assets/icons/fiat-currencty.svg'
 import Button from '../../general/buttons/Button'
 import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
-import {
-  handleDispatchError,
-  handlePaymentStatusEvents,
-} from '../../../util/serviceDeployment'
-import { getAccount } from '../../../util/getAccount'
 import { useSubstrateState } from '../../../../substrate-lib'
 import robo from '../../../../../public/assets/icons/robo.png'
 import LoadingModal from '../../general/modals/Loading'
 import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
-//import { useNavigate } from 'react-router-dom'
-//import { ROUTES } from '../../../../index'
-//import useService from '../../../hooks/useService'
+import useTransaction from '../../../api/parachain/useTransaction'
 
 const PAYMENT_OPTIONS = [
   { name: 'ENTT', icon: robo, isAvailable: true, testnet: true },
@@ -28,29 +20,8 @@ const PAYMENT_OPTIONS = [
 ]
 
 function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
-  // from updoad docker modal
-   //const navigate = useNavigate()
 
   const { api, currentAccount } = useSubstrateState()
-  //const service = useService()
-
-  //const [url, setUrl] = useState('')
-  const [onIsInBlockWasCalled, setOnIsInBlockWasCalled] = useState(false)
-
-  //const handleUrlChange = e => {
-  //  setUrl(e.target.value)
-  //}
-
-  //const navigateToDashboard = () => {
-  //  if(service.id === 'CYBER_DOCK'){
-  //    navigate(ROUTES.CYBERDOCK_DASHBOARD);
-  //  }
-  // if(service.id === 'NEURO_ZK'){
-  //   navigate(ROUTES.NEURO_ZK_DASHBOARD);
-  //  }
-  //}
-  // from upload docker modal
-  //
 
   const {
     data: computeHourPrice,
@@ -60,7 +31,6 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
 
   const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
-  const [loading, setLoading] = useState(false);
 
   const startTransaction = () => {
     if (!termsAreAccepted) {
@@ -73,77 +43,28 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
       return
     }
 
-    //onConfirm()
-    handleSubmit()
+    submitTransaction()
   }
 
-  const handleSubmit = async event => {
-    //event.preventDefault()
+  const { handleTransaction, isLoading } = useTransaction(api);
 
-    //toast(`Scheduling task for node ${nodeIds[0].owner} / ${nodeIds[0].id}`)
-
-    const fromAcct = await getAccount(currentAccount)
-    if (fromAcct) {
-      const paymentTask = api.tx.payment.purchaseComputeHours(
-        hoursSelected
-      )
-      
-      await paymentTask
-        .signAndSend(...fromAcct, ({ status, events, dispatchError }) => {
-          setLoading(true);
-          //setTaskStatus(DEPLOY_STATUS.PENDING)
-          // status would still be set, but in the case of error we can shortcut
-          // to just check it (so an error would indicate InBlock or Finalized)
-          if (dispatchError) {
-            handleDispatchError(api, dispatchError)
-            toast("Payment failed...")
-            setLoading(false)
-          }
-
-          if (status.isInBlock || status.isFinalized) {
-            const { hasErrored, successfulEvents } = handlePaymentStatusEvents(
-              api,
-              events
-            )
-
-
-
-            if (hasErrored) {
-              toast("Payment failed...")
-              setLoading(false)
-            } else if (successfulEvents) {
-              //setTaskStatus(DEPLOY_STATUS.READY)
-              const paymentEvent = successfulEvents[0].toJSON().event.data
-              console.log('Extrinsic Success: ', paymentEvent)
-
-
-              //There can be scenarios where the status.isInBlock changes mutliple times, we only want to navigate once
-              if (status.isInBlock && !onIsInBlockWasCalled) {
-                setOnIsInBlockWasCalled(true)
-                setLoading(false)
-                onConfirm()
-                //toast.success(
-                //  `Task executing in node ${nodeIds[0].owner} / ${nodeIds[0].id}`
-                //)
-                //navigateToDashboard()
-              }
-            }
-          }
-        })
-        .catch(error => {
-          console.error('Other Errors', error)
-          toast.error(error.toString())
-          setLoading(false) 
-          //setService(null)
-        })
-    }
-  }
-
+  const submitTransaction = async () => {
+    const tx = api.tx.payment.purchaseComputeHours(hoursSelected);
+    await handleTransaction({
+      tx,
+      account: currentAccount,
+      onSuccess: (events) => {
+        console.log("Transaction Successful!", events)
+        onConfirm();
+      },
+      onError: (error) => toast("Transaction Failed:", error),
+    });
+  };
 
   return (
     <>
     {
-    loading ?
+    isLoading ?
     <LoadingModal text={"Processing your payment, please wait..."} />
     :
     <Modal
@@ -174,7 +95,7 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
               }}
             >
               <div className="flex justify-center items-center gap-2">
-                <img className="h-10 aspect-square" src={option.icon} />
+                <img className="h-10 aspect-square" alt="Currency" src={option.icon} />
                 <div className='relative'>
                   {option.name}
                   {option.testnet ?
@@ -213,7 +134,10 @@ function PaymentModal({ onCancel, onConfirm, setService, hoursSelected}) {
           />
           <div>
             I agree to CyborgNetwork's{' '}
-            <a className="hover:cursor-pointer">
+            <a 
+              href='https://github.com/Cyborg-Network/cyborg-parachain/blob/master/Local%20Testing.md' 
+              className="hover:cursor-pointer"
+            >
               Terms of Service and Conditions
             </a>
           </div>

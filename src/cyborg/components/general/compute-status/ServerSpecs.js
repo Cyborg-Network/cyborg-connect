@@ -1,4 +1,5 @@
 import { toast } from 'react-hot-toast'
+import { i32CoordinateToFloatCoordinate } from '../../../util/coordinateConversion'
 
 export function ServerSpecs({ specs, metric, uptime }) {
   return (
@@ -46,7 +47,10 @@ export function ServerSpecs({ specs, metric, uptime }) {
           <p>Location:</p>
           <p>
             {specs
-              ? /*`${specs.location.coordinates[0]}, ${specs.location.coordinates[1] }`*/'5.7721, 1.29401'
+              ? `
+                  ${i32CoordinateToFloatCoordinate(specs.location.coordinates[0].toString())}, 
+                  ${i32CoordinateToFloatCoordinate(specs.location.coordinates[1].toString())}
+                `
               : null}
           </p>
         </li>

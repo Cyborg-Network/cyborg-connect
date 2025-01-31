@@ -24,6 +24,7 @@ function AddNodeModal({onCancel}) {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    //TODO: This is old code, and since the workers will register themselves in production (plug and play) it's unlikely that this component will be needed, keeping it here until final decision
 
     /*
     //TODO: Might be a good idea to figure out a way to perform a node availability check beforehand to not have to rely on the oracle

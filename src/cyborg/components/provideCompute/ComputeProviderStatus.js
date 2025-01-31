@@ -11,6 +11,8 @@ import earnings from '../../../../public/assets/icons/earnings.png'
 import arrowDown from '../../../../public/assets/icons/arrow-circled-down.png'
 import arrowUp from '../../../../public/assets/icons/arrow-circled-up.png'
 
+//TODO: Component not in use right now. Might be necessary in the future in case the abstract one (in /general) doesn't make sense anymore
+
 export function GetLogs({ link, taskId }) {
   const [data, setData] = useState(null)
   const [status, setStatus] = useState(null)

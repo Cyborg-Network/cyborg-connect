@@ -1,10 +1,8 @@
-import { signMessageWithWallet } from "../util/non-bc-crypto/signMessageWithWallet";
+import { signTimestampWithWallet } from "../../util/non-bc-crypto/signTimestampWithWallet";
 import sodium from 'libsodium-wrappers'
 
 export const constructAgentApiRequest = (target_ip, requestType) => {
 
-  console.log(target_ip);
-  
   const request = JSON.stringify({
     target_ip: target_ip,
     endpoint: "Request",
@@ -17,7 +15,7 @@ export const constructAgentApiRequest = (target_ip, requestType) => {
 export const constructAgentAuthRequest = async (target_ip, taskId, ephemeral_public_key) => {
 
   await sodium.ready;
-  const { signedTimestamp, signature } = await signMessageWithWallet();
+  const { signedTimestamp, signature } = await signTimestampWithWallet();
 
   const request = JSON.stringify({
     target_ip: target_ip,
