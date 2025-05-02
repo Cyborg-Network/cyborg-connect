@@ -21,7 +21,7 @@ const CHAIN = {
 }
 
 const parsedQuery = new URLSearchParams(window.location.search)
-const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.CYBORG
+const connectedSocket = parsedQuery.get('rpc') || config.SOCKET_PROVIDER || SOCKETS.LOCAL
 ///
 // Initial state for `useReducer`
 
@@ -35,7 +35,7 @@ const initialState = {
   apiError: null,
   apiState: null,
   currentAccount: null,
-  chain: CHAIN.CYBORG
+  chain: CHAIN.LOCAL
 }
 
 const registry = new TypeRegistry()
@@ -82,7 +82,12 @@ const connect = (state, dispatch) => {
 
   console.log(`Connected socket: ${socket}`)
   const provider = new WsProvider(socket)
-  const _api = new ApiPromise({ provider, rpc: jsonrpc })
+  const _api = new ApiPromise({ 
+    provider, 
+    rpc: jsonrpc,
+    types: {
+    }
+  })
 
   console.log('api: ', _api)
   console.log('jsonrpc: ', jsonrpc)
@@ -95,14 +100,14 @@ const connect = (state, dispatch) => {
   })
   _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }))
   _api.on('error', err => {
-    toast(`Error connecting to socket ${socket}, switching back to default socket.`)
+    toast(`Error connecting to socket ${socket}, retrying...`)
     dispatch({ type: 'CONNECT_ERROR', payload: err })
     if(socket !== SOCKETS.CYBORG)
-    setTimeout(() => {
-      dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.CYBORG, chain: CHAIN.CYBORG } })
-      sessionStorage.setItem('CHAIN', CHAIN.CYBORG);
+  {/*setTimeout(() => {
+      dispatch({ type: 'SWITCH_PROVIDER', payload: { socket: SOCKETS.LOCAL, chain: CHAIN.LOCAL } })
+      sessionStorage.setItem('CHAIN', CHAIN.LOCAL);
       window.location.reload(true)
-    }, 1500)
+    }, 30000)*/}
   })
 }
 
