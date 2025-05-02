@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "jsx": "react",
+      "allowJs": true,
+      "checkJs": false,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "outDir": "./dist",
+      "noEmit": false,
+    },
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx", 
+      "custom.d.ts"    
+    ],
+    "exclude": [
+      "node_modules",
+      "src/**/*.js"
+    ],
+}
