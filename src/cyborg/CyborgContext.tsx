@@ -1,38 +1,8 @@
-import React, {
-  useReducer,
-  useContext,
-} from 'react'
-import comingsoon from '../../public/assets/icons/comingsoon.svg'
-import cyberdock from '../../public/assets/icons/cyberdock.svg'
-import neurozk from '../../public/assets/icons/neuro-zk.svg'
-import { Service } from './types/service'
+import React, { useReducer, useContext } from 'react'
+
 import { TaskId } from './types/task'
 
 //TODO: Currently most of this is not used. However the functionality is still there, because it might be needed with future parachain updates (eg. for keeping track of deployed tasks in the background via event subscription), but Zustand might be a better lib for that
-
-export const SERVICES = {
-  NO_SERVICE: {
-    id: null, 
-    name: null, 
-    icon: comingsoon, 
-    substrateEnumValue: null,
-    workerType: null
-  },
-  CYBER_DOCK: {
-    id: "CYBER_DOCK", 
-    name: "Cyber Dock", 
-    icon: cyberdock, 
-    substrateEnumValue: "docker",
-    workerType: "workerClusters"
-  },
-  EXECUTABLE: {
-    id: "EXECUTABLE", 
-    name: "Executable", 
-    icon: neurozk, 
-    substrateEnumValue: "executable",
-    workerType: "executableWorkers"
-  }
-}
 
 export const DEPLOY_STATUS = {
   PENDING: 'PENDING',
@@ -45,7 +15,6 @@ export const DEPLOY_STATUS = {
 
 const initialState = {
   // These are the states
-  service: null,
   serviceStatus: {
     deployCompute: null,
     deployTask: null,
@@ -56,7 +25,6 @@ const initialState = {
 ///
 // Actions types for 'useReducer`
 const ACTIONS = {
-  SELECT_SERVICE: 'SELECT_SERVICE',
   DEPLOY_SERVICE: 'DEPLOY_SERVICE',
   SET_USER_TASKS: 'SET_USER_TASKS',
 }
@@ -68,12 +36,10 @@ const reducer = (state, action) => {
   console.log('cyborg action: ', action)
   console.log('cyborg state: ', state)
   switch (action.type) {
-    case ACTIONS.SELECT_SERVICE:
-      return { ...state, service: action.payload }
     case ACTIONS.DEPLOY_SERVICE:
       return { ...state, serviceStatus: action.payload }
     case ACTIONS.SET_USER_TASKS:
-      return {...state, userTasks: action.payload }
+      return { ...state, userTasks: action.payload }
     default:
       throw new Error(`Unknown type: ${action.type}`)
   }
@@ -129,10 +95,6 @@ const CyborgContextProvider = props => {
   }, [api])
   */
 
-  const selectService = (service: Service) => {
-    dispatch({ type: ACTIONS.SELECT_SERVICE, payload: service })
-  }
-
   const setTaskStatus = deployTask => {
     dispatch({
       type: ACTIONS.DEPLOY_SERVICE,
@@ -148,20 +110,19 @@ const CyborgContextProvider = props => {
   }
 
   const addUserTask = (taskId: TaskId) => {
-    let currentUserTasks;
-    if(state.userTasks){
+    let currentUserTasks
+    if (state.userTasks) {
       currentUserTasks = [...state.userTasks, taskId]
-    }else{
-      currentUserTasks = [taskId];
+    } else {
+      currentUserTasks = [taskId]
     }
-    dispatch({ type: ACTIONS.SET_USER_TASKS, payload: currentUserTasks})
+    dispatch({ type: ACTIONS.SET_USER_TASKS, payload: currentUserTasks })
   }
 
   return (
     <CyborgContext.Provider
       value={{
         state,
-        selectService,
         addUserTask,
         setTaskStatus,
         setDeployComputeStatus,

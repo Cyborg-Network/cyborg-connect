@@ -1,6 +1,6 @@
-export interface Task{
-    id: String,
-    assigned_worker: String,
+export interface Task {
+  id: String
+  assigned_worker: String
 }
 
-export type TaskId = number;
+export type TaskId = number

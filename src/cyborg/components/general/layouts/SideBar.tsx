@@ -52,10 +52,10 @@ const SideBar = () => {
           </span>
           <span className="flex flex-col items-center my-6">
             <Button
-              type='button'
+              type="button"
               selectable={false}
               variation="primary"
-              onClick={() => navigateAndCloseSidebar(ROUTES.EXECUTABLE_DASHBOARD)}
+              onClick={() => navigateAndCloseSidebar(ROUTES.DASHBOARD)}
               additionalClasses={'w-5/6'}
             >
               Dashboard

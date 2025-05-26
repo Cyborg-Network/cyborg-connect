@@ -4,12 +4,12 @@ import arrowUp from '../../../../../public/assets/icons/arrow-circled-up.png'
 import React from 'react'
 
 interface GaugeDisplayProps {
-  percentage: number,
-  fill: string,
-  name: string,
-  styleAdditions: string,
-  selectedGauge: { name: string },
-  setAsSelectedGauge: ( name: string, fill: string ) => void,
+  percentage: number
+  fill: string
+  name: string
+  styleAdditions: string
+  selectedGauge: { name: string }
+  setAsSelectedGauge: (name: string, fill: string) => void
 }
 
 const GaugeDisplay: React.FC<GaugeDisplayProps> = ({
@@ -69,7 +69,10 @@ const GaugeDisplay: React.FC<GaugeDisplayProps> = ({
         } w-full flex gap-2 text-lg justify-center items-center h-12 rounded-b-lg`}
       >
         <div>View Details</div>
-        <img alt='Gauge Details' src={name === selectedGauge.name ? arrowUp : arrowDown} />
+        <img
+          alt="Gauge Details"
+          src={name === selectedGauge.name ? arrowUp : arrowDown}
+        />
       </div>
     </div>
   )

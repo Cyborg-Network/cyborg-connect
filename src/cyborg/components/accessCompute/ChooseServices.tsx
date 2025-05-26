@@ -1,15 +1,17 @@
 import React from 'react'
 import ServiceCard from './ServiceCard'
-import { useCyborg, SERVICES } from '../../CyborgContext'
-import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../index'
+import useService from '../../hooks/useService'
+import { SERVICES, Service } from '../../hooks/useService'
+import comingsoon from '../../../../public/assets/icons/comingsoon.svg'
+import { useNavigate } from 'react-router-dom'
 
 const ChooseServices: React.FC = () => {
-  const { selectService } = useCyborg()
+  const { setService } = useService()
   const navigate = useNavigate()
 
-  const handleSelectService = (service, route) => {
-    selectService(service)
+  const handleSelectService = (service: Service, route) => {
+    setService(service.id)
     navigate(route)
   }
 
@@ -17,37 +19,23 @@ const ChooseServices: React.FC = () => {
     <div className="relative py-20 flex flex-col items-center justify-center md:py-0">
       <h1 className="text-white">Choose Services</h1>
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row gap-4 p-2">
-        <ServiceCard 
-          logo={SERVICES.EXECUTABLE.icon} 
-          title={SERVICES.EXECUTABLE.name}
+        <ServiceCard
+          logo={SERVICES.NZK.icon}
+          title={SERVICES.NZK.name}
           description="(deploy executable files at ease)"
-          onClick={() => handleSelectService(SERVICES.EXECUTABLE, ROUTES.EXECUTABLE_MAP)}
+          onClick={() => handleSelectService(SERVICES.NZK, ROUTES.MAP)}
         />
         <ServiceCard
-          logo={SERVICES.CYBER_DOCK.icon}
-          title="Cyber Dock"
+          logo={SERVICES.OI.icon}
+          title={SERVICES.OI.name}
           description="(deploy docker images at ease)"
-          onClick={() => handleSelectService(SERVICES.CYBER_DOCK, ROUTES.CYBERDOCK_MAP)}
+          onClick={() => handleSelectService(SERVICES.OI, ROUTES.MAP)}
         />
         <ServiceCard
           additionalClasses="sm:col-span-2 sm:justify-self-center"
-          logo={SERVICES.NO_SERVICE.icon}
-          title="Coming Soon..."
-          description=''
-          onClick={() => {}}
-        />
-      </div>
-      <div className="flex sm:flex-row flex-col gap-4 p-3">
-        <ServiceCard
-          logo={SERVICES.NO_SERVICE.icon} 
-          title="Coming Soon..." 
-          description=''
-          onClick={() => {}}
-        />
-        <ServiceCard 
-          logo={SERVICES.NO_SERVICE.icon} 
-          title="Coming Soon..." 
-          description=''
+          logo={comingsoon}
+          title="More coming Soon..."
+          description=""
           onClick={() => {}}
         />
       </div>

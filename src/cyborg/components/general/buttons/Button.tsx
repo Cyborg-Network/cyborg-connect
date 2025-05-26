@@ -3,11 +3,11 @@ import { IoClose } from 'react-icons/io5'
 import './Button.styles.css'
 
 interface Props {
-  variation: "primary" | "secondary" | "cancel" | "inactive",
-  children: ReactNode,
-  type: "submit" | "reset" | "button",
-  onClick: (e: React.MouseEvent) => void,
-  additionalClasses?: String,
+  variation: 'primary' | 'secondary' | 'cancel' | 'inactive'
+  children: ReactNode
+  type: 'submit' | 'reset' | 'button'
+  onClick: (e: React.MouseEvent) => void
+  additionalClasses?: String
   selectable: { isSelected: boolean } | false
 }
 
@@ -22,8 +22,8 @@ const Button: React.FC<Props> = ({
 }: Props) => {
   const [btnState, setBtnState] = useState('initial')
 
-  let className: String;
-  let content: ReactNode;
+  let className: String
+  let content: ReactNode
 
   const returnButtonClass = variation => {
     //Order is important here! Change with care

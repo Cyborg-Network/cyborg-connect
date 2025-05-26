@@ -1,9 +1,9 @@
-import { Data } from "../components/general/Chart";
+import { Data } from '../components/general/Chart'
 
-export type MetricName = "RAM" | "CPU" | "DISK";
+export type MetricName = 'RAM' | 'CPU' | 'DISK'
 
 export interface SelectedGaugeState {
-    name: MetricName,
-    color: string,
-    data: Data, 
+  name: MetricName
+  color: string
+  data: Data
 }

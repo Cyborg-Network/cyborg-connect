@@ -1,14 +1,12 @@
 import React from 'react'
 import NodeCard from './NodeCard'
-import { Miner } from '../../../types/miner'
 
 interface Props {
-  nodes: [any],
-  isProvider: boolean,
+  nodes: any[]
+  isProvider: boolean
 }
 
-const NodeList = ({ nodes, isProvider }) => {
-
+const NodeList: React.FC<Props> = ({ nodes, isProvider }: Props) => {
   return (
     <div className="flex flex-col w-full text-white text-opacity-70 ">
       <span

@@ -6,16 +6,13 @@ import PaymentModal from '../modals/Payment'
 import SimpleTaskUpload from '../modals/SimpleTaskUpload'
 import haversineDistance from 'haversine-distance'
 import { useLocation } from 'react-router-dom'
-import {
-  DEPLOY_STATUS,
-  useCyborgState,
-  SERVICES,
-} from '../../../CyborgContext'
+import { DEPLOY_STATUS, useCyborgState } from '../../../CyborgContext'
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
-import useService from '../../../hooks/useService'
 import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import { isPositiveInteger } from '../../../util/numberOperations'
+import NeuroZkUpload from '../modals/NeuroZKUpload'
+import useService, { SERVICES } from '../../../hooks/useService'
 //import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
@@ -26,8 +23,8 @@ const DEPLOYMENT_STAGES = {
 }
 
 const SelectNodePage: React.FC = () => {
-  const service = useService();
   const { serviceStatus } = useCyborgState()
+  const { service } = useService()
 
   const location = useLocation()
 
@@ -37,12 +34,12 @@ const SelectNodePage: React.FC = () => {
     data: workers,
     //isLoading: workersIsLoading,
     //error: workersError
-  } = useWorkersQuery(service.workerType)
+  } = useWorkersQuery(service)
 
   const [nearbyNodes, setNearbyNodes] = useState([])
   const [selectedNodes, setSelectedNodes] = useState([])
   const [deploymentStage, setDeploymentStage] = useState(DEPLOYMENT_STAGES.INIT)
-  const [hoursSelected, setHoursSelected] = useState("0")
+  const [hoursSelected, setHoursSelected] = useState('0')
 
   useEffect(() => {
     if (preSelectedNode)
@@ -107,8 +104,8 @@ const SelectNodePage: React.FC = () => {
       return
     }
 
-    if(!isPositiveInteger(hoursSelected)){
-      toast('Please select a valid number of hours (positive integer)');
+    if (!isPositiveInteger(hoursSelected)) {
+      toast('Please select a valid number of hours (positive integer)')
       return
     }
 
@@ -138,12 +135,16 @@ const SelectNodePage: React.FC = () => {
   }
 
   return (
-    <div className='h-screen w-screen grid'>
+    <div className="h-screen w-screen grid">
       <div className="text-white bg-transparent p-0 flex flex-col gap-4 2xl:w-2/5 xl:w-3/5 lg:w-4/6 sm:w-4/5 w-11/12 self-center justify-self-center my-24">
         <div className="flex justify-between bg-cb-gray-600 p-3 sm:p-8 rounded-lg">
           <div className="flex gap-2">
-            <div className='w-16 h-16 p-2 rounded-full bg-cb-gray-500'>
-              <img className='h-full aspect-square' alt='Service' src={service.icon} />
+            <div className="w-16 h-16 p-2 rounded-full bg-cb-gray-500">
+              <img
+                className="h-full aspect-square"
+                alt="Service"
+                src={service.icon}
+              />
             </div>
             <div className="flex flex-col justify-center">
               <div className="font-bold text-xl">{service.name}</div>
@@ -172,25 +173,25 @@ const SelectNodePage: React.FC = () => {
               />
             ))}
           </div>
-          <div className='text-2xl self-start'>Purchase Compute Hours</div>
-          <div className='flex gap-4 w-full'>
-          <input
-              type='text'
+          <div className="text-2xl self-start">Purchase Compute Hours</div>
+          <div className="flex gap-4 w-full">
+            <input
+              type="text"
               className="bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded w-16 sm:w-auto"
-              placeholder='Number of Hours'
+              placeholder="Number of Hours"
               onChange={e => setHoursSelected(e.target.value)}
-          />
-          <Button 
-            type='button'
-            selectable={false}
-            onClick={startTransaction} 
-            variation="primary"
-          >
-            <div className="flex items-center gap-2">
-              <div>Select Payment Method</div>
-              <TiArrowRight />
-            </div>
-          </Button>
+            />
+            <Button
+              type="button"
+              selectable={false}
+              onClick={startTransaction}
+              variation="primary"
+            >
+              <div className="flex items-center gap-2">
+                <div>Select Payment Method</div>
+                <TiArrowRight />
+              </div>
+            </Button>
           </div>
         </div>
       </div>
@@ -204,26 +205,26 @@ const SelectNodePage: React.FC = () => {
       ) : (
         <></>
       )}
-      {
-        (deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT) && 
-        (service.id === SERVICES.CYBER_DOCK.id || service.id === SERVICES.EXECUTABLE.id)
-        ? <SimpleTaskUpload
-            setService={() => {}}
-            onCancel={cancelTransaction}
-            nodes={selectedNodes}
-          />
-        : <></>
-      }
-      {/*
-      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT && service.id === SERVICES.NEURO_ZK.id
-        ? <NeuroZkUpload
-            onCancel={cancelTransaction}
-            nodes={selectedNodes}
-          />
-          :
+      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
+      service.id === SERVICES.OI.id ? (
+        <SimpleTaskUpload
+          setService={() => {}}
+          onCancel={cancelTransaction}
+          nodes={selectedNodes}
+        />
+      ) : (
         <></>
-      }
-      */}
+      )}
+      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
+      service.id === SERVICES.NZK.id ? (
+        <NeuroZkUpload
+          setService={() => {}}
+          onCancel={cancelTransaction}
+          nodes={selectedNodes}
+        />
+      ) : (
+        <></>
+      )}
       {serviceStatus.deployTask === DEPLOY_STATUS.PENDING ? (
         <LoadingModal text={'Deploying your Model!'} />
       ) : (

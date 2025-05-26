@@ -2,13 +2,16 @@ import React from 'react'
 import Chart, { Data } from '../Chart'
 
 interface RenderChartProps {
-  metric: string,
-  data: Data,
-  color: string,
+  metric: string
+  data: Data
+  color: string
 }
 
-const RenderChart: React.FC<RenderChartProps> = ({ metric, data, color }: RenderChartProps) => {
-
+const RenderChart: React.FC<RenderChartProps> = ({
+  metric,
+  data,
+  color,
+}: RenderChartProps) => {
   return (
     <div className="bg-cb-gray-600 rounded-lg w-full">
       <div className="flex justify-between pt-6 px-6">

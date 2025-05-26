@@ -1,15 +1,14 @@
 import React from 'react'
 import Flag from 'react-world-flags'
 import { Country } from '../../../types/location'
-import { Service } from '../../../types/service'
+import { Service } from '../../../hooks/useService'
 
 interface Props {
-  country: Country,
-  service: Service,
+  country: Country
+  service: Service
 }
 
 const MapHeader: React.FC<Props> = ({ country, service }: Props) => {
-
   return (
     <div className="p-6 bg-cb-gray-600 rounded-lg flex flex-col gap-3 sm:flex-row justify-between">
       <div className="flex items-center gap-3">

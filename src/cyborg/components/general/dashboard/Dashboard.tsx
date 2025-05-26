@@ -12,13 +12,15 @@ import FirstNodeDeployModal from '../../provideCompute/modals/FirstNodeDeploy'
 import { useUserWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 
 interface PlaceholderProps {
-  addNode: (status: boolean) => void;
+  addNode: (status: boolean) => void
 }
 
-const PlaceholderIfNoNodes: React.FC<PlaceholderProps> = ({ addNode }: PlaceholderProps) => {
+const PlaceholderIfNoNodes: React.FC<PlaceholderProps> = ({
+  addNode,
+}: PlaceholderProps) => {
   return (
     <div className="flex flex-col justify-center h-full items-center">
-      <img src={nondeployed} alt="No Node Deployed"/>
+      <img src={nondeployed} alt="No Node Deployed" />
       <div className="text-white flex flex-col">
         <p>Currently, you don't have any nodes.</p>
         <button onClick={() => addNode(true)} className="hover:text-cb-green">
@@ -30,11 +32,12 @@ const PlaceholderIfNoNodes: React.FC<PlaceholderProps> = ({ addNode }: Placehold
 }
 
 const Dashboard: React.FC = () => {
-  const location = useLocation();
-  const isProvider = location.pathname === ROUTES.PROVIDE_COMPUTE;
+  const location = useLocation()
+  const isProvider = location.pathname === ROUTES.PROVIDE_COMPUTE
 
-  const [addNodeModalIsActive, setAddNodeModalIsActive] = useState(false);
-  const [firstDeployModalIsActive, setFirstDeployModalIsActive] = useState(false);
+  const [addNodeModalIsActive, setAddNodeModalIsActive] = useState(false)
+  const [firstDeployModalIsActive, setFirstDeployModalIsActive] =
+    useState(false)
 
   const { sidebarIsActive } = useUi()
 
@@ -42,32 +45,32 @@ const Dashboard: React.FC = () => {
     data: userWorkerClusters,
     refetch: refetchWorkerClusters,
     //isLoading: computeHourPriceIsLoading,
-    //error: computeHourPriceError 
-  } = useUserWorkersQuery(isProvider, "workerClusters");
+    //error: computeHourPriceError
+  } = useUserWorkersQuery(isProvider, 'workerClusters')
 
   const {
     data: userExecutableWorkers,
     refetch: refetchExecutableWorkers,
     //isLoading: computeHourPriceIsLoading,
-    //error: computeHourPriceError 
-  } = useUserWorkersQuery(isProvider, "executableWorkers");
+    //error: computeHourPriceError
+  } = useUserWorkersQuery(isProvider, 'executableWorkers')
 
   const forceRefresh = () => {
-    refetchWorkerClusters();
-    refetchExecutableWorkers();
+    refetchWorkerClusters()
+    refetchExecutableWorkers()
   }
 
   const handleAddNodeButtonClick = () => {
-    if(!localStorage.getItem('cyborgConnectDeployIntroductionShown')){
-      setFirstDeployModalIsActive(true);
+    if (!localStorage.getItem('cyborgConnectDeployIntroductionShown')) {
+      setFirstDeployModalIsActive(true)
     } else {
-      setAddNodeModalIsActive(true);
+      setAddNodeModalIsActive(true)
     }
   }
-  
+
   const handleDismissFirstNodeModal = () => {
-    setFirstDeployModalIsActive(false);
-    setAddNodeModalIsActive(true);
+    setFirstDeployModalIsActive(false)
+    setAddNodeModalIsActive(true)
   }
 
   return (
@@ -83,20 +86,22 @@ const Dashboard: React.FC = () => {
               sidebarIsActive ? 'ml-0' : 'ml-burger-btn-offset'
             } transition-all duration-500 ease-in-out`}
           >
-            <img src={deploymentsTab} alt="Deployments"/>
+            <img src={deploymentsTab} alt="Deployments" />
             <div>
-              <h3 className="mb-0">{isProvider ? 'Your Nodes' : 'Deployments'}</h3>
+              <h3 className="mb-0">
+                {isProvider ? 'Your Nodes' : 'Deployments'}
+              </h3>
               <p className="hidden sm:block text-white text-opacity-70">
                 Dashboard / Node List
               </p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button 
-              variation={'secondary'} 
+            <Button
+              variation={'secondary'}
               onClick={() => forceRefresh()}
               selectable={false}
-              type='button'
+              type="button"
             >
               <TbRefresh />
             </Button>
@@ -109,24 +114,27 @@ const Dashboard: React.FC = () => {
             )}*/}
           </div>
         </div>
-        {
-          (userWorkerClusters?.length > 0 || userExecutableWorkers?.length > 0) 
-          ? <NodeList 
-              nodes={[...userExecutableWorkers, ...userWorkerClusters]} 
-              isProvider={isProvider} 
-            />
-          : <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
-        }
-        {
-          addNodeModalIsActive
-          ? <AddNodeModal onCancel={() => setAddNodeModalIsActive(false)}/>
-          : <></>
-        }
-        {
-          firstDeployModalIsActive
-          ? <FirstNodeDeployModal onProceed={() => handleDismissFirstNodeModal()} onCancel={() => setFirstDeployModalIsActive(false)}/>
-          : <></>
-        }
+        {userWorkerClusters?.length > 0 || userExecutableWorkers?.length > 0 ? (
+          <NodeList
+            nodes={[...userExecutableWorkers, ...userWorkerClusters]}
+            isProvider={isProvider}
+          />
+        ) : (
+          <PlaceholderIfNoNodes addNode={handleAddNodeButtonClick} />
+        )}
+        {addNodeModalIsActive ? (
+          <AddNodeModal onCancel={() => setAddNodeModalIsActive(false)} />
+        ) : (
+          <></>
+        )}
+        {firstDeployModalIsActive ? (
+          <FirstNodeDeployModal
+            onProceed={() => handleDismissFirstNodeModal()}
+            onCancel={() => setFirstDeployModalIsActive(false)}
+          />
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   )

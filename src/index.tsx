@@ -30,15 +30,11 @@ export const ROUTES = {
   CHOOSE_PATH: "/",
   PROVIDE_COMPUTE: "/provide-compute",
   ACCESS_COMPUTE: "/access-compute",
-  CYBERDOCK_DASHBOARD: "/access-compute/cyberdock/dashboard",
-  EXECUTABLE_DASHBOARD: "/access-compute/executable/dashboard",
-  CYBERDOCK_COMPUTE_STATUS: "/access-compute/cyberdock/dashboard/compute-status",
-  EXECUTABLE_COMPUTE_STATUS: "/access-compute/executable/dashboard/compute-status",
+  DASHBOARD: "/access-compute/dashboard",
+  COMPUTE_STATUS: "/access-compute/dashboard/compute-status",
   DEV_MODE: "/dev-mode",
-  CYBERDOCK_MAP: "/access-compute/cyberdock/map",
-  EXECUTABLE_MAP: "/access-compute/executable/map",
-  CYBERDOCK_MODAL_NODES: "/access-compute/cyberdock/modal-nodes",
-  EXECUTABLE_MODAL_NODES: "/access-compute/executable/modal-nodes",
+  MAP: "/access-compute/map",
+  MODAL_NODES: "/access-compute/modal-nodes",
 }
 
 const GlobalLayout = () => {
@@ -101,35 +97,35 @@ const router = createBrowserRouter([
                 element: <Dashboard />,
               },
               {
-                path: ROUTES.CYBERDOCK_DASHBOARD,
+                path: ROUTES.DASHBOARD,
                 element: <Dashboard />,
               },
               {
-                path: `${ROUTES.CYBERDOCK_COMPUTE_STATUS}/:domain`,
+                path: `${ROUTES.COMPUTE_STATUS}/:domain`,
                 element: <ComputeStatus perspective='accessor' />,
               },
               {
-                path: `${ROUTES.CYBERDOCK_MAP}`,
+                path: `${ROUTES.MAP}`,
                 element: <MapInteractor />,
               },
               {
-                path: `${ROUTES.CYBERDOCK_MODAL_NODES}`,
+                path: `${ROUTES.MODAL_NODES}`,
                 element: <SelectNodePage />,
               },
               {
-                path: ROUTES.EXECUTABLE_DASHBOARD,
+                path: ROUTES.DASHBOARD,
                 element: <Dashboard />,
               },
               {
-                path: `${ROUTES.EXECUTABLE_COMPUTE_STATUS}/:domain`,
+                path: `${ROUTES.COMPUTE_STATUS}/:domain`,
                 element: <ComputeStatus perspective='accessor'/>,
               },
               {
-                path: `${ROUTES.EXECUTABLE_MAP}`,
+                path: `${ROUTES.MAP}`,
                 element: <MapInteractor />,
               },
               {
-                path: `${ROUTES.EXECUTABLE_MODAL_NODES}`,
+                path: `${ROUTES.MODAL_NODES}`,
                 element: <SelectNodePage />,
               }
             ]

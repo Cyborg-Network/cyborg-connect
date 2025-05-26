@@ -2,13 +2,17 @@ import React from 'react'
 import { IoClose } from 'react-icons/io5'
 
 interface Props {
-  type: "submit" | "reset" | "button",
-  onClick: () => void,
+  type: 'submit' | 'reset' | 'button'
+  onClick: () => void
   additionalClasses?: String
 }
 
 // Separate from the regular, abstract Button.js, so that it doesn't have to import the IoClose icon even though it might not need it
-const CloseButton: React.FC<Props> = ({ type, onClick, additionalClasses }: Props) => {
+const CloseButton: React.FC<Props> = ({
+  type,
+  onClick,
+  additionalClasses,
+}: Props) => {
   return (
     <button
       type={type}

@@ -1,10 +1,10 @@
-import { SERVICES } from "../CyborgContext"
+import { SERVICES } from '../hooks/useService'
 
 export const returnCorrectWorkers = (workers, service) => {
-  switch(service.id) {
-    case SERVICES.CYBER_DOCK.id:
-    return workers.workerClusters
-    case SERVICES.EXECUTABLE.id:
-    return workers.executableWorkers
+  switch (service.id) {
+    case SERVICES.OI.id:
+      return workers.executableWorkers
+    case SERVICES.NZK.id:
+      return workers.executableWorkers
   }
 }

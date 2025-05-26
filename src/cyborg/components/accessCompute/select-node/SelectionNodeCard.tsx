@@ -6,25 +6,28 @@ import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
 import React from 'react'
 
 interface Props {
-  node: any,
-  onClick: () => void,
-  isSelected: boolean,
+  node: any
+  onClick: () => void
+  isSelected: boolean
 }
 
-const SelectionNodeCard: React.FC<Props> = ({ node, onClick, isSelected }: Props) => {
-
+const SelectionNodeCard: React.FC<Props> = ({
+  node,
+  onClick,
+  isSelected,
+}: Props) => {
   const {
     data: computeHourPrice,
     //isLoading: computeHourPriceIsLoading,
-    //error: computeHourPriceError 
-  } = usePriceQuery();
+    //error: computeHourPriceError
+  } = usePriceQuery()
 
   return (
     <Button
-      type='button'
+      type="button"
       additionalClasses={'px-10 py-10 relative flex items-start rounded-xl'}
       variation="secondary"
-      selectable={{isSelected: isSelected}}
+      selectable={{ isSelected: isSelected }}
       onClick={() => onClick()}
     >
       <div
@@ -58,17 +61,28 @@ const SelectionNodeCard: React.FC<Props> = ({ node, onClick, isSelected }: Props
         <div className="grid grid-cols-4 gap-4">
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'CPU'}</div>
-            <div className="text-gray-400 text-sm">
-              {node.specs.cpu} Cores
-            </div>
+            <div className="text-gray-400 text-sm">{node.specs.cpu} Cores</div>
           </div>
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'Storage'}</div>
-            <div className="text-gray-400 text-sm">{(parseInt(node.specs.storage.replace(/,/g, '')) / 1024 / 1024 / 1024).toFixed(2)} GB</div>
+            <div className="text-gray-400 text-sm">
+              {(
+                parseInt(node.specs.storage.replace(/,/g, '')) /
+                1024 /
+                1024 /
+                1024
+              ).toFixed(2)}{' '}
+              GB
+            </div>
           </div>
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'Memory'}</div>
-            <div className="text-gray-400 text-sm">{Math.round(parseInt(node.specs.ram.replace(/,/g, '', )) / 1024 / 1024)} MB</div>
+            <div className="text-gray-400 text-sm">
+              {Math.round(
+                parseInt(node.specs.ram.replace(/,/g, '')) / 1024 / 1024
+              )}{' '}
+              MB
+            </div>
           </div>
         </div>
       </div>

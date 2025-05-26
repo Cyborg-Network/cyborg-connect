@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { VictoryArea, VictoryChart, VictoryAxis, VictoryLabel, DomainTuple, Datum } from 'victory'
+import {
+  VictoryArea,
+  VictoryChart,
+  VictoryAxis,
+  VictoryLabel,
+  DomainTuple,
+  Datum,
+} from 'victory'
 import useResizeObserver from '../../hooks/useResizeObserver'
- 
+
 interface Props {
-  color: string,
-  data: Data,
+  color: string
+  data: Data
 }
 
 export interface Data {
-  yUnits: { name: string, max: number, },
+  yUnits: { name: string; max: number }
   data: Datum
 }
 
@@ -63,7 +70,7 @@ const Chart: React.FC<Props> = ({ color, data }: Props) => {
   }, [width])
 
   return (
-    <div ref={ref} className='VictoryContainer'>
+    <div ref={ref} className="VictoryContainer">
       {/*Position has to be absolute and height of 0 otherwise the svg starts to take up space, it is only supposed to attach itself to the line*/}
       <svg style={{ position: 'absolute' }} height={0}>
         <defs>

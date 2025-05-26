@@ -1,34 +1,38 @@
 import { FaRegClock } from 'react-icons/fa6'
 import { FaCheck } from 'react-icons/fa6'
 import { useUi } from '../../../context/UiContext'
-import useService from '../../../hooks/useService'
 import { truncateAddress } from '../../../util/truncateAddress'
 import React, { ReactNode } from 'react'
+import useService from '../../../hooks/useService'
 
 interface MetaDataHeaderProps {
-  owner: string,
-  id: number,
-  domain: string,
-  status: string,
+  owner: string
+  id: number
+  domain: string
+  status: string
   lastCheck: number
 }
 
-const FlexContainer: React.FC<{children: ReactNode}> = ({ children }: { children: ReactNode }) => {
+const FlexContainer: React.FC<{ children: ReactNode }> = ({
+  children,
+}: {
+  children: ReactNode
+}) => {
   return <div className="flex items-center gap-1">{children}</div>
 }
 
-export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({ 
-  owner, 
-  id, 
-  domain, 
-  status, 
-  lastCheck 
+export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
+  owner,
+  id,
+  domain,
+  status,
+  lastCheck,
 }: MetaDataHeaderProps) => {
-  const isOnline = status === "Active" || status === 'busy' ? true : false
-  const isBusy = status === "Inactive" || status !== 'active' ? true : false
+  const isOnline = status === 'Active' || status === 'busy' ? true : false
+  const isBusy = status === 'Inactive' || status !== 'active' ? true : false
 
-  const { sidebarIsActive } = useUi();
-  const service = useService();
+  const { sidebarIsActive } = useUi()
+  const { service } = useService()
 
   return (
     <div
@@ -71,7 +75,9 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">
           <div className="text-opacity-50 text-white">
             IP Address:{' '}
-            <span className="text-white text-opacity-100">{/*{domain}*/'16.171.249.42'}</span>
+            <span className="text-white text-opacity-100">
+              {/*{domain}*/ '16.171.249.42'}
+            </span>
           </div>
           <div className="bg-cb-gray-600 w-fit text-md rounded-full text-white">
             <div

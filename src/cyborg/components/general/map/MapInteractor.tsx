@@ -9,9 +9,9 @@ import Modal from '../modals/Modal'
 import InfoBox from '../InfoBox'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
-import useService from '../../../hooks/useService'
 import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import { Country, Location } from '../../../types/location'
+import useService from '../../../hooks/useService'
 const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
@@ -23,7 +23,10 @@ const getNearestNode = (originLocation: Location, nodes: any[]) => {
 
   nodes.forEach(node => {
     const distance = haversineDistance(
-      { latitude: originLocation.latitude, longitude: originLocation.longitude },
+      {
+        latitude: originLocation.latitude,
+        longitude: originLocation.longitude,
+      },
       { latitude: node.location.latitude, longitude: node.location.longitude }
     )
 
@@ -43,18 +46,21 @@ const getNodeCountry = (node: any): Country => {
 const MapInteractor: React.FC = () => {
   const navigate = useNavigate()
 
-  const service = useService();
+  const { service } = useService()
+  console.log('MAP_INTERACTOR - service: ', service)
   const {
     data: workers,
     //isLoading: workersIsLoading,
     //error: workersError
-  } = useWorkersQuery(service.workerType);
+  } = useWorkersQuery(service)
 
   const [userLocation, setUserLocation] = useState<Location | null>(null)
   const [selectedNode, setSelectedNode] = useState<any | null>(null)
   const [distance, setDistance] = useState<number | null>(null)
   const [nearestNode, setNearestNode] = useState<any | null>(null)
-  const [userLocationInput, setUserLocationInput] = useState<Location | null>(null)
+  const [userLocationInput, setUserLocationInput] = useState<Location | null>(
+    null
+  )
 
   const handleReturnToNearestNode = () => {
     setSelectedNode(nearestNode)
@@ -67,10 +73,10 @@ const MapInteractor: React.FC = () => {
   const handleManualSelection = (id: number, owner: string) => {
     const node = workers.find(node => node.owner === owner && node.id === id)
 
-    if(node){
-      setSelectedNode({...node, country: getNodeCountry(node) })
+    if (node) {
+      setSelectedNode({ ...node, country: getNodeCountry(node) })
     } else {
-      toast("This node does not exist")
+      toast('This node does not exist')
     }
   }
 
@@ -117,19 +123,19 @@ const MapInteractor: React.FC = () => {
       )
     }
   }
-  
+
   useEffect(() => {
     if (userLocation && workers)
-    if (workers.length > 0) {
-      const nodeData = getNearestNode(userLocation, workers)
+      if (workers.length > 0) {
+        const nodeData = getNearestNode(userLocation, workers)
 
-      setNearestNode({
-        ...nodeData.node,
-        country: getNodeCountry(nodeData.node),
-      })
-      handleSelectNode(nodeData.node)
-      setDistance(nodeData.distance)
-    }
+        setNearestNode({
+          ...nodeData.node,
+          country: getNodeCountry(nodeData.node),
+        })
+        handleSelectNode(nodeData.node)
+        setDistance(nodeData.distance)
+      }
   }, [userLocation, workers])
 
   useEffect(() => {
@@ -153,19 +159,15 @@ const MapInteractor: React.FC = () => {
 
   //Fix this when TanstackRouter is implemented
   const navigateToNearestNodesSelection = () => {
-    if(service.id === 'CYBER_DOCK')
-    navigate(ROUTES.CYBERDOCK_MODAL_NODES, {
-      state: { userLocation: userLocation, preSelectedNode: selectedNode },
-    })
-
-    if(service.id === 'EXECUTABLE')
-    navigate(ROUTES.EXECUTABLE_MODAL_NODES, {
+    navigate(ROUTES.MODAL_NODES, {
       state: { userLocation: userLocation, preSelectedNode: selectedNode },
     })
   }
 
   const userInputIsPresent =
-    userLocationInput && userLocationInput.latitude && userLocationInput.longitude
+    userLocationInput &&
+    userLocationInput.latitude &&
+    userLocationInput.longitude
 
   return (
     <div className="w-screen h-screen">
@@ -195,14 +197,14 @@ const MapInteractor: React.FC = () => {
           <></>
         )}
         {!userLocation ? (
-          <Modal 
+          <Modal
             onOutsideClick={() => {}}
             additionalClasses="flex flex-col gap-3"
           >
             <div className="text-xl font-bold">Choose Location</div>
-            <Button 
-              type='button'
-              variation="primary" 
+            <Button
+              type="button"
+              variation="primary"
               onClick={getUserLocation}
               selectable={false}
             >
@@ -240,7 +242,7 @@ const MapInteractor: React.FC = () => {
               />
             </div>
             <Button
-              type='button'
+              type="button"
               selectable={false}
               onClick={
                 userInputIsPresent

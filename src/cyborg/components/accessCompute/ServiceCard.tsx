@@ -1,11 +1,11 @@
-import React, { useState } from "react"
+import React, { useState } from 'react'
 
 interface Props {
-  logo: string;
-  title: string;
-  description: string;
-  additionalClasses?: string;
-  onClick: () => void;
+  logo: string
+  title: string
+  description: string
+  additionalClasses?: string
+  onClick: () => void
 }
 
 const ServiceCard: React.FC<Props> = ({
@@ -15,12 +15,13 @@ const ServiceCard: React.FC<Props> = ({
   additionalClasses,
   onClick,
 }) => {
-
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false)
 
   return (
     <div
-      className={`${additionalClasses} border ${isHovered ? 'hover:ring-2 hover:ring-cb-green border-cb-green' : ''} border-cb-gray-400 rounded-md w-80 hover:cursor-pointer`}
+      className={`${additionalClasses} border ${
+        isHovered ? 'hover:ring-2 hover:ring-cb-green border-cb-green' : ''
+      } border-cb-gray-400 rounded-md w-80 hover:cursor-pointer`}
       onMouseDown={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -36,7 +37,11 @@ const ServiceCard: React.FC<Props> = ({
         <p className="text-white opacity-50 text-center text-sm">
           {description}
         </p>
-        <div className={`text-gray-400 grid justify-center items-center text-lg font-bold bg-cb-gray-400 w-full h-14 ${isHovered ? 'bg-cb-green text-white' : ''}`}>
+        <div
+          className={`text-gray-400 grid justify-center items-center text-lg font-bold bg-cb-gray-400 w-full h-14 ${
+            isHovered ? 'bg-cb-green text-white' : ''
+          }`}
+        >
           Deploy Now
         </div>
       </div>

@@ -1,13 +1,17 @@
-import React from "react"
-import { ReactNode } from "react"
+import React from 'react'
+import { ReactNode } from 'react'
 
 interface Props {
-  children: ReactNode,
-  onOutsideClick: () => void,
+  children: ReactNode
+  onOutsideClick: () => void
   additionalClasses?: String
 }
 
-const Modal: React.FC<Props> = ({ children, onOutsideClick, additionalClasses }) => {
+const Modal: React.FC<Props> = ({
+  children,
+  onOutsideClick,
+  additionalClasses,
+}) => {
   //alignment should be either 'items-center' or undefined, this will be better with ts
   return (
     <div

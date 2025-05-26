@@ -1,15 +1,15 @@
 import sodium from 'libsodium-wrappers'
-import { X25519PrivKey } from './generateX25519KeyPair';
+import { X25519PrivKey } from './generateX25519KeyPair'
 
 export const processDiffieHellmanAuth = async (
-  nodePubKeyHex: string, 
+  nodePubKeyHex: string,
   privateKey: X25519PrivKey
 ) => {
-  await sodium.ready;
+  await sodium.ready
 
-  const nodePubKey = sodium.from_hex(nodePubKeyHex);
+  const nodePubKey = sodium.from_hex(nodePubKeyHex)
 
-  const diffieHellmanSecret = sodium.crypto_scalarmult(privateKey, nodePubKey);
+  const diffieHellmanSecret = sodium.crypto_scalarmult(privateKey, nodePubKey)
 
-  return diffieHellmanSecret;
+  return diffieHellmanSecret
 }

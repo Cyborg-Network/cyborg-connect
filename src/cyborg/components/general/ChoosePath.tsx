@@ -21,8 +21,10 @@ const ChoosePath: React.FC = () => {
       <div className="text-white text-3xl font-bold mb-2">Choose Your Path</div>
       <div className="flex gap-4">
         <Button
-          type='button'
-          onClick={() => {setPath('provide-compute')}}
+          type="button"
+          onClick={() => {
+            setPath('provide-compute')
+          }}
           selectable={{ isSelected: path === 'provide-compute' ? true : false }}
           variation="secondary"
           additionalClasses={'relative py-6'}
@@ -38,9 +40,9 @@ const ChoosePath: React.FC = () => {
           Access Compute
         </Button>
       </div>
-      <Button 
-        type='button'
-        onClick={handleClick} 
+      <Button
+        type="button"
+        onClick={handleClick}
         selectable={false}
         variation="primary"
       >

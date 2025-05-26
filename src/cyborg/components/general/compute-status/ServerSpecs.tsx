@@ -4,13 +4,13 @@ import React from 'react'
 import { MinerSpecs } from '../../../types/agent'
 
 interface ServerSpecsProps {
-  specs: MinerSpecs,
-  uptime: number,
+  specs: MinerSpecs
+  uptime: number
 }
 
 export const ServerSpecs: React.FC<ServerSpecsProps> = ({
-   specs, 
-   uptime 
+  specs,
+  uptime,
 }: ServerSpecsProps) => {
   return (
     <div className="bg-cb-gray-600 rounded-lg w-full h-full">
@@ -37,9 +37,7 @@ export const ServerSpecs: React.FC<ServerSpecsProps> = ({
           }
         >
           <p>CPU:</p>
-          <p className="truncate">
-            {specs ? specs.cpus[0] : null}
-          </p>
+          <p className="truncate">{specs ? specs.cpus[0] : null}</p>
         </li>
         <li className="flex justify-between">
           <p>Memory:</p>
@@ -49,17 +47,19 @@ export const ServerSpecs: React.FC<ServerSpecsProps> = ({
         </li>
         <li className="flex justify-between">
           <p>Storage:</p>
-          <p>
-            {specs ? `~${Math.round(specs.disk / 1073741824)} GB` : null}
-          </p>
+          <p>{specs ? `~${Math.round(specs.disk / 1073741824)} GB` : null}</p>
         </li>
         <li className="flex justify-between">
           <p>Location:</p>
           <p>
             {specs
               ? `
-                  ${i32CoordinateToFloatCoordinate(specs.location.coordinates[0].toString())}, 
-                  ${i32CoordinateToFloatCoordinate(specs.location.coordinates[1].toString())}
+                  ${i32CoordinateToFloatCoordinate(
+                    specs.location.coordinates[0].toString()
+                  )}, 
+                  ${i32CoordinateToFloatCoordinate(
+                    specs.location.coordinates[1].toString()
+                  )}
                 `
               : null}
           </p>
