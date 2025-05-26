@@ -47,7 +47,6 @@ const MapInteractor: React.FC = () => {
   const navigate = useNavigate()
 
   const { service } = useService()
-  console.log('MAP_INTERACTOR - service: ', service)
   const {
     data: workers,
     //isLoading: workersIsLoading,

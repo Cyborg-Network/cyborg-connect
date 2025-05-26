@@ -31,11 +31,8 @@ export const SERVICES: Record<string, Service> = {
 }
 
 const useService = () => {
-  console.log('USE_SERVICE')
   const [service, setServiceState] = useState<Service | null>(() => {
-    console.log('USE_SERVICE USE_EFFECT')
     const s = localStorage.getItem('currentService')
-    console.log('USE_SERVICE - s', s)
     if (s) {
       try {
         const serviceString = JSON.parse(s)
@@ -43,16 +40,13 @@ const useService = () => {
           serviceString === SERVICES.OI.id ||
           serviceString === SERVICES.NZK.id
         ) {
-          console.log('USE_SERVICE - id', serviceString)
           return SERVICES[serviceString]
         } else {
-          console.log('USE_SERVICE: if else')
           toast(
             'Invalid service selection resulting in no service being selected...'
           )
         }
       } catch (e) {
-        console.log('USE_SERVICE: catch')
         toast(
           'Invalid service selection resulting in no service being selected...'
         )
