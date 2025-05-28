@@ -11,8 +11,7 @@ import {
 import { processDiffieHellmanAuth } from '../../util/non-bc-crypto/processDiffieHellmanAuth'
 import { LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
 
-//const CYBORG_SERVER_URL = 'wss://server.cyborgnetwork.io/ws/';
-const CYBORG_SERVER_URL = 'ws://127.0.0.1:8081'
+const CYBORG_SERVER_URL = process.env.REACT_APP_CYBORG_PROXY_URL
 
 export const useAgentCommunication = (metadata: any) => {
   const navigate = useNavigate()
@@ -118,8 +117,9 @@ export const useAgentCommunication = (metadata: any) => {
     },
     onError: () => {
       toast(
-        'This nodes agent encountered an unrecoverable error. Closing the lock...'
+        'This miners agent encountered an unrecoverable error. Closing the lock...'
       )
+      setLockState({ isLocked: true, isLoading: false })
     },
   })
 
@@ -170,6 +170,7 @@ export const useAgentCommunication = (metadata: any) => {
         setLockState({ ...lockState, isLoading: true })
       } catch (e) {
         toast('Error sending auth message. Cannot get usage data.')
+        setLockState({ isLocked: true, isLoading: false })
       }
     }
     if (keys) {

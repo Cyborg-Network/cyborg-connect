@@ -218,9 +218,9 @@ const SelectNodePage: React.FC = () => {
       {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
       service.id === SERVICES.NZK.id ? (
         <NeuroZkUpload
-          setService={() => {}}
           onCancel={cancelTransaction}
-          nodes={selectedNodes}
+          minerId={selectedNodes[0].id}
+          minerAdress={selectedNodes[0].owner}
         />
       ) : (
         <></>

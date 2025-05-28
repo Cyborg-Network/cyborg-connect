@@ -4,6 +4,7 @@ import { useUi } from '../../../context/UiContext'
 import { truncateAddress } from '../../../util/truncateAddress'
 import React, { ReactNode } from 'react'
 import useService from '../../../hooks/useService'
+import comingsoon from '../../../../../public/assets/icons/comingsoon.svg'
 
 interface MetaDataHeaderProps {
   owner: string
@@ -42,11 +43,11 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
     >
       <div className="flex text-white gap-3 flex-row-reverse md:flex-row flex-nowrap items-center">
         <div className="rounded-md h-24 aspect-square p-3 flex items-center justify-center">
-          <img src={service.icon} />
+          <img src={ service ? service.icon : comingsoon } />
         </div>
         <div className="justify-end md:justify-start flex flex-col gap-1">
           <div className="text-xl font-bold text-right md:text-left">
-            {service.name}
+            { service ? service.name : 'Neuro ZK' }
           </div>
           <div className="text-nowrap flex gap-1">
             RPC Node |

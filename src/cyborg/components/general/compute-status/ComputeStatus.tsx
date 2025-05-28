@@ -254,7 +254,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
       {lockState.isLocked ? (
         <SigntoUnlockModal
           text={
-            'For privacy reasons, only the user who is currently in control of the worker is allowed to view the workers usage. Please confirm your identity with your public key.'
+            'For privacy reasons, only the user who is currently in control of the worker is allowed to view the miners usage. Please confirm your identity with your public key.'
           }
           onClick={authenticateWithAgent}
           loading={lockState.isLoading}

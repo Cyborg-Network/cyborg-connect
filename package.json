@@ -64,6 +64,7 @@
     "react-simple-maps": "^3.0.0",
     "react-use-websocket": "^3.0.0",
     "react-world-flags": "^1.6.0",
+    "reconnecting-websocket": "^4.4.0",
     "semantic-ui-css": "Semantic-Org/Semantic-UI-CSS#master",
     "semantic-ui-react": "^2.1.2",
     "stream-browserify": "^3.0.0",

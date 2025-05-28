@@ -22,6 +22,10 @@ const getUserTasks = async (api: ApiPromise, currentAccount: AccountId32) => {
   return userOwnedTasks
 }
 
+/* const getSingleTask = async (api: ApiPromise, taskId: number) => {
+  return await api.query.taskManagement.tasks(taskId)
+} */
+
 export const useUserTasksQuery = () => {
   const { api, apiState, currentAccount } = useSubstrateState()
 
@@ -31,3 +35,13 @@ export const useUserTasksQuery = () => {
     queryFn: () => getUserTasks(api, currentAccount),
   })
 }
+
+/* export const useSingleTaskQuery = (taskId: number) => {
+  const { api, apiState } = useSubstrateState()
+
+  return useQuery({
+    queryKey: ['singleTask', taskId],
+    enabled: !!(api && apiState === 'READY'),
+    queryFn: () => getSingleTask(api, taskId),
+  })
+} */
