@@ -85,6 +85,7 @@ const useFileUpload = () => {
 
       if (!response.ok) {
         toast(`Upload failed: ${response.statusText}`)
+        console.log('upload error: ', response)
         setIsUploading(false)
         return
       }

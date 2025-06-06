@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { transformToNumber } from '../../util/numberOperations'
 
 const getComputeHourPrice = async (api: ApiPromise): Promise<number> => {
-  return transformToNumber((await api.query.payment.pricePerHour()).toString())
+  return transformToNumber((await api.query.payment.subscriptionFee()).toString())
 }
 
 export const usePriceQuery = () => {

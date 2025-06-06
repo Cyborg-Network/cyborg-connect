@@ -13,6 +13,11 @@ import { parseGaugeMetric } from './util'
 import { useUserWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import { MetricName, SelectedGaugeState } from '../../../types/compute_status'
 import { Data } from '../Chart'
+import { Step, Stepper } from 'react-form-stepper'
+import Button from '../buttons/Button'
+import useTransaction from '../../../api/parachain/useTransaction'
+import toast from 'react-hot-toast'
+import { useSubstrateState } from '../../../../substrate-lib'
 
 interface ComputeStatusProps {
   perspective: 'provider' | 'accessor'
@@ -28,6 +33,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
 }: ComputeStatusProps) => {
   const { sidebarIsActive } = useUi()
   const { domain } = useParams()
+  const { api, currentAccount } = useSubstrateState()
 
   const [metadata, setMetadata] = useState(null)
   const [selectedGauge, setSelectedGauge] = useState<SelectedGaugeState>({
@@ -35,9 +41,22 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     color: 'var(--gauge-red)',
     data: defaultData,
   })
+  const [proofStage, setProofStage] = useState(1);
 
   const { usageData, agentSpecs, logs, lockState, authenticateWithAgent } =
     useAgentCommunication(metadata)
+
+  useEffect(() => {
+    if (usageData) {
+      console.log('usageData: ', usageData)
+    }
+  }, [usageData])
+
+  useEffect(() => {
+    if (agentSpecs) {
+      console.log('agentSpecs: ', agentSpecs)
+    }
+  }, [agentSpecs])
 
   const {
     data: executableWorkers,
@@ -78,7 +97,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
       case 'RAM':
         truncateUsageData(usageData.RAM)
         return {
-          yUnits: { name: 'MB', max: agentSpecs.memory / 1024 / 1024 },
+          yUnits: { name: 'MB', max: agentSpecs.specs.memory / 1024 / 1024 },
           data: truncatedUsageData.RAM.map((value, index) => ({
             x: truncatedUsageData.timestamp[index],
             y: value / 1024 / 1024, // display memory in MB
@@ -87,7 +106,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
       case 'DISK':
         truncateUsageData(usageData.DISK)
         return {
-          yUnits: { name: 'GB', max: agentSpecs.disk / 1024 / 1024 / 1024 },
+          yUnits: { name: 'GB', max: agentSpecs.specs.disk / 1024 / 1024 / 1024 },
           data: truncatedUsageData.DISK.map((value, index) => ({
             x: truncatedUsageData.timestamp[index],
             y: value / 1024 / 1024 / 1024, // display storage in GB
@@ -127,6 +146,41 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     }
   }, [executableWorkers, workerClusters, setMetadata, domain])
 
+  const { handleTransaction, isLoading } = useTransaction(api)
+
+  const requestProof = async taskId => {
+    const tx = api.tx.neuroZk.requestProof(taskId)
+
+    await handleTransaction({
+      tx,
+      account: currentAccount,
+      onSuccess: events => {
+        console.log('Proof sucessfully requested!', events);
+        setProofStage(2);
+        pollStorageUntil(taskId);
+      },
+      onError: error => toast('Transaction Failed:', error),
+    })
+  }
+
+  async function pollStorageUntil(taskId: number, intervalMs = 2000) {
+  while (proofStage !== 4) {
+    const task = await api.query.taskManagement.tasks(taskId);
+
+    if (task.nzkData.zkProof && !task.nzkData.lastProofAccepted) {
+      setProofStage(3)
+      return;
+    }
+
+    if (task.nzkData.lastProofAccepted) {
+      setProofStage(4)
+      return;
+    }
+
+    await new Promise((res) => setTimeout(res, intervalMs));
+  }
+  }
+
   return (
     <>
       <div
@@ -144,18 +198,33 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
               lastCheck={metadata.statusLastUpdated}
             />
             <div className="text-white w-full bg-cb-gray-600 flex rounded-lg gap-4 items-center">
-              {/* This is the ZK progress stepper, currently deactivated */}
-              {/*
-            <div className='pl-24 text-white text-lg w-fit'>ZK Progress</div> 
+            <Button
+              onClick={() => requestProof(metadata.lastTask)}
+              type="button"
+              variation="primary"
+              selectable={false}
+              additionalClasses="ml-10"
+            >
+              {isLoading ? 'Requesting Proof...' : 'Request Proof'}
+            </Button>
             <div className='flex-grow'>
-              <Stepper activeStep={usageData.zkStage-1} 
+              <Stepper activeStep={proofStage} 
                   connectorStateColors={true}
                   connectorStyleConfig={{
+                    size: ".5em",
                     activeColor: "#15e84c",
                     completedColor: "#32b054",
                     disabledColor: "#343735",
+                    style: ""
                   }}
                   styleConfig={{
+                    completedTextColor: "#ffffff",
+                    inactiveTextColor: "#ffffff",
+                    size: "3em",
+                    fontWeight: "regular",
+                    labelFontSize: "0.9em",
+                    circleFontSize: "1em",
+                    borderRadius: "50%",
                     activeBgColor: "#15e84c",
                     completedBgColor: "#32b054",
                     inactiveBgColor: "#343735",
@@ -163,12 +232,11 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
                   }}
               >
                 <Step label="Setup Complete" />
-                <Step label="Proof Generated" />
+                <Step label="Proof Requested" />
                 <Step label="Proof Submitted" />
                 <Step label="Proof Verified" />
               </Stepper>
             </div>
-          */}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
               {perspective === 'provider' ? (
@@ -214,7 +282,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
                       selectedGauge={selectedGauge}
                       percentage={
                         usageData && usageData.RAM.length > 0
-                          ? parseGaugeMetric(usageData.RAM, agentSpecs.memory)
+                          ? parseGaugeMetric(usageData.RAM, agentSpecs.specs.memory)
                           : 1
                       }
                       fill={'var(--gauge-green)'}
@@ -228,7 +296,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
                       selectedGauge={selectedGauge}
                       percentage={
                         usageData && usageData.DISK.length > 0
-                          ? parseGaugeMetric(usageData.DISK, agentSpecs.disk)
+                          ? parseGaugeMetric(usageData.DISK, agentSpecs.specs.disk)
                           : 1
                       }
                       fill={'var(--gauge-yellow)'}

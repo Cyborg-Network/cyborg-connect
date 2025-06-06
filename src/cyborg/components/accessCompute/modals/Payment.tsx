@@ -12,6 +12,8 @@ import robo from '../../../../../public/assets/icons/robo.png'
 import LoadingModal from '../../general/modals/Loading'
 import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
 import useTransaction from '../../../api/parachain/useTransaction'
+import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
+import { transformToNumber } from '../../../util/numberOperations'
 
 const PAYMENT_OPTIONS = [
   { name: 'ENTT', icon: robo, isAvailable: true, testnet: true },
@@ -23,14 +25,11 @@ interface Props {
   onCancel: () => void
   onConfirm: () => void
   setService: () => void
-  hoursSelected: number
 }
 
 const PaymentModal: React.FC<Props> = ({
   onCancel,
   onConfirm,
-  setService,
-  hoursSelected,
 }: Props) => {
   const { api, currentAccount } = useSubstrateState()
 
@@ -40,8 +39,16 @@ const PaymentModal: React.FC<Props> = ({
     //error: computeHourPriceError
   } = usePriceQuery()
 
+  const {
+    data: userComputeHours,
+    refetch
+    //isLoading: userComputeHoursIsLoading,
+    //error: userComputeHoursError 
+  } = useUserComputeHoursQuery();
+
   const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
+  const [hoursSelected, setHoursSelectedNumber] = useState(0)
 
   const startTransaction = () => {
     if (!termsAreAccepted) {
@@ -54,18 +61,30 @@ const PaymentModal: React.FC<Props> = ({
       return
     }
 
+    if (hoursSelected <= 0) {
+      toast('Please select a valid number of hours!')
+      return
+    }
+
     submitTransaction()
+  }
+
+  const setHoursSelected = (hours: string) => {
+    setHoursSelectedNumber(
+      transformToNumber(hours)
+    )
   }
 
   const { handleTransaction, isLoading } = useTransaction(api)
 
   const submitTransaction = async () => {
-    const tx = api.tx.payment.purchaseComputeHours(hoursSelected)
+    const tx = userComputeHours > 0 ? api.tx.payment.addHours(hoursSelected) : api.tx.payment.subscribe(hoursSelected)
     await handleTransaction({
       tx,
       account: currentAccount,
       onSuccess: events => {
         console.log('Transaction Successful!', events)
+        refetch()
         onConfirm()
       },
       onError: error => toast('Transaction Failed:', error),
@@ -85,13 +104,20 @@ const PaymentModal: React.FC<Props> = ({
         >
           <div className="flex flex-col gap-6 w-full h-full rounded-lg text-lg">
             <div className="flex justify-between">
-              <div className="text-2xl font-bold">Payment Method</div>
+              <div className="text-2xl font-bold">{userComputeHours > 0 ? "Extend Subscription" : "Subscribe"}</div>
               <CloseButton
                 type="button"
                 onClick={onCancel}
                 additionalClasses={'absolute top-6 right-6'}
               />
             </div>
+            <Separator colorClass={'bg-cb-gray-400'} />
+            <input
+              type="text"
+              className="bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded w-16 sm:w-auto"
+              placeholder="Number of Hours"
+              onChange={e => setHoursSelected(e.target.value)}
+            />
             <Separator colorClass={'bg-cb-gray-400'} />
             <div className="flex flex-col md:flex-row gap-4 justify-center h-full">
               {PAYMENT_OPTIONS.map(option => (

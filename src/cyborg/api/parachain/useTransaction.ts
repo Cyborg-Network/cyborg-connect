@@ -39,7 +39,7 @@ const handleTransactionEvents = (api: ApiPromise, events: any) => {
   return { hasErrored, successfulEvents, errorEvents }
 }
 
-export const useTransaction = api => {
+export const useTransaction = (api: ApiPromise) => {
   const [isLoading, setIsLoading] = useState(false)
   const onIsInBlockWasCalledRef = useRef(false)
 

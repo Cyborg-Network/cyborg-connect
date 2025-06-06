@@ -32,6 +32,7 @@ const NeuroZkUpload: React.FC<Props> = ({
   const { addUserTask } = useCyborg()
   const [zkFiles, setZkFiles] = useState({
     model: null,
+    publicInput: null
   })
   const { 
     uploadFile, 
@@ -45,6 +46,10 @@ const NeuroZkUpload: React.FC<Props> = ({
   const navigateToDashboard = () => {
     navigate(ROUTES.DASHBOARD)
   }
+
+  useEffect(() => {
+    console.log(zkFiles)
+  }, [zkFiles])
 
   useEffect(() => {
     if (error) {
@@ -61,9 +66,15 @@ const NeuroZkUpload: React.FC<Props> = ({
   }, [isUploading, taskId])
 
   const uploadModel = async () => {
+    if (!zkFiles.model || !zkFiles.publicInput) {
+      toast('Please upload both model and public input files!')
+      return
+    }
+
     const formData = new FormData()
 
     formData.append('model.onnx', zkFiles.model)
+    formData.append('publicInput.json', zkFiles.publicInput)
 
     uploadFile(formData, minerAdress, minerId);
   }
@@ -73,7 +84,7 @@ const NeuroZkUpload: React.FC<Props> = ({
     console.log(e.target)
     setZkFiles(prevState => ({
       ...prevState,
-      model: files[0],
+      [e.target.name]: files[0],
     }))
   }
 
@@ -86,7 +97,7 @@ const NeuroZkUpload: React.FC<Props> = ({
 
     const InfoTextContainer = ({ infoText }) => {
       return (
-        <div className="absolute min-w-80 top-full left-full rounded-lg border border-cb-gray-400 bg-black bg-opacity-90 p-4 z-50 text-white">
+        <div className="absolute min-w-80 top-full left-full rounded-lg border border-cb-green-500 bg-black bg-opacity-90 p-4 z-50 text-white">
           {infoText}
         </div>
       )
@@ -156,8 +167,14 @@ const NeuroZkUpload: React.FC<Props> = ({
               <FileUploadElement
                 label="Model"
                 icon={<ZkPublicInputs />}
-                name="zk_public_input"
-                infoText="A public input file, required for the generation of a zero knowledge proof."
+                name="model"
+                infoText="A tract compatible model in the .ONNX format."
+              />
+              <FileUploadElement
+                label="Public Input"
+                icon={<ZkPublicInputs />}
+                name="publicInput"
+                infoText="A public input in a format that the model can consume, used for the generation of the zk-proofs"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">

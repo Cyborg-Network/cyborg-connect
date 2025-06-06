@@ -24,30 +24,30 @@ export const ServerSpecs: React.FC<ServerSpecsProps> = ({
       <ul className="px-6 py-3 h-auto">
         <li className="flex justify-between">
           <p>OS:</p>
-          <p>{specs ? specs.os : null}</p>
+          <p>{specs ? specs.specs.os : null}</p>
         </li>
         <li
           className="flex justify-between gap-4"
           onClick={
             specs
-              ? () => toast(specs.cpus[0])
+              ? () => toast(specs.specs.cpus[0])
               : () => {
                   return
                 }
           }
         >
           <p>CPU:</p>
-          <p className="truncate">{specs ? specs.cpus[0] : null}</p>
+          <p className="truncate">{specs ? specs.specs.cpus[0] : null}</p>
         </li>
         <li className="flex justify-between">
           <p>Memory:</p>
           <p>
-            {specs ? `~${Math.round(specs.memory / (1024 * 1024))} MB` : null}
+            {specs ? `~${Math.round(specs.specs.memory / (1024 * 1024))} MB` : null}
           </p>
         </li>
         <li className="flex justify-between">
           <p>Storage:</p>
-          <p>{specs ? `~${Math.round(specs.disk / 1073741824)} GB` : null}</p>
+          <p>{specs ? `~${Math.round(specs.specs.disk / 1073741824)} GB` : null}</p>
         </li>
         <li className="flex justify-between">
           <p>Location:</p>

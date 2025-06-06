@@ -1,8 +1,10 @@
 export interface MinerSpecs {
-  os: string
-  memory: number
-  disk: number
-  cpus: string[]
+  specs: {
+    os: string
+    memory: number
+    disk: number
+    cpus: string[]
+  },
   location: { coordinates: number[] }
 }
 
