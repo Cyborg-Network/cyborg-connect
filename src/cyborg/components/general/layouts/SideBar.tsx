@@ -1,24 +1,18 @@
 import React from 'react'
 import logo from '../../../../../public/assets/Logo.png'
-import profile from '../../../../../public/assets/icons/profile.png'
+//import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
 import { useUi } from '../../../context/UiContext'
 import Button from '../buttons/Button'
-
-const ServiceTab = ({ name }) => {
-  return (
-    <button className="flex justify-center text-white text-opacity-50 py-3 rounded-md focus:text-black focus:bg-cb-green bg-cb-gray-700">
-      {name}
-    </button>
-  )
-}
+import { useAuth0 } from '@auth0/auth0-react'
 
 const SideBar = () => {
-  const navigate = useNavigate()
-  const { sidebarIsActive, setSidebarIsActive } = useUi()
+  const navigate = useNavigate();
+  const { sidebarIsActive, setSidebarIsActive } = useUi();
+  const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
 
   const navigateAndCloseSidebar = url => {
     setSidebarIsActive(false)
@@ -72,18 +66,38 @@ const SideBar = () => {
           </span>
           <span className="flex flex-col p-4 bg-cb-gray-700 m-4 rounded-md">
             <div className="flex justify-between items-center pb-6">
-              <div className="flex mx-4">
+              <div className="flex gap-4 justify-between">
                 <a>
-                  <img src={profile} className="h-10S" />
+                  <img src={user.picture} className="h-10S" />
                 </a>
-                <button className="text-white">Profile</button>
+                <button className="text-white">{
+                  (isAuthenticated && user)
+                    ? user.email
+                    : "User"
+                }</button>
+                <BsThreeDots size={40} color={'gray'} />
               </div>
-              <BsThreeDots size={20} color={'gray'} />
+              
             </div>
-            <div className="grid grid-cols-2 border border-cb-gray-500 rounded-md p-1">
-              <ServiceTab name="Provider" />
-              <ServiceTab name="User" />
-            </div>
+            {!isAuthenticated ? (
+              <Button
+                type="button"
+                selectable={false}
+                variation="primary"
+                onClick={() => loginWithRedirect()}
+              >
+                Login
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                selectable={false}
+                variation="primary"
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+              >
+                Logout
+              </Button>
+            )}
           </span>
         </div>
       </div>

@@ -41,7 +41,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     color: 'var(--gauge-red)',
     data: defaultData,
   })
-  const [proofStage, setProofStage] = useState(1);
+  const [proofStage, setProofStage] = useState(0);
 
   const { usageData, agentSpecs, logs, lockState, authenticateWithAgent } =
     useAgentCommunication(metadata)
@@ -69,6 +69,35 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     //isLoading: workerClustersIsLoading,
     //error: workerClustersError
   } = useUserWorkersQuery(false, 'workerClusters')
+
+  useEffect(() => {
+   async function queryProofStage() {
+    if(metadata){
+    if(metadata.lastTask){
+      
+    const task = await api.query.taskManagement.tasks(metadata.lastTask);
+
+    console.log(task)
+
+    if(task.nzkData){
+      if (task.nzkData.zkProof && !task.nzkData.lastProofAccepted) {
+        setProofStage(2)
+        return;
+      }
+    }
+
+    if(task.nzkData){
+      if (task.nzkData.lastProofAccepted) {
+        setProofStage(3)
+        return;
+      }
+    }
+    }
+  }
+   } 
+
+   queryProofStage();
+  }, [metadata])
 
   const transformUsageDataToChartData = (usageType: MetricName): Data => {
     let truncatedUsageData
@@ -156,7 +185,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
       account: currentAccount,
       onSuccess: events => {
         console.log('Proof sucessfully requested!', events);
-        setProofStage(2);
+        setProofStage(1);
         pollStorageUntil(taskId);
       },
       onError: error => toast('Transaction Failed:', error),
@@ -164,17 +193,21 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   }
 
   async function pollStorageUntil(taskId: number, intervalMs = 2000) {
-  while (proofStage !== 4) {
+  while (proofStage !== 3) {
     const task = await api.query.taskManagement.tasks(taskId);
 
-    if (task.nzkData.zkProof && !task.nzkData.lastProofAccepted) {
+    if(task.nzkData){
+      if (task.nzkData.zkProof && !task.nzkData.lastProofAccepted) {
+        setProofStage(2)
+        return;
+      }
+    }
+
+    if(task.nzkData){
+    if (task.nzkData.lastProofAccepted) {
       setProofStage(3)
       return;
     }
-
-    if (task.nzkData.lastProofAccepted) {
-      setProofStage(4)
-      return;
     }
 
     await new Promise((res) => setTimeout(res, intervalMs));

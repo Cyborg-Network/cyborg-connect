@@ -25,6 +25,7 @@ import { UiContextProvider } from './cyborg/context/UiContext';
 import MapInteractor from './cyborg/components/general/map/MapInteractor';
 import SelectNodePage from './cyborg/components/accessCompute/select-node/SelectNode';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Auth0Provider } from '@auth0/auth0-react';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -82,16 +83,16 @@ const router = createBrowserRouter([
         element: <CyborgLayout />,
         children: [
           {
-            path: ROUTES.ACCESS_COMPUTE,
-            element: <ChooseServices />,
-          },
-          {
-            path: ROUTES.CHOOSE_PATH,
-            element: <ChoosePath />,
-          },
-          {
             element: <SideBar />,
             children: [
+              {
+                path: ROUTES.ACCESS_COMPUTE,
+                element: <ChooseServices />,
+              },
+              {
+                path: ROUTES.CHOOSE_PATH,
+                element: <ChoosePath />,
+              },
               {
                 path: ROUTES.PROVIDE_COMPUTE,
                 element: <Dashboard />,
@@ -160,24 +161,32 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
     <SubstrateContextProvider>
-      <AccountContextProvider>
-        <CyborgContextProvider>
-          <UiContextProvider>
-          <Toaster
-            position="top-center"
-            reverseOrder={false}
-            toastOptions={{
-                style: {
-                  background: 'var(--cb-gray-600)',
-                  color: 'white',
-                  border: '1px solid var(--cb-green)'
-                }
-              }}
-          />
-          <RouterProvider router={router} />
-          </UiContextProvider>
-        </CyborgContextProvider>
-      </AccountContextProvider>
+      <Auth0Provider
+        domain="dev-2x17egiyhkuudp5t.us.auth0.com"
+        clientId="s77Fg5QZqAPltjVm9d4NkWiUyEgzjNRD"
+        authorizationParams={{
+          redirect_uri: window.location.origin
+        }}
+      >
+        <AccountContextProvider>
+          <CyborgContextProvider>
+            <UiContextProvider>
+            <Toaster
+              position="top-center"
+              reverseOrder={false}
+              toastOptions={{
+                  style: {
+                    background: 'var(--cb-gray-600)',
+                    color: 'white',
+                    border: '1px solid var(--cb-green)'
+                  }
+                }}
+            />
+            <RouterProvider router={router} />
+            </UiContextProvider>
+          </CyborgContextProvider>
+        </AccountContextProvider>
+      </Auth0Provider>
     </SubstrateContextProvider>
     </QueryClientProvider>
   </React.StrictMode>
