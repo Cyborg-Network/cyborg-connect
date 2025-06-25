@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import logo from '../../../../../public/assets/Logo.png'
-//import profile from '../../../../../public/assets/icons/profile.png'
+import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 import { BsThreeDots } from 'react-icons/bs'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
@@ -12,12 +12,44 @@ import { useAuth0 } from '@auth0/auth0-react'
 const SideBar = () => {
   const navigate = useNavigate();
   const { sidebarIsActive, setSidebarIsActive } = useUi();
-  const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, logout, user, getAccessTokenSilently } = useAuth0();
+  const [userMetadata, setUserMetadata] = useState(null);
 
   const navigateAndCloseSidebar = url => {
     setSidebarIsActive(false)
     navigate(url)
   }
+
+  useEffect(() => {
+    const getUserMetadata = async () => {
+      const domain = "dev-2x17egiyhkuudp5t.us.auth0.com";
+
+      try {
+        const accessToken = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: `https://${domain}/api/v2/`,
+            scope: "read:current_user",
+          },
+        });
+
+        const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`;
+
+        const metadataResponse = await fetch(userDetailsByIdUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const { user_metadata } = await metadataResponse.json();
+
+        setUserMetadata(user_metadata);
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+
+    getUserMetadata();
+  }, [getAccessTokenSilently, user?.sub]);
 
   const returnSidebarClass = sidebarIsActive ? '' : '-translate-x-full'
   const returnButtonClass = sidebarIsActive
@@ -68,7 +100,7 @@ const SideBar = () => {
             <div className="flex justify-between items-center pb-6">
               <div className="flex gap-4 justify-between">
                 <a>
-                  <img src={user.picture} className="h-10S" />
+                  <img src={user ? user.picture : profile} className="h-10S" />
                 </a>
                 <button className="text-white">{
                   (isAuthenticated && user)
@@ -77,7 +109,6 @@ const SideBar = () => {
                 }</button>
                 <BsThreeDots size={40} color={'gray'} />
               </div>
-              
             </div>
             {!isAuthenticated ? (
               <Button
@@ -97,6 +128,12 @@ const SideBar = () => {
               >
                 Logout
               </Button>
+            )}
+            <p>User Metadata</p>
+            {userMetadata ? (
+              <pre>{JSON.stringify(userMetadata, null, 2)}</pre>
+            ) : (
+              "No user metadata defined"
             )}
           </span>
         </div>

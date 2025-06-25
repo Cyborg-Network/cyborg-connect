@@ -165,7 +165,9 @@ root.render(
         domain="dev-2x17egiyhkuudp5t.us.auth0.com"
         clientId="s77Fg5QZqAPltjVm9d4NkWiUyEgzjNRD"
         authorizationParams={{
-          redirect_uri: window.location.origin
+          redirect_uri: window.location.origin,
+          audience: "https://dev-2x17egiyhkuudp5t.us.auth0.com/api/v2/",
+          scope: "read:current_user update:current_user_metadata"
         }}
       >
         <AccountContextProvider>
