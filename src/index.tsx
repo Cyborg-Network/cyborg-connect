@@ -26,6 +26,7 @@ import MapInteractor from './cyborg/components/general/map/MapInteractor';
 import SelectNodePage from './cyborg/components/accessCompute/select-node/SelectNode';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Auth0Provider } from '@auth0/auth0-react';
+import KycForm from './cyborg/components/kyc/KycForm';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -36,6 +37,7 @@ export const ROUTES = {
   DEV_MODE: "/dev-mode",
   MAP: "/access-compute/map",
   MODAL_NODES: "/access-compute/modal-nodes",
+  KYC: "/kyc"
 }
 
 const GlobalLayout = () => {
@@ -128,6 +130,10 @@ const router = createBrowserRouter([
               {
                 path: `${ROUTES.MODAL_NODES}`,
                 element: <SelectNodePage />,
+              },
+              {
+                path: `${ROUTES.KYC}`,
+                element: <KycForm />,
               }
             ]
           },
