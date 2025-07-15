@@ -14,12 +14,18 @@ import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import { transformToNumber } from '../../../util/numberOperations'
+import { loadStripe } from '@stripe/stripe-js'
+import { useAuth0 } from '@auth0/auth0-react'
+import { Elements } from '@stripe/react-stripe-js'
+import StripePaymentForm from '../../general/StripePaymentForm'
 
 const PAYMENT_OPTIONS = [
   { name: 'ENTT', icon: robo, isAvailable: true, testnet: true },
   { name: 'Crypto', icon: crypto, isAvailable: false, testnet: false },
-  { name: '', icon: fiat, isAvailable: false, testnet: false },
+  { name: 'FIAT', icon: fiat, isAvailable: true, testnet: false },
 ]
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
 
 interface Props {
   onCancel: () => void
@@ -27,11 +33,50 @@ interface Props {
   setService: () => void
 }
 
-const PaymentModal: React.FC<Props> = ({
-  onCancel,
-  onConfirm,
-}: Props) => {
+const PaymentModal: React.FC<Props> = ({ onCancel, onConfirm }: Props) => {
   const { api, currentAccount } = useSubstrateState()
+
+  const [clientSecret, setClientSecret] = useState('')
+  const [processingPayment, setProcessingPayment] = useState(false)
+  const { getAccessTokenSilently } = useAuth0()
+
+  const handleFiatPayment = async (paymentMethodId: string) => {
+    setProcessingPayment(true)
+
+    try {
+      const token = await getAccessTokenSilently()
+
+      const response = await fetch(
+        `${process.env.REACT_APP_GATEKEEPER_HTTPS_URL}/payment/process`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            amount: hoursSelected * computeHourPrice * 100, // Convert to cents
+            currency: 'usd',
+            payment_method_id: paymentMethodId,
+            account_id: currentAccount.toString(),
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Payment failed')
+      }
+
+      const paymentIntent = await response.json()
+      toast.success('Payment successful!')
+      refetch()
+      onConfirm()
+    } catch (error) {
+      toast.error(error.message || 'Payment failed')
+    } finally {
+      setProcessingPayment(false)
+    }
+  }
 
   const {
     data: computeHourPrice,
@@ -41,10 +86,10 @@ const PaymentModal: React.FC<Props> = ({
 
   const {
     data: userComputeHours,
-    refetch
+    refetch,
     //isLoading: userComputeHoursIsLoading,
-    //error: userComputeHoursError 
-  } = useUserComputeHoursQuery();
+    //error: userComputeHoursError
+  } = useUserComputeHoursQuery()
 
   const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
@@ -70,15 +115,16 @@ const PaymentModal: React.FC<Props> = ({
   }
 
   const setHoursSelected = (hours: string) => {
-    setHoursSelectedNumber(
-      transformToNumber(hours)
-    )
+    setHoursSelectedNumber(transformToNumber(hours))
   }
 
   const { handleTransaction, isLoading } = useTransaction(api)
 
   const submitTransaction = async () => {
-    const tx = userComputeHours > 0 ? api.tx.payment.addHours(hoursSelected) : api.tx.payment.subscribe(hoursSelected)
+    const tx =
+      userComputeHours > 0
+        ? api.tx.payment.addHours(hoursSelected)
+        : api.tx.payment.subscribe(hoursSelected)
     await handleTransaction({
       tx,
       account: currentAccount,
@@ -104,7 +150,9 @@ const PaymentModal: React.FC<Props> = ({
         >
           <div className="flex flex-col gap-6 w-full h-full rounded-lg text-lg">
             <div className="flex justify-between">
-              <div className="text-2xl font-bold">{userComputeHours > 0 ? "Extend Subscription" : "Subscribe"}</div>
+              <div className="text-2xl font-bold">
+                {userComputeHours > 0 ? 'Extend Subscription' : 'Subscribe'}
+              </div>
               <CloseButton
                 type="button"
                 onClick={onCancel}
@@ -193,18 +241,27 @@ const PaymentModal: React.FC<Props> = ({
               >
                 Cancel
               </Button>
-              <Button
-                type="button"
-                selectable={false}
-                variation="primary"
-                additionalClasses="w-full"
-                onClick={startTransaction}
-              >
-                <div className="flex gap-2 justify-center">
-                  <div>Confirm Payment and Proceed to Upload</div>
-                  <TiArrowRight />
-                </div>
-              </Button>
+              {selectedOption === 'FIAT' ? (
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <StripePaymentForm
+                    onSubmit={handleFiatPayment}
+                    processing={processingPayment}
+                  />
+                </Elements>
+              ) : (
+                <Button
+                  type="button"
+                  selectable={false}
+                  variation="primary"
+                  additionalClasses="w-full"
+                  onClick={startTransaction}
+                >
+                  <div className="flex gap-2 justify-center">
+                    <div>Confirm Payment and Proceed to Upload</div>
+                    <TiArrowRight />
+                  </div>
+                </Button>
+              )}
             </div>
           </div>
         </Modal>

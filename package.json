@@ -41,6 +41,8 @@
     "@polkadot/ui-settings": "^3.3.1",
     "@polkadot/util": "^12.1.2",
     "@polkadot/util-crypto": "^12.1.2",
+    "@stripe/react-stripe-js": "^3.7.0",
+    "@stripe/stripe-js": "^7.4.0",
     "@tanstack/react-query": "^5.65.1",
     "@types/libsodium-wrappers": "^0.7.14",
     "@types/react-simple-maps": "^3.0.6",
