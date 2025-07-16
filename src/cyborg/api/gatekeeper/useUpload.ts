@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import ReconnectingWebSocket from 'reconnecting-websocket'
+import { accountIdToPublicKey, deriveSharedSecret, encryptModel } from '../../util/non-bc-crypto/modelEncryotion'
+import { generateX25519KeyPair } from '../../util/non-bc-crypto/generateX25519KeyPair'
 
 const useFileUpload = () => {
   const trackingUrl = `${process.env.REACT_APP_GATEKEEPER_WS_URL}/track_upload`
@@ -62,48 +64,64 @@ const useFileUpload = () => {
     }
   }, [uploadId])
 
-  const uploadFile = useCallback(async (formData: FormData, minerAdress: string, minerId: number) => {
-    if (!formData) return
+  const uploadFile = useCallback(async (formData: FormData, minerAddress: string, minerId: number) => {
+    if (!formData) return;
 
-    setProgress('Initiating Upload')
-    setIsUploading(true)
-    setError(null)
-
-    const controller = new AbortController()
-    abortControllerRef.current = controller
+    setProgress('Initiating Upload');
+    setIsUploading(true);
+    setError(null);
 
     try {
+      // Generate ephemeral key pair
+      const keyPair = await generateX25519KeyPair();
+      
+      // Convert miner's account ID to public key
+      const minerPublicKey = accountIdToPublicKey(minerAddress);
+      
+      // Derive shared secret
+      const sharedSecret = await deriveSharedSecret(keyPair.privateKey, minerPublicKey);
+      
+      // Get files from form data
+      const modelFile = formData.get('model.onnx') as File;
+      const inputFile = formData.get('publicInput.json') as File;
+      
+      // Encrypt files
+      setProgress('Encrypting model...');
+      const { encryptedFile: encryptedModel } = await encryptModel(modelFile, sharedSecret);
+      const { encryptedFile: encryptedInput } = await encryptModel(inputFile, sharedSecret);
+      
+      // Create new form data with encrypted files
+      const encryptedFormData = new FormData();
+      encryptedFormData.append('model.onnx', encryptedModel, modelFile.name);
+      encryptedFormData.append('publicInput.json', encryptedInput, inputFile.name);
+      
+      // Add ephemeral public key to headers
+      const headers = {
+        'miner-account': minerAddress,
+        'miner-id': String(minerId),
+        'ephemeral-pubkey': sodium.to_hex(keyPair.publicKey)
+      };
+
       const response = await fetch(uploadUrl, {
-        headers: {
-          'miner-account': minerAdress,
-          'miner-id': String(minerId)
-        },
+        headers,
         method: 'POST',
-        body: formData,
-        signal: controller.signal,
-      })
+        body: encryptedFormData,
+      });
 
       if (!response.ok) {
-        toast(`Upload failed: ${response.statusText}`)
-        console.log('upload error: ', response)
-        setIsUploading(false)
-        return
+        throw new Error(response.statusText);
       }
 
-      const data = await response.json()
-      console.log('upload data: ', data.upload_id)
-      setUploadId(data.upload_id)
-      return data.uploadId
+      const data = await response.json();
+      setUploadId(data.upload_id);
+      return data.uploadId;
     } catch (err) {
-      if (err.name === 'AbortError') {
-        console.log('Upload canceled')
-      } else {
-        setError(err.message)
-        setIsUploading(false)
-        toast("Upload failed, please try again!")
-      }
+      setError(err);
+      setIsUploading(false);
+      toast.error("Upload failed, please try again!");
     }
-  }, [])
+  }, []);
+
 
   const cancelUpload = useCallback(() => {
     abortControllerRef.current?.abort()
