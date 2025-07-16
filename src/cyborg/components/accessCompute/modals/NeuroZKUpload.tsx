@@ -67,17 +67,17 @@ const NeuroZkUpload: React.FC<Props> = ({
 
   const uploadModel = async () => {
     if (!zkFiles.model || !zkFiles.publicInput) {
-      toast('Please upload both model and public input files!')
-      return
+      toast('Please upload both model and public input files!');
+      return;
     }
 
-    const formData = new FormData()
-
-    formData.append('model.onnx', zkFiles.model)
-    formData.append('publicInput.json', zkFiles.publicInput)
+    const formData = new FormData();
+    formData.append('model.onnx', zkFiles.model);
+    formData.append('publicInput.json', zkFiles.publicInput);
 
     uploadFile(formData, minerAdress, minerId);
-  }
+  };
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
