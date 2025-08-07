@@ -162,7 +162,7 @@ export const useAgentCommunication = (metadata: any) => {
     const sendAuthMessage = async () => {
       try {
         const message = await constructAgentAuthRequest(
-          metadata.api.domain.split(':')[0],
+          metadata.api.domain,
           metadata.lastTask,
           keys.publicKey
         )

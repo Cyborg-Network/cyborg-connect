@@ -8,7 +8,7 @@ import { ROUTES } from '../../../../index'
 import Button from '../../general/buttons/Button'
 import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
-import useService from '../../../hooks/useService'
+//import useService from '../../../hooks/useService'
 
 interface Props {
   setService: (service: string | null) => void
@@ -24,7 +24,7 @@ const UploadDockerImgURL: React.FC<Props> = ({
   const navigate = useNavigate()
 
   const { api, currentAccount } = useSubstrateState()
-  const { service } = useService()
+  //const { service } = useService()
 
   const [url, setUrl] = useState('')
   const [computeHoursDeposit, setComputeHoursDeposit] = useState('')
@@ -45,9 +45,7 @@ const UploadDockerImgURL: React.FC<Props> = ({
 
   const submitTransaction = async parsedHoursDeposit => {
     const tx = api.tx.taskManagement.taskScheduler(
-      service.substrateEnumValue,
-      url,
-      undefined,
+      { OpenInference: { Onnx: { storageLocationIdentifier: url } } },
       nodes[0].owner,
       nodes[0].id,
       parsedHoursDeposit

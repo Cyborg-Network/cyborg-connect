@@ -28,7 +28,7 @@ export const constructAgentAuthRequest = async (
   const request = JSON.stringify({
     target_ip: target_ip,
     endpoint: 'Auth',
-    task_id: 1,
+    task_id: taskId,
     signed_timestamp: signedTimestamp,
     signed_timestamp_signature: signature,
     ephemeral_public_key: sodium.to_hex(ephemeral_public_key),

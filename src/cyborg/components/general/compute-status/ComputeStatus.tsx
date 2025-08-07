@@ -169,7 +169,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     if (!executableWorkers || !workerClusters) return
     //This is necessary because if the user tries to share a link to the current node, it will not have the data otherwise
     const currentWorker = [...executableWorkers, ...workerClusters].find(
-      node => node.api.domain === domain
+      node => node.api.domain === `https://${domain}`
     )
     if (currentWorker) {
       setMetadata(currentWorker)
