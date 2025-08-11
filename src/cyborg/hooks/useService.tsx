@@ -18,8 +18,8 @@ export const SERVICES: Record<string, Service> = {
     id: 'OI',
     name: 'Open Inference',
     icon: oi,
-    substrateEnumValue: 'docker',
-    workerType: 'workerClusters',
+    substrateEnumValue: 'executable',
+    workerType: 'executableWorkers',
   },
   NZK: {
     id: 'NZK',

@@ -47,6 +47,33 @@
   background-color: var(--cb-gray-400);
 }
 
+.btn-warn {
+  background: linear-gradient(
+    100deg,
+    #e538353c 40%,
+    #b71c1c7f 50%,
+    #d32f2f3a 60%
+  );
+  background-size: 400% 400%;
+  background-position: right;
+}
+
+.btn-warn-on {
+  animation-name: move-gradient-in;
+  animation-duration: 0.7s;
+  animation-fill-mode: forwards;
+}
+
+.btn-warn-off {
+  animation-name: move-gradient-out;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+.btn-warn-selected {
+  background-position: left;
+}
+
 @keyframes move-gradient-in {
   0% {
     background-position: right;

@@ -31,7 +31,8 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
   )
 
   const navigateToComputeScreen = () => {
-    navigate(`${ROUTES.COMPUTE_STATUS}/${item.api.domain}`, {
+    const minerName = item.api.domain.replace(/^https?:\/\//, '');
+    navigate(`${ROUTES.COMPUTE_STATUS}/${minerName}`, {
       state: item,
     })
   }
