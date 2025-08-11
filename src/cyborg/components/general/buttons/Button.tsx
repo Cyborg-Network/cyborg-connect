@@ -3,7 +3,7 @@ import { IoClose } from 'react-icons/io5'
 import './Button.styles.css'
 
 interface Props {
-  variation: 'primary' | 'secondary' | 'cancel' | 'inactive'
+  variation: 'primary' | 'secondary' | 'cancel' | 'inactive' | 'warning'
   children: ReactNode
   type: 'submit' | 'reset' | 'button'
   onClick: (e: React.MouseEvent) => void
@@ -70,6 +70,12 @@ const Button: React.FC<Props> = ({
     case 'cancel':
       className = `bg-cb-gray-400 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center hover:text-cb-green ${additionalClasses}`
       content = <IoClose size={20} />
+      break
+    case 'warning':
+      className = `size-30 border-red-500 border text-white py-3 px-6 rounded-md btn-warn ${returnButtonClass(
+        'warn'
+      )} ${additionalClasses}`
+      content = children
       break
     case 'inactive':
       className = `bg-cb-gray-400 size-30 text-gray-500 py-3 px-6 rounded-md border border-gray-500 ${additionalClasses}`

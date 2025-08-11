@@ -17,6 +17,7 @@ export const useAgentCommunication = (metadata: any) => {
   const navigate = useNavigate()
 
   const [keys, setKeys] = useState<X25519KeyPair | null>(null)
+  const [agentUrl, setAgentUrl] = useState<string | null>(null)
   const [diffieHellmanSecret, setDiffieHellmanSecret] =
     useState<Uint8Array | null>(null)
   const [usageData, setUsageData] = useState<MinerUsageData>({
@@ -33,11 +34,18 @@ export const useAgentCommunication = (metadata: any) => {
     isLoading: false,
   })
 
+  useEffect(() => {
+    if (metadata) {
+      setAgentUrl(`${metadata.api.domain.replace('https://', 'wss://')}/agent-usage`)
+    }
+  }, [metadata])
+
   const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  const { sendMessage } = useWebSocket(CYBORG_SERVER_URL, {
+  const { sendMessage } = useWebSocket(agentUrl, {
+    shouldReconnect: () => !!agentUrl,
     onOpen: () => {
       console.log('Connection with cyborg-agent established')
     },
@@ -121,24 +129,24 @@ export const useAgentCommunication = (metadata: any) => {
       )
       setLockState({ isLocked: true, isLoading: false })
     },
-  })
+  }, !!agentUrl);
 
   useEffect(() => {
     if (diffieHellmanSecret) {
       sendMessage(
-        constructAgentApiRequest(metadata.api.domain.split(':')[0], 'Init')
+        constructAgentApiRequest(agentUrl, 'Init')
       )
     }
-  }, [diffieHellmanSecret, metadata, sendMessage])
+  }, [diffieHellmanSecret, metadata, sendMessage, agentUrl])
 
   useEffect(() => {
     if (agentSpecs) {
       setLockState({ isLoading: false, isLocked: false })
       sendMessage(
-        constructAgentApiRequest(metadata.api.domain.split(':')[0], 'Usage')
+        constructAgentApiRequest(agentUrl, 'Usage')
       )
     }
-  }, [agentSpecs, metadata, sendMessage])
+  }, [agentSpecs, metadata, sendMessage, agentUrl])
 
   useEffect(() => {
     let isMounted = true
@@ -162,7 +170,7 @@ export const useAgentCommunication = (metadata: any) => {
     const sendAuthMessage = async () => {
       try {
         const message = await constructAgentAuthRequest(
-          metadata.api.domain,
+          agentUrl,
           metadata.lastTask,
           keys.publicKey
         )

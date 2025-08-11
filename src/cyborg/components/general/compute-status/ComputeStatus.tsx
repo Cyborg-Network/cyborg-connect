@@ -18,6 +18,7 @@ import Button from '../buttons/Button'
 import useTransaction from '../../../api/parachain/useTransaction'
 import toast from 'react-hot-toast'
 import { useSubstrateState } from '../../../../substrate-lib'
+import useService, { SERVICES } from '../../../hooks/useService'
 
 interface ComputeStatusProps {
   perspective: 'provider' | 'accessor'
@@ -32,6 +33,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   perspective,
 }: ComputeStatusProps) => {
   const { sidebarIsActive } = useUi()
+  const { service } = useService()
   const { domain } = useParams()
   const { api, currentAccount } = useSubstrateState()
 
@@ -261,52 +263,59 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
           <>
             <MetaDataHeader
               owner={metadata.owner}
+              taskId={metadata.lastTask}
               id={metadata.id}
               domain={metadata.api.domain}
               status={metadata.status}
               lastCheck={metadata.statusLastUpdated}
             />
-            <div className="text-white w-full bg-cb-gray-600 flex rounded-lg gap-4 items-center">
-            <Button
-              onClick={() => requestProof(metadata.lastTask)}
-              type="button"
-              variation="primary"
-              selectable={false}
-              additionalClasses="ml-10"
-            >
-              {isLoading ? 'Requesting Proof...' : 'Request Proof'}
-            </Button>
-            <div className='flex-grow'>
-              <Stepper activeStep={proofStage} 
-                  connectorStateColors={true}
-                  connectorStyleConfig={{
-                    size: ".5em",
-                    activeColor: "#15e84c",
-                    completedColor: "#32b054",
-                    disabledColor: "#343735",
-                    style: ""
-                  }}
-                  styleConfig={{
-                    completedTextColor: "#ffffff",
-                    inactiveTextColor: "#ffffff",
-                    size: "3em",
-                    fontWeight: "regular",
-                    labelFontSize: "0.9em",
-                    circleFontSize: "1em",
-                    borderRadius: "50%",
-                    activeBgColor: "#15e84c",
-                    completedBgColor: "#32b054",
-                    inactiveBgColor: "#343735",
-                    activeTextColor: "#ffffff"
-                  }}
-              >
-                <Step label="Setup Complete" />
-                <Step label="Proof Requested" />
-                <Step label="Proof Submitted" />
-                <Step label="Proof Verified" />
-              </Stepper>
-            </div>
-            </div>
+            {
+              service === SERVICES.NZK
+              ?
+              <div className="text-white w-full bg-cb-gray-600 flex rounded-lg gap-4 items-center">
+                <Button
+                  onClick={() => requestProof(metadata.lastTask)}
+                  type="button"
+                  variation="primary"
+                  selectable={false}
+                  additionalClasses="ml-10"
+                >
+                  {isLoading ? 'Requesting Proof...' : 'Request Proof'}
+                </Button>
+                <div className='flex-grow'>
+                  <Stepper activeStep={proofStage} 
+                      connectorStateColors={true}
+                      connectorStyleConfig={{
+                        size: ".5em",
+                        activeColor: "#15e84c",
+                        completedColor: "#32b054",
+                        disabledColor: "#343735",
+                        style: ""
+                      }}
+                      styleConfig={{
+                        completedTextColor: "#ffffff",
+                        inactiveTextColor: "#ffffff",
+                        size: "3em",
+                        fontWeight: "regular",
+                        labelFontSize: "0.9em",
+                        circleFontSize: "1em",
+                        borderRadius: "50%",
+                        activeBgColor: "#15e84c",
+                        completedBgColor: "#32b054",
+                        inactiveBgColor: "#343735",
+                        activeTextColor: "#ffffff"
+                      }}
+                  >
+                    <Step label="Setup Complete" />
+                    <Step label="Proof Requested" />
+                    <Step label="Proof Submitted" />
+                    <Step label="Proof Verified" />
+                  </Stepper>
+                </div>
+              </div>
+              :
+              <></>
+            }
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
               {perspective === 'provider' ? (
                 <div className="col-span-1">
