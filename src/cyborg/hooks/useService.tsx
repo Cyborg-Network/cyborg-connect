@@ -3,7 +3,7 @@ import oi from '../../../public/assets/icons/cyberdock.svg'
 import nzk from '../../../public/assets/icons/neuro-zk.svg'
 import toast from 'react-hot-toast'
 
-type ServiceId = 'OI' | 'NZK'
+type ServiceId = 'OI' | 'NZK' | 'FI'
 
 export interface Service {
   id: ServiceId
@@ -14,6 +14,13 @@ export interface Service {
 }
 
 export const SERVICES: Record<string, Service> = {
+  FI: {
+    id: 'FI',
+    name: 'Flash Infer',
+    icon: oi,
+    substrateEnumValue: 'executable',
+    workerType: 'executableWorkers',
+  },
   OI: {
     id: 'OI',
     name: 'Open Inference',
@@ -38,7 +45,8 @@ const useService = () => {
         const serviceString = JSON.parse(s)
         if (
           serviceString === SERVICES.OI.id ||
-          serviceString === SERVICES.NZK.id
+          serviceString === SERVICES.NZK.id || 
+          serviceString === SERVICES.FI.id
         ) {
           return SERVICES[serviceString]
         } else {
