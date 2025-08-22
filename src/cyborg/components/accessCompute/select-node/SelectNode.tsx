@@ -13,6 +13,7 @@ import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import NeuroZkUpload from '../modals/NeuroZKUpload'
 import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
+import FlashInferUpload from '../modals/FlashInferUpload'
 //import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
@@ -230,6 +231,16 @@ const SelectNodePage: React.FC = () => {
           onCancel={setDeploymentStageToInit}
           minerId={selectedNodes[0].id}
           minerAdress={selectedNodes[0].owner}
+        />
+      ) : (
+        <></>
+      )}
+      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
+      service.id === SERVICES.FI.id ? (
+        <FlashInferUpload
+          setService={() => {}}
+          onCancel={setDeploymentStageToInit}
+          nodes={selectedNodes}
         />
       ) : (
         <></>
