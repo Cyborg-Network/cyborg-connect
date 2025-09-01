@@ -7,26 +7,26 @@ interface Props {
   children: ReactNode
   type: 'submit' | 'reset' | 'button'
   onClick: (e: React.MouseEvent) => void
-  additionalClasses?: String
+  additionalClasses?: string
   selectable: { isSelected: boolean } | false
+  disabled?: boolean
 }
 
-//with ts, add exclusivity of either varation === "cancel"
 const Button: React.FC<Props> = ({
   variation,
   children,
   type,
   onClick,
-  additionalClasses,
+  additionalClasses = '',
   selectable,
+  disabled = false
 }: Props) => {
   const [btnState, setBtnState] = useState('initial')
 
-  let className: String
+  let className: string
   let content: ReactNode
 
-  const returnButtonClass = variation => {
-    //Order is important here! Change with care
+  const returnButtonClass = (variation: string) => {
     if (selectable) {
       if (selectable.isSelected) {
         return `btn-${variation}-selected`
@@ -44,6 +44,7 @@ const Button: React.FC<Props> = ({
     if (btnState === 'btn-off') {
       return `btn-${variation}-off`
     }
+    return ''
   }
 
   const handleMouseLeave = () => {
@@ -90,8 +91,9 @@ const Button: React.FC<Props> = ({
       type={type}
       onMouseEnter={() => setBtnState('btn-on')}
       onMouseLeave={() => handleMouseLeave()}
-      onClick={e => onClick(e)}
-      className={`${className}`}
+      onClick={(e) => !disabled && onClick(e)}
+      className={`${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      disabled={disabled}
     >
       {content}
     </button>
