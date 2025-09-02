@@ -26,6 +26,7 @@ import MapInteractor from './cyborg/components/general/map/MapInteractor';
 import SelectNodePage from './cyborg/components/accessCompute/select-node/SelectNode';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Auth0Provider } from '@auth0/auth0-react';
+import { ParachainContextProvider } from './cyborg/context/PapiContext';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -160,36 +161,38 @@ const root = createRoot(domNode);
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-    <SubstrateContextProvider>
-      <Auth0Provider
-        domain="dev-2x17egiyhkuudp5t.us.auth0.com"
-        clientId="s77Fg5QZqAPltjVm9d4NkWiUyEgzjNRD"
-        authorizationParams={{
-          redirect_uri: window.location.origin,
-          audience: "https://dev-2x17egiyhkuudp5t.us.auth0.com/api/v2/",
-          scope: "read:current_user update:current_user_metadata"
-        }}
-      >
-        <AccountContextProvider>
-          <CyborgContextProvider>
-            <UiContextProvider>
-            <Toaster
-              position="top-center"
-              reverseOrder={false}
-              toastOptions={{
-                  style: {
-                    background: 'var(--cb-gray-600)',
-                    color: 'white',
-                    border: '1px solid var(--cb-green)'
-                  }
-                }}
-            />
-            <RouterProvider router={router} />
-            </UiContextProvider>
-          </CyborgContextProvider>
-        </AccountContextProvider>
-      </Auth0Provider>
-    </SubstrateContextProvider>
+      <SubstrateContextProvider>
+        <ParachainContextProvider>
+          <Auth0Provider
+            domain="dev-2x17egiyhkuudp5t.us.auth0.com"
+            clientId="s77Fg5QZqAPltjVm9d4NkWiUyEgzjNRD"
+            authorizationParams={{
+              redirect_uri: window.location.origin,
+              audience: "https://dev-2x17egiyhkuudp5t.us.auth0.com/api/v2/",
+              scope: "read:current_user update:current_user_metadata"
+            }}
+          >
+            <AccountContextProvider>
+              <CyborgContextProvider>
+                <UiContextProvider>
+                <Toaster
+                  position="top-center"
+                  reverseOrder={false}
+                  toastOptions={{
+                      style: {
+                        background: 'var(--cb-gray-600)',
+                        color: 'white',
+                        border: '1px solid var(--cb-green)'
+                      }
+                    }}
+                />
+                <RouterProvider router={router} />
+                </UiContextProvider>
+              </CyborgContextProvider>
+            </AccountContextProvider>
+          </Auth0Provider>
+        </ParachainContextProvider>
+      </SubstrateContextProvider>
     </QueryClientProvider>
   </React.StrictMode>
 )

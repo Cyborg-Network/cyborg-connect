@@ -8,6 +8,9 @@ import { ROUTES } from '../../../../index'
 import Button from '../../general/buttons/Button'
 import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
+import { useParachain } from '../../../context/PapiContext'
+import { Binary, Enum } from 'polkadot-api'
+import { Transaction } from 'polkadot-api'
 //import useService from '../../../hooks/useService'
 
 interface Props {
@@ -23,7 +26,8 @@ const FlashInferUpload: React.FC<Props> = ({
 }: Props) => {
   const navigate = useNavigate()
 
-  const { api, currentAccount } = useSubstrateState()
+  const { api, currentAccount } = useSubstrateState();
+  const { parachainApi } = useParachain();
   //const { service } = useService()
 
   const [huggingfaceId, setHuggingfaceId] = useState('')
@@ -44,6 +48,14 @@ const FlashInferUpload: React.FC<Props> = ({
   const { handleTransaction, isLoading } = useTransaction(api)
 
   const submitTransaction = async parsedHoursDeposit => {
+
+    const trx = parachainApi.tx.TaskManagement.task_scheduler({
+      task_kind: Enum("FlashInfer", {type: "Huggingface", value: Binary.fromText(huggingfaceId)}),
+      worker_owner: nodes[0].owner,
+      worker_id: nodes[0].id,
+      compute_hours_deposit: parsedHoursDeposit
+    });
+
     const tx = api.tx.taskManagement.taskScheduler(
       { FlashInfer: { Huggingface: { hf_identifier: huggingfaceId } } },
       nodes[0].owner,
