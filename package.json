@@ -109,7 +109,12 @@
       "react-app",
       "eslint:recommended",
       "prettier"
-    ]
+    ],
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    }
   },
   "engines": {
     "node": ">=16",

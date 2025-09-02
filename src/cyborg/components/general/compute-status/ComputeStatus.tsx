@@ -19,6 +19,8 @@ import useTransaction from '../../../api/parachain/useTransaction'
 import toast from 'react-hot-toast'
 import { useSubstrateState } from '../../../../substrate-lib'
 import useService, { SERVICES } from '../../../hooks/useService'
+import { useParachain } from '../../../context/PapiContext'
+import { safeBigIntTransform } from '../../../util/safeBigIntTransform'
 
 interface ComputeStatusProps {
   perspective: 'provider' | 'accessor'
@@ -35,7 +37,8 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   const { sidebarIsActive } = useUi()
   const { service } = useService()
   const { domain } = useParams()
-  const { api, currentAccount } = useSubstrateState()
+  const { api } = useSubstrateState()
+  const { account, parachainApi} = useParachain()
 
   const [metadata, setMetadata] = useState(null)
   const [selectedGauge, setSelectedGauge] = useState<SelectedGaugeState>({
@@ -75,30 +78,34 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
 
   useEffect(() => {
    async function queryProofStage() {
-    if(metadata){
-    if(metadata.lastTask){
-      
-    const task = await api.query.taskManagement.tasks(metadata.lastTask);
+      if(metadata){
+        if(
+          metadata.lastTask && 
+          typeof metadata.lastTask === "number" && 
+          Number.isFinite(metadata.lastTask) && 
+          Number.isInteger(metadata.lastTask)
+        ){
+          const task = await parachainApi.query.TaskManagement.Tasks.getValue(metadata.lastTask)
 
-    console.log(task)
+          switch (task.task_kind.type) {
+            case "NeuroZK": {
+              let task_value = task.task_kind.value
+                if (task_value.zk_proof && !task_value.last_proof_accepted) {
+                  setProofStage(2)
+                  return;
+                }
 
-    if(task.nzkData){
-      if (task.nzkData.zkProof && !task.nzkData.lastProofAccepted) {
-        setProofStage(2)
-        return;
+                if (task_value.last_proof_accepted) {
+                  setProofStage(3)
+                  return;
+                }
+            }
+            break
+          }
+          
+        }
       }
-    }
-
-    if(task.nzkData){
-      if (task.nzkData.lastProofAccepted) {
-        setProofStage(3)
-        return;
-      }
-    }
-    }
-  }
    } 
-
    queryProofStage();
   }, [metadata])
 
@@ -178,21 +185,26 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     }
   }, [executableWorkers, workerClusters, setMetadata, domain])
 
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { handleTransaction, isLoading } = useTransaction()
 
   const requestProof = async (taskId: number) => {
-    const tx = api.tx.neuroZk.requestProof(taskId)
+    const bigInt = safeBigIntTransform(taskId);
+    if (!bigInt) {
+      toast("Task id is not a valid number, tx aborted.")
+      return
+    }
+
+    const tx = parachainApi.tx.NeuroZk.request_proof({ task_id: BigInt(bigInt) })
 
     await handleTransaction({
       tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log('Proof sucessfully requested!', events);
+      account,
+      onSuccess: () => {
         setProofStage(1);
         setProofRequested(true)
         pollTaskStatus(taskId, api, setProofStage);
       },
-      onError: error => toast('Transaction Failed:', error),
+      txName: "Request Proof"
     })
   }
 

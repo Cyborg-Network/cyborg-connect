@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useSubstrateState } from '../../../../substrate-lib'
 import toast from 'react-hot-toast'
 import Modal from '../../general/modals/Modal'
 import CloseButton from '../../general/buttons/CloseButton'
@@ -8,6 +7,8 @@ import { ROUTES } from '../../../../index'
 import Button from '../../general/buttons/Button'
 import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
+import { useParachain } from '../../../context/PapiContext'
+import { Binary, Enum } from 'polkadot-api'
 //import useService from '../../../hooks/useService'
 
 interface Props {
@@ -23,7 +24,7 @@ const UploadDockerImgURL: React.FC<Props> = ({
 }: Props) => {
   const navigate = useNavigate()
 
-  const { api, currentAccount } = useSubstrateState()
+  const { account, parachainApi } = useParachain()
   //const { service } = useService()
 
   const [url, setUrl] = useState('')
@@ -41,24 +42,21 @@ const UploadDockerImgURL: React.FC<Props> = ({
     navigate(ROUTES.DASHBOARD)
   }
 
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { handleTransaction, isLoading } = useTransaction()
 
   const submitTransaction = async parsedHoursDeposit => {
-    const tx = api.tx.taskManagement.taskScheduler(
-      { OpenInference: { Onnx: { storageLocationIdentifier: url } } },
-      nodes[0].owner,
-      nodes[0].id,
-      parsedHoursDeposit
-    )
+    const tx = parachainApi.tx.TaskManagement.task_scheduler({
+      task_kind: Enum("OpenInference", {type: "Onnx", value: { storage_location_identifier: Binary.fromText(url) } }),
+      worker_owner: nodes[0].owner,
+      worker_id: nodes[0].id,
+      compute_hours_deposit: parsedHoursDeposit
+    });
 
     await handleTransaction({
-      tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log('Transaction Successful!', events)
-        navigateToDashboard()
-      },
-      onError: error => toast('Transaction Failed:', error),
+      tx, 
+      account, 
+      onSuccess: navigateToDashboard,
+      txName: "Open Inference Task"
     })
   }
 

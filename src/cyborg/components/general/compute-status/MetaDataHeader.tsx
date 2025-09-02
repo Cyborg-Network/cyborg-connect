@@ -7,9 +7,10 @@ import useService from '../../../hooks/useService'
 import comingsoon from '../../../../../public/assets/icons/comingsoon.svg'
 import Button from '../buttons/Button'
 import WarnConfirmModal from '../modals/WarnConfirm'
-import toast from 'react-hot-toast'
 import useTransaction from '../../../api/parachain/useTransaction'
-import { useSubstrateState } from '../../../../substrate-lib'
+import { useParachain } from '../../../context/PapiContext'
+import { safeBigIntTransform } from '../../../util/safeBigIntTransform'
+import { toast } from 'react-hot-toast'
 
 interface MetaDataHeaderProps {
   owner: string
@@ -41,23 +42,25 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
 
   const { sidebarIsActive } = useUi()
   const { service } = useService()
-  const { api, currentAccount } = useSubstrateState()
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { parachainApi, account } = useParachain()
+  const { handleTransaction, isLoading } = useTransaction()
 
   const [confirmModalVisible, setConfirmModalVisible] = useState(false)
 
   const stopTask = async (taskId: number) => {
-    const tx = api.tx.taskManagement.stopTaskAndVacateMiner(
-      taskId
+    let bigInt = safeBigIntTransform(taskId)
+    if(!bigInt){
+      toast("Cannot stop task, Task ID is not a valid number.")
+    }
+    const tx = parachainApi.tx.TaskManagement.stop_task_and_vacate_miner(
+      {task_id: bigInt}
     )
 
     await handleTransaction({
       tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log('Proof sucessfully requested!', events);
-      },
-      onError: error => toast('Transaction Failed:', error),
+      account,
+      onSuccess: () => {},
+      txName: "Stop Task"
     })
   }
 

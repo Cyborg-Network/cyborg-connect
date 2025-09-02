@@ -7,13 +7,13 @@ import fiat from '../../../../../public/assets/icons/fiat-currencty.svg'
 import Button from '../../general/buttons/Button'
 import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
-import { useSubstrateState } from '../../../../substrate-lib/index'
 import robo from '../../../../../public/assets/icons/robo.png'
 import LoadingModal from '../../general/modals/Loading'
 import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import { transformToNumber } from '../../../util/numberOperations'
+import { useParachain } from '../../../context/PapiContext'
 
 const PAYMENT_OPTIONS = [
   { name: 'ENTT', icon: robo, isAvailable: true, testnet: true },
@@ -31,7 +31,7 @@ const PaymentModal: React.FC<Props> = ({
   onCancel,
   onConfirm,
 }: Props) => {
-  const { api, currentAccount } = useSubstrateState()
+  const { account, parachainApi } = useParachain()
 
   const {
     data: computeHourPrice,
@@ -75,19 +75,21 @@ const PaymentModal: React.FC<Props> = ({
     )
   }
 
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { handleTransaction, isLoading } = useTransaction()
 
   const submitTransaction = async () => {
-    const tx = userComputeHours > 0 ? api.tx.payment.addHours(hoursSelected) : api.tx.payment.subscribe(hoursSelected)
+    const tx = userComputeHours > 0 
+      ? parachainApi.tx.Payment.add_hours({ extra_hours: hoursSelected })
+      : parachainApi.tx.Payment.subscribe({ hours: hoursSelected })
+
     await handleTransaction({
       tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log('Transaction Successful!', events)
-        refetch()
+      account,
+      onSuccess: () => {
         onConfirm()
+        refetch()
       },
-      onError: error => toast('Transaction Failed:', error),
+      txName: "Top Up"
     })
   }
 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useSubstrateState } from '../../../../substrate-lib'
 import toast from 'react-hot-toast'
 import Modal from '../../general/modals/Modal'
 import CloseButton from '../../general/buttons/CloseButton'
@@ -10,7 +9,6 @@ import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useParachain } from '../../../context/PapiContext'
 import { Binary, Enum } from 'polkadot-api'
-import { Transaction } from 'polkadot-api'
 //import useService from '../../../hooks/useService'
 
 interface Props {
@@ -26,7 +24,7 @@ const FlashInferUpload: React.FC<Props> = ({
 }: Props) => {
   const navigate = useNavigate()
 
-  const { api, currentAccount } = useSubstrateState();
+  const { account } = useParachain();
   const { parachainApi } = useParachain();
   //const { service } = useService()
 
@@ -45,33 +43,22 @@ const FlashInferUpload: React.FC<Props> = ({
     navigate(ROUTES.DASHBOARD)
   }
 
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { handleTransaction, isLoading } = useTransaction()
 
   const submitTransaction = async parsedHoursDeposit => {
-
-    const trx = parachainApi.tx.TaskManagement.task_scheduler({
+    const tx = parachainApi.tx.TaskManagement.task_scheduler({
       task_kind: Enum("FlashInfer", {type: "Huggingface", value: Binary.fromText(huggingfaceId)}),
       worker_owner: nodes[0].owner,
       worker_id: nodes[0].id,
       compute_hours_deposit: parsedHoursDeposit
     });
 
-    const tx = api.tx.taskManagement.taskScheduler(
-      { FlashInfer: { Huggingface: { hf_identifier: huggingfaceId } } },
-      nodes[0].owner,
-      nodes[0].id,
-      parsedHoursDeposit
-    )
-
-    await handleTransaction({
-      tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log('Transaction Successful!', events)
-        navigateToDashboard()
-      },
-      onError: error => toast('Transaction Failed:', error),
-    })
+    handleTransaction({
+      tx, 
+      account, 
+      onSuccess: navigateToDashboard,
+      txName: "Flash Infer Task"
+    });
   }
 
   const handleSubmit = async () => {

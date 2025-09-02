@@ -1,4 +1,3 @@
-import { useSubstrateState } from '../../../../substrate-lib'
 import { toast } from 'react-hot-toast'
 import Modal from '../../general/modals/Modal'
 import CloseButton from '../../general/buttons/CloseButton'
@@ -7,6 +6,9 @@ import { Separator } from '../../general/Separator'
 import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
 import React from 'react'
+import { useParachain } from '../../../context/PapiContext'
+import { Enum } from 'polkadot-api'
+import { safeBigIntTransform } from '../../../util/safeBigIntTransform'
 
 interface Props {
   nodeInfo: { workerType: string; id: number }
@@ -14,26 +16,32 @@ interface Props {
 }
 
 const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
-  const { api, currentAccount } = useSubstrateState()
+  const { parachainApi, account } = useParachain()
 
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { handleTransaction, isLoading } = useTransaction()
 
   console.log(nodeInfo)
 
   const submitTransaction = async () => {
-    const tx = api.tx.edgeConnect.removeWorker(nodeInfo.workerType, nodeInfo.id)
+    const bigInt = safeBigIntTransform(nodeInfo.id)
+    if(!bigInt){
+      toast("Cannot remove miner, MinerId is an invalid number!")
+      return
+    }
+    const tx = parachainApi.tx.EdgeConnect.remove_worker(
+      {
+        worker_type: Enum("Executable", undefined),
+        worker_id: bigInt
+      }
+    )
 
     await handleTransaction({
       tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log(events)
+      account,
+      onSuccess: () => {
         toast('Node Successfully Removed.')
       },
-      onError: error => {
-        console.log(error)
-        toast('Transaction Failed.')
-      },
+      txName: "Remove Miner"
     })
   }
 
