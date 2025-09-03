@@ -1,23 +1,46 @@
 import { useSubstrateState } from '../../../substrate-lib/SubstrateContext'
 import { useQuery } from '@tanstack/react-query'
 import { i32CoordinateToFloatCoordinate } from '../../util/coordinateConversion'
-import { getAccount } from '../../util/getAccount'
-import { ApiPromise } from '@polkadot/api'
-import { AccountId32 } from '@polkadot/types/interfaces'
 import { Service } from '../../hooks/useService'
+import { TypedApi } from 'polkadot-api'
+import { CyborgParachain, CyborgParachainQueries } from '@polkadot-api/descriptors'
+import { InjectedPolkadotAccount } from 'polkadot-api/dist/reexports/pjs-signer'
 
 type workerType = 'executableWorkers' | 'workerClusters'
 
-const getWorkers = async (api: ApiPromise, workerType: workerType) => {
-  const workerEntries = await api.query.edgeConnect[workerType].entries()
+export type Miner = 
+  CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["Value"] |
+  CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["Value"];
 
-  const workers = workerEntries.map(([_key, value]) => {
-    const data: any = value.toHuman()
+
+type WorkerCluster = {
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["Value"];
+};
+
+type ExecutableWorker = {
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["Value"];
+}
+
+
+const getWorkers = async (api: TypedApi<CyborgParachain>, workerType: workerType): Promise<Miner[]>  => {
+  let workerEntries: WorkerCluster[] | ExecutableWorker[]
+  switch (workerType) {
+    case "executableWorkers":
+      workerEntries = await api.query.EdgeConnect.ExecutableWorkers.getEntries();
+      break;
+    case "workerClusters":
+      workerEntries = await api.query.EdgeConnect.WorkerClusters.getEntries();
+      break;
+  }
+
+  const workers = workerEntries.map(({value}) => {
     return {
-      ...data,
+      ...value,
       location: {
-        latitude: i32CoordinateToFloatCoordinate(data.location.latitude),
-        longitude: i32CoordinateToFloatCoordinate(data.location.longitude),
+        latitude: i32CoordinateToFloatCoordinate(value.location.latitude),
+        longitude: i32CoordinateToFloatCoordinate(value.location.longitude),
       },
       lastTask: null,
       workerType: workerType,
@@ -28,36 +51,32 @@ const getWorkers = async (api: ApiPromise, workerType: workerType) => {
 }
 
 const getUserWorkers = async (
-  api: ApiPromise,
-  currentAccount: AccountId32,
+  api: TypedApi<CyborgParachain>,
+  account: InjectedPolkadotAccount,
   isProvider: boolean,
   workerType: workerType
-) => {
+): Promise<Miner[]> => {
+  const userAddress = account.address
+
   if (isProvider) {
     const workers = await getWorkers(api, workerType)
-    const userAccount = await getAccount(currentAccount)
-    const userAddress = userAccount[0]
-
     return workers.filter(worker => worker.owner === userAddress)
   }
+
   //TODO: This whole next block is wildly inefficient, but a more efficient approach
   // requires a fix on the parachain side
   if (!isProvider) {
-    const userAccount = await getAccount(currentAccount)
-    const userAddress = userAccount[0]
-
     const workers = await getWorkers(api, workerType)
-    const taskEntries = await api.query.taskManagement.taskAllocations.entries()
-    const allTaskOwners = await api.query.taskManagement.taskOwners.entries()
+    const taskEntries = await api.query.TaskManagement.TaskAllocations.getEntries();
+    const allTaskOwners = await api.query.TaskManagement.TaskOwners.getEntries();
 
     const userWorkers = []
 
-    const tasks = taskEntries.map(([key, value]) => {
-      const [taskExecutor, workerId]: any = value.toHuman()
+    const tasks = taskEntries.map(({keyArgs, value}) => {
       return {
-        taskExecutor,
-        workerId,
-        taskId: Number(key.toHuman()[0]),
+        taskExecutor: value[0],
+        workerId: value[1],
+        taskId: keyArgs[0],
       }
     })
 
@@ -79,21 +98,22 @@ const getUserWorkers = async (
       })
       .filter(Boolean)
 
-    const userOwnedTasks = allTaskOwners.reduce((acc, [key, value]) => {
-      if (value.toHuman() === userAddress) {
-        acc.push(parseInt(key.toHuman()[0]))
+    const userOwnedTasks = allTaskOwners.reduce((acc, {keyArgs, value}) => {
+      if (value === userAddress) {
+        acc.push(keyArgs[0])
       }
       return acc
     }, [])
 
-    if (userOwnedTasks)
+    if (userOwnedTasks) {
       workersWithLastTasks.forEach(worker => {
         if (userOwnedTasks.includes(worker.lastTask)) {
           userWorkers.push(worker)
         }
       })
+    }
 
-    console.log(userWorkers)
+    console.log(`User Miners: ${userWorkers}`)
 
     return userWorkers
   }

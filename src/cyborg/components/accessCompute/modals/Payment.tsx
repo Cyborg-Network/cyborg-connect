@@ -14,6 +14,7 @@ import useTransaction from '../../../api/parachain/useTransaction'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import { transformToNumber } from '../../../util/numberOperations'
 import { useParachain } from '../../../context/PapiContext'
+import { safeBigIntTransform, safeBigIntToNumberTransform } from '../../../util/safeBigIntTransform'
 
 const PAYMENT_OPTIONS = [
   { name: 'ENTT', icon: robo, isAvailable: true, testnet: true },
@@ -48,7 +49,7 @@ const PaymentModal: React.FC<Props> = ({
 
   const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
-  const [hoursSelected, setHoursSelectedNumber] = useState(0)
+  const [hoursSelected, setHoursSelectedNumber] = useState<bigint>(BigInt(0))
 
   const startTransaction = () => {
     if (!termsAreAccepted) {
@@ -71,16 +72,22 @@ const PaymentModal: React.FC<Props> = ({
 
   const setHoursSelected = (hours: string) => {
     setHoursSelectedNumber(
-      transformToNumber(hours)
+      safeBigIntTransform(hours)
     )
   }
 
   const { handleTransaction, isLoading } = useTransaction()
 
-  const submitTransaction = async () => {
+  const submitTransaction = async (): Promise<void> => {
+    const hoursSelectedNumber = safeBigIntToNumberTransform(hoursSelected);
+    if (!hoursSelectedNumber) {
+      toast("Invalid number of hours selected!")
+      return
+    }
+
     const tx = userComputeHours > 0 
-      ? parachainApi.tx.Payment.add_hours({ extra_hours: hoursSelected })
-      : parachainApi.tx.Payment.subscribe({ hours: hoursSelected })
+      ? parachainApi.tx.Payment.add_hours({ extra_hours: hoursSelectedNumber })
+      : parachainApi.tx.Payment.subscribe({ hours: hoursSelectedNumber })
 
     await handleTransaction({
       tx,

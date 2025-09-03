@@ -1,10 +1,10 @@
-import { ApiPromise } from '@polkadot/api'
 import { useSubstrateState } from '../../../substrate-lib/SubstrateContext'
 import { useQuery } from '@tanstack/react-query'
-import { transformToNumber } from '../../util/numberOperations'
+import { TypedApi } from 'polkadot-api'
+import { CyborgParachain } from '@polkadot-api/descriptors'
 
-const getComputeHourPrice = async (api: ApiPromise): Promise<number> => {
-  return transformToNumber((await api.query.payment.subscriptionFee()).toString())
+const getComputeHourPrice = async (api: TypedApi<CyborgParachain>): Promise<bigint> => {
+  return await api.query.Payment.SubscriptionFee.getValue()
 }
 
 export const usePriceQuery = () => {

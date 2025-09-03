@@ -15,9 +15,6 @@ export function floatCoordinateToI32Coordinate(value: number): number {
 }
 
 // Convert what comes from substrate to a 'real' coordinate
-export function i32CoordinateToFloatCoordinate(value: string): number {
-  const cleanedString = value.replace(/,/g, '')
-  const integer = parseInt(cleanedString)
-
-  return integer / SCALE_FACTOR
+export function i32CoordinateToFloatCoordinate(value: number): number {
+  return value / SCALE_FACTOR
 }
