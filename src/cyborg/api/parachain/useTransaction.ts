@@ -24,9 +24,11 @@ export const useTransaction = () => {
 
     tx.signSubmitAndWatch(account.polkadotSigner).subscribe({
       next: (event) => {
+        // To track the tx based on events and for errors that get returned after a while eg. dispatch errors
         processEvent(event, txName)
       },
       error: (error) => {
+        // For errors that get returned right away eg. invalid nonce
         processError(error, txName) 
       },
       complete() {
