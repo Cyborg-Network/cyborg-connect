@@ -5,18 +5,19 @@ import TruncatedAddress from '../TruncatedAddress'
 import { useState } from 'react'
 import Modal from '../modals/Modal'
 import { toast } from 'react-hot-toast'
-import { transformToNumber } from '../../../util/numberOperations'
+import { transformToNumber, safeNumberToBigIntTransform } from '../../../util/numberOperations'
+import { Miner } from '../../../api/parachain/useWorkersQuery'
 
 interface Props {
-  node: any
+  node: Miner
   distance: number
   returntoNearestNode: () => void
   onNavigate: () => void
-  handleManualSelection: (nodeId: number, nodeOwner: string) => void
+  handleManualSelection: (nodeId: bigint, nodeOwner: string) => void
 }
 
 interface ManualSelectionModalProps {
-  handleManualSelection: (nodeId: number, nodeOwner: string) => void
+  handleManualSelection: (nodeId: bigint, nodeOwner: string) => void
 }
 
 const NodeInformationBar: React.FC<Props> = ({
@@ -38,8 +39,9 @@ const NodeInformationBar: React.FC<Props> = ({
     }>({ id: null, owner: null })
 
     const returnManualSelection = () => {
-      if (nodeInfo.id && nodeInfo.owner) {
-        handleManualSelection(nodeInfo.id, nodeInfo.owner)
+      const bigIntId = safeNumberToBigIntTransform(nodeInfo.id)
+      if (bigIntId && nodeInfo.owner) {
+        handleManualSelection(bigIntId, nodeInfo.owner)
         setManualSelectionModalIsActive(false)
       } else {
         toast('Please enter all of the required information!')
@@ -115,18 +117,35 @@ const NodeInformationBar: React.FC<Props> = ({
         >
           Find Nearest
         </Button>
-        <Button
-          type="button"
-          selectable={false}
-          variation={'primary'}
-          additionalClasses="grid justify-center"
-          onClick={() => onNavigate()}
-        >
-          <div className="flex gap-2">
-            <div>Proceed</div>
-            <TiArrowRight />
-          </div>
-        </Button>
+        {
+          node.status.type === "Active"
+          ?
+          <Button
+            type="button"
+            selectable={false}
+            variation={'primary'}
+            additionalClasses="grid justify-center"
+            onClick={() => onNavigate()}
+          >
+            <div className="flex gap-2">
+              <div>Proceed</div>
+              <TiArrowRight />
+            </div>
+          </Button>
+          :
+          <Button
+            type="button"
+            selectable={false}
+            variation={'inactive'}
+            additionalClasses="grid justify-center"
+            // Disable this button in prod
+            onClick={() => onNavigate()}
+          >
+            <div className="flex gap-2">
+              <div>{`Miner is ${node.status.type.toLowerCase()}`}</div>
+            </div>
+          </Button>
+        }
       </div>
       {manualSelectionModalIsActive ? (
         <ManualSelectionModal handleManualSelection={handleManualSelection} />

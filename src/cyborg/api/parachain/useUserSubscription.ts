@@ -1,18 +1,19 @@
-import { ApiPromise } from '@polkadot/api'
-import { useSubstrateState } from '../../../substrate-lib/SubstrateContext'
 import { useQuery } from '@tanstack/react-query'
-import { transformToNumber } from '../../util/numberOperations'
+import { TypedApi } from 'polkadot-api'
+import { CyborgParachain } from '@polkadot-api/descriptors'
+import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
+import { useParachain } from '../../context/PapiContext'
 
-const getUserComputeHours = async (api: ApiPromise, account: any): Promise<number> => {
-  return transformToNumber((await api.query.payment.computeHours(account.address)).toString())
+const getUserComputeHours = async (api: TypedApi<CyborgParachain>, account: InjectedPolkadotAccount): Promise<number> => {
+  return await api.query.Payment.ComputeHours.getValue(account.address)
 }
 
 export const useUserComputeHoursQuery = () => {
-  const { api, apiState, currentAccount } = useSubstrateState()
+  const { account, parachainApi } = useParachain()
 
   return useQuery({
     queryKey: ['userComputeHours'],
-    enabled: !!(api && apiState === 'READY' && currentAccount),
-    queryFn: () => getUserComputeHours(api, currentAccount),
+    enabled: !!(parachainApi && account),
+    queryFn: () => getUserComputeHours(parachainApi, account),
   })
 }

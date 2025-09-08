@@ -1,5 +1,3 @@
-import { useSubstrateState } from '../../../../substrate-lib'
-import { toast } from 'react-hot-toast'
 import Modal from '../../general/modals/Modal'
 import CloseButton from '../../general/buttons/CloseButton'
 import Button from '../../general/buttons/Button'
@@ -7,33 +5,33 @@ import { Separator } from '../../general/Separator'
 import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
 import React from 'react'
+import { useParachain } from '../../../context/PapiContext'
+import { Enum } from 'polkadot-api'
 
 interface Props {
-  nodeInfo: { workerType: string; id: number }
+  nodeInfo: { workerType: string; id: bigint }
   onCancel: () => void
 }
 
 const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
-  const { api, currentAccount } = useSubstrateState()
+  const { parachainApi, account } = useParachain()
 
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { handleTransaction, isLoading } = useTransaction()
 
   console.log(nodeInfo)
 
   const submitTransaction = async () => {
-    const tx = api.tx.edgeConnect.removeWorker(nodeInfo.workerType, nodeInfo.id)
+    const tx = parachainApi.tx.EdgeConnect.remove_worker(
+      {
+        worker_type: Enum("Executable", undefined),
+        worker_id: nodeInfo.id
+      }
+    )
 
     await handleTransaction({
       tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log(events)
-        toast('Node Successfully Removed.')
-      },
-      onError: error => {
-        console.log(error)
-        toast('Transaction Failed.')
-      },
+      account,
+      txName: "Remove Miner"
     })
   }
 

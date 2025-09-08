@@ -5,11 +5,13 @@ import cyberdock from '../../../../../public/assets/icons/cyberdockDash.png'
 import { Separator } from '../Separator'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import RemoveNodeModal from '../../provideCompute/modals/RemoveNode'
-import { Task } from '../../../types/task'
+import { TaskId } from '../../../types/task'
+import { UserMiner } from '../../../api/parachain/useWorkersQuery'
+import { MinerReactRouterState } from '../../../types/miner'
 
 interface Props {
-  item: any
-  lastTask: Task
+  item: UserMiner
+  lastTask: TaskId
   isProvider: boolean
 }
 
@@ -31,9 +33,12 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
   )
 
   const navigateToComputeScreen = () => {
-    const minerName = item.api.domain.replace(/^https?:\/\//, '');
+    const minerName = item.api.asText().replace(/^https?:\/\//, '');
+
+    //Semi Typesafety for react router
+    const minerReactRouterState: MinerReactRouterState = { id: item.id, owner: item.owner }
     navigate(`${ROUTES.COMPUTE_STATUS}/${minerName}`, {
-      state: item,
+      state: minerReactRouterState,
     })
   }
 
@@ -68,7 +73,7 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
             />
             <LI>
               <SPAN>IP / URL:</SPAN>
-              <span>{`${item.api.domain}`}</span>
+              <span>{`${item.api.asText()}`}</span>
             </LI>
             <Separator
               colorClass={'bg-gray-500'}
@@ -111,7 +116,7 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
       </div>
       {removeNodeModalIsActive ? (
         <RemoveNodeModal
-          nodeInfo={{ id: item.id, workerType: item.workerType }}
+          nodeInfo={{ id: item.id, workerType: "executable" }}
           onCancel={() => setRemoveNodeModalIsActive(false)}
         />
       ) : (

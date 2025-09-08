@@ -14,6 +14,8 @@ module.exports = {
         'cb-gray-500': 'var(--cb-gray-500)',
         'cb-gray-600': 'var(--cb-gray-600)',
         'cb-gray-700': 'var(--cb-gray-700)',
+        'cb-red-400': 'var(--cb-red-400)',
+        'cb-red-500': 'var(--cb-red-500)',
         'gauge-red': 'var(--gauge-red)',
         'gauge-green': 'var(--gauge-green)',
         'gauge-yellow': 'var(--gauge-yellow)',

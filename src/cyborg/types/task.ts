@@ -3,4 +3,4 @@ export interface Task {
   assigned_worker: String
 }
 
-export type TaskId = number
+export type TaskId = bigint

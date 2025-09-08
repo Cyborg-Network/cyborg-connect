@@ -9,13 +9,16 @@ import Modal from '../modals/Modal'
 import InfoBox from '../InfoBox'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
-import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
+import { Miner, useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import { Country, Location } from '../../../types/location'
 import useService from '../../../hooks/useService'
+import { MinerReactRouterStateWithLocation } from '../../../types/miner'
 const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
 // (specs will be interesting to user because there might be a willingness to pay more for a node with better reputation even though it may be more powerful than what is needed )
+
+export type MinerWithCountry = Miner & { country: Country }
 
 //TODO: Here again will proably be a better way to do this, but will depend on the parachain implementation (eg. geohashes)
 const getNearestNode = (originLocation: Location, nodes: any[]) => {
@@ -39,7 +42,7 @@ const getNearestNode = (originLocation: Location, nodes: any[]) => {
   return { distance: currentNearest.distance, node: currentNearest.node }
 }
 
-const getNodeCountry = (node: any): Country => {
+const getNodeCountry = (node: Miner): Country => {
   return crg.get_country(node.location.latitude, node.location.longitude)
 }
 
@@ -54,7 +57,7 @@ const MapInteractor: React.FC = () => {
   } = useWorkersQuery(service)
 
   const [userLocation, setUserLocation] = useState<Location | null>(null)
-  const [selectedNode, setSelectedNode] = useState<any | null>(null)
+  const [selectedNode, setSelectedNode] = useState<MinerWithCountry | null>(null)
   const [distance, setDistance] = useState<number | null>(null)
   const [nearestNode, setNearestNode] = useState<any | null>(null)
   const [userLocationInput, setUserLocationInput] = useState<Location | null>(
@@ -65,11 +68,11 @@ const MapInteractor: React.FC = () => {
     setSelectedNode(nearestNode)
   }
 
-  const handleSelectNode = (node: any) => {
+  const handleSelectNode = (node: Miner) => {
     setSelectedNode({ ...node, country: getNodeCountry(node) })
   }
 
-  const handleManualSelection = (id: number, owner: string) => {
+  const handleManualSelection = (id: bigint, owner: string) => {
     const node = workers.find(node => node.owner === owner && node.id === id)
 
     if (node) {
@@ -156,10 +159,14 @@ const MapInteractor: React.FC = () => {
     setUserLocationInput({ ...userLocationInput, [`${type}`]: value })
   }
 
-  //Fix this when TanstackRouter is implemented
-  const navigateToNearestNodesSelection = () => {
+  const navigateToNearestNodesSelection = (): void => {
+    // Simulates typesafety for react router
+    const MinerReactRouterState: MinerReactRouterStateWithLocation = { 
+      userLocation, 
+      selectedNodeId: {  id: selectedNode.id, owner: selectedNode.owner } 
+    }
     navigate(ROUTES.MODAL_NODES, {
-      state: { userLocation: userLocation, preSelectedNode: selectedNode },
+      state: MinerReactRouterState,
     })
   }
 

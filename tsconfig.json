@@ -1,13 +1,16 @@
 {
     "compilerOptions": {
-      "target": "es5",
-      "jsx": "react",
+      "target": "es2021",
+      "jsx": "react-jsx",
       "allowJs": true,
       "checkJs": false,
       "skipLibCheck": true,
+      "moduleResolution": "node",
+      "module": "esnext",
       "esModuleInterop": true,
       "outDir": "./dist",
       "noEmit": false,
+      "lib": ["dom", "es2021"]
     },
     "include": [
       "src/**/*.ts",

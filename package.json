@@ -32,6 +32,7 @@
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.18",
     "@mui/x-charts": "^7.5.1",
+    "@polkadot-api/descriptors": "file:.papi/descriptors",
     "@polkadot/api": "^11.3.1",
     "@polkadot/extension-dapp": "^0.46.2",
     "@polkadot/keyring": "^12.1.2",
@@ -53,7 +54,9 @@
     "haversine-distance": "^1.2.3",
     "libsodium-wrappers": "^0.7.15",
     "node-polyfill-webpack-plugin": "^1.1.4",
+    "polkadot-api": "^1.16.2",
     "prop-types": "^15.8.1",
+    "radix-ui": "^1.4.3",
     "react": "^18.3.1",
     "react-copy-to-clipboard": "^5.0.4",
     "react-dom": "^18.3.1",
@@ -107,7 +110,12 @@
       "react-app",
       "eslint:recommended",
       "prettier"
-    ]
+    ],
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    }
   },
   "engines": {
     "node": ">=16",

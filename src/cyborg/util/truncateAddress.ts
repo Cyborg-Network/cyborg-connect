@@ -5,3 +5,7 @@ export const truncateAddress = (address: string, screenWidth: number) => {
     return address
   }
 }
+
+export const truncateStringFixed = (input: string, numOfChars: number) => {
+  return `${input.slice(0,numOfChars)}...${input.slice(-numOfChars)}`
+}

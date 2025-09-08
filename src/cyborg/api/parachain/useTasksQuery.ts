@@ -1,23 +1,17 @@
-import { ApiPromise } from '@polkadot/api'
-import { useSubstrateState } from '../../../substrate-lib/SubstrateContext'
 import { useQuery } from '@tanstack/react-query'
-import { AccountId32 } from '@polkadot/types/interfaces'
-import { getAccount } from '../../util/getAccount'
+import { TypedApi } from 'polkadot-api'
+import { CyborgParachain } from '@polkadot-api/descriptors'
+import { InjectedPolkadotAccount } from 'polkadot-api/dist/reexports/pjs-signer'
+import { useParachain } from '../../context/PapiContext'
 
-const getUserTasks = async (api: ApiPromise, currentAccount: AccountId32) => {
-  const allTasks = await api.query.taskManagement.taskOwners.entries()
-  const userAccount = await getAccount(currentAccount)
-  const userAddress = userAccount[0]
+const getUserTasks = async (api: TypedApi<CyborgParachain>, account: InjectedPolkadotAccount): Promise<bigint[]> => {
+  const allTasks = await api.query.TaskManagement.TaskOwners.getEntries();
 
-  const userOwnedTasks = allTasks.map(([key, value]) => {
-    const currentTaskOwner = value.toHuman()
+  const userOwnedTasks = allTasks
+    .filter(({ value }) => value === account.address)
+    .map(({ keyArgs }) => keyArgs[0]); 
 
-    if (currentTaskOwner === userAddress) {
-      return parseInt(key.toHuman()[0])
-    }
-  })
-
-  console.log(userOwnedTasks)
+  console.log(`User Owned Tasks: ${userOwnedTasks}`)
 
   return userOwnedTasks
 }
@@ -27,12 +21,12 @@ const getUserTasks = async (api: ApiPromise, currentAccount: AccountId32) => {
 } */
 
 export const useUserTasksQuery = () => {
-  const { api, apiState, currentAccount } = useSubstrateState()
+  const { parachainApi, account } = useParachain()
 
   return useQuery({
     queryKey: ['userTasks'],
-    enabled: !!(api && apiState === 'READY' && currentAccount),
-    queryFn: () => getUserTasks(api, currentAccount),
+    enabled: !!(parachainApi && account),
+    queryFn: () => getUserTasks(parachainApi, account),
   })
 }
 

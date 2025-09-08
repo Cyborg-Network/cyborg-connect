@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import { useSubstrateState } from '../../../../substrate-lib'
 import toast from 'react-hot-toast'
 import Modal from '../../general/modals/Modal'
 import CloseButton from '../../general/buttons/CloseButton'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
 import Button from '../../general/buttons/Button'
-import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
+import { useParachain } from '../../../context/PapiContext'
+import { Binary, Enum } from 'polkadot-api'
 //import useService from '../../../hooks/useService'
 
 interface Props {
@@ -23,7 +23,8 @@ const FlashInferUpload: React.FC<Props> = ({
 }: Props) => {
   const navigate = useNavigate()
 
-  const { api, currentAccount } = useSubstrateState()
+  const { account } = useParachain();
+  const { parachainApi } = useParachain();
   //const { service } = useService()
 
   const [huggingfaceId, setHuggingfaceId] = useState('')
@@ -41,25 +42,26 @@ const FlashInferUpload: React.FC<Props> = ({
     navigate(ROUTES.DASHBOARD)
   }
 
-  const { handleTransaction, isLoading } = useTransaction(api)
+  const { handleTransaction } = useTransaction()
 
   const submitTransaction = async parsedHoursDeposit => {
-    const tx = api.tx.taskManagement.taskScheduler(
-      { FlashInfer: { Huggingface: { hf_identifier: huggingfaceId } } },
-      nodes[0].owner,
-      nodes[0].id,
-      parsedHoursDeposit
-    )
+    const tx = parachainApi.tx.TaskManagement.task_scheduler({
+      task_kind: Enum("FlashInfer", {type: "Huggingface", value: Binary.fromText(huggingfaceId)}),
+      worker_owner: nodes[0].owner,
+      worker_id: nodes[0].id,
+      compute_hours_deposit: parsedHoursDeposit
+    });
 
-    await handleTransaction({
-      tx,
-      account: currentAccount,
-      onSuccess: events => {
-        console.log('Transaction Successful!', events)
-        navigateToDashboard()
+    handleTransaction({
+      tx, 
+      account, 
+      userCallToAction: {
+        fn: navigateToDashboard,
+        text: "Navigate To Dashboard"
       },
-      onError: error => toast('Transaction Failed:', error),
-    })
+      onSuccessFn: navigateToDashboard,
+      txName: "Flash Infer Task"
+    });
   }
 
   const handleSubmit = async () => {
@@ -73,68 +75,62 @@ const FlashInferUpload: React.FC<Props> = ({
   }
 
   return (
-    <>
-      {isLoading ? (
-        <LoadingModal text={'Processing Compute Request, Please Wait...'} />
-      ) : (
-        <Modal onOutsideClick={() => onCancel()}>
-          <CloseButton
-            type="button"
-            onClick={() => onCancel()}
-            additionalClasses="absolute top-6 right-6"
+    <Modal onOutsideClick={() => onCancel()}>
+      <CloseButton
+        type="button"
+        onClick={() => onCancel()}
+        additionalClasses="absolute top-6 right-6"
+      />
+      <div>
+        <h5 className="flex">{'Deploy Huggingface Model'}</h5>
+        <div className="mb-4">
+          <input
+            type="text"
+            id="url"
+            name="url"
+            placeholder={'Insert Huggingface Id'}
+            onChange={e => handleUrlChange(e)}
+            className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
-          <div>
-            <h5 className="flex">{'Deploy Huggingface Model'}</h5>
-            <div className="mb-4">
-              <input
-                type="text"
-                id="url"
-                name="url"
-                placeholder={'Insert Huggingface Id'}
-                onChange={e => handleUrlChange(e)}
-                className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <h5 className="flex">Deposit Compute Hours</h5>
-            <div className="mb-4">
-              <input
-                type="text"
-                id="url"
-                name="url"
-                placeholder="Insert Number of Compute Hours"
-                onChange={e => handleComputeHourDepositChange(e)}
-                className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
+        </div>
+        <h5 className="flex">Deposit Compute Hours</h5>
+        <div className="mb-4">
+          <input
+            type="text"
+            id="url"
+            name="url"
+            placeholder="Insert Number of Compute Hours"
+            onChange={e => handleComputeHourDepositChange(e)}
+            className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div className=" flex items-center justify-between">
-                <Button
-                  type="button"
-                  selectable={false}
-                  variation="secondary"
-                  onClick={() => setService(null)}
-                  additionalClasses="w-full"
-                >
-                  Close
-                </Button>
-              </div>
-              <div className=" flex items-center justify-between">
-                <Button
-                  type="button"
-                  selectable={false}
-                  variation="primary"
-                  onClick={() => handleSubmit()}
-                  additionalClasses="w-full"
-                >
-                  Submit
-                </Button>
-              </div>
-            </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className=" flex items-center justify-between">
+            <Button
+              type="button"
+              selectable={false}
+              variation="secondary"
+              onClick={() => setService(null)}
+              additionalClasses="w-full"
+            >
+              Close
+            </Button>
           </div>
-        </Modal>
-      )}
-    </>
+          <div className=" flex items-center justify-between">
+            <Button
+              type="button"
+              selectable={false}
+              variation="primary"
+              onClick={() => handleSubmit()}
+              additionalClasses="w-full"
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Modal>
   )
 }
 

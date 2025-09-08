@@ -20,7 +20,15 @@ For testing the whole network, please refer to [Local Testing](https://github.co
 
 ### Usage
 
-You can start in development mode to connect to a locally running node
+To start cyborg connect in development first you need to create the metadata needed for type safety provided by papi.
+For this you need to point papi to a ws endpoint exposed by a running parachain (eg. wss://alphachain.cyborgnetwork.io or ws://127.0.0.1:9988 if you have a node running locally)
+
+```bash
+    npx papi add cyborgParachain -w <WS-Endpoint>
+    npx papi
+```
+
+You can start in development mode to connect to a locally running node or a hosted node, depending on the endpoints defined `.env.development`
 
 ```bash
     npm run start

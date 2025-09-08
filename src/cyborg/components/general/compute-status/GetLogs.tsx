@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 
 interface GetLogsProps {
   link: string
-  taskId: number
+  taskId: bigint
   scrollIsAutomated: boolean
   logs: string[]
 }
