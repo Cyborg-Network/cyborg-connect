@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "start": "react-app-rewired start",
+    "prebuild": "npx papi",
     "build": "react-app-rewired build",
     "test": "CI=true react-app-rewired test",
     "eject": "react-scripts eject",
