@@ -1,8 +1,8 @@
-import { useSubstrateState } from '../../../substrate-lib/SubstrateContext'
 import { useQuery } from '@tanstack/react-query'
 import { TypedApi } from 'polkadot-api'
 import { CyborgParachain } from '@polkadot-api/descriptors'
 import { InjectedPolkadotAccount } from 'polkadot-api/dist/reexports/pjs-signer'
+import { useParachain } from '../../context/PapiContext'
 
 const getUserTasks = async (api: TypedApi<CyborgParachain>, account: InjectedPolkadotAccount): Promise<bigint[]> => {
   const allTasks = await api.query.TaskManagement.TaskOwners.getEntries();
@@ -21,12 +21,12 @@ const getUserTasks = async (api: TypedApi<CyborgParachain>, account: InjectedPol
 } */
 
 export const useUserTasksQuery = () => {
-  const { api, apiState, currentAccount } = useSubstrateState()
+  const { parachainApi, account } = useParachain()
 
   return useQuery({
     queryKey: ['userTasks'],
-    enabled: !!(api && apiState === 'READY' && currentAccount),
-    queryFn: () => getUserTasks(api, currentAccount),
+    enabled: !!(parachainApi && account),
+    queryFn: () => getUserTasks(parachainApi, account),
   })
 }
 

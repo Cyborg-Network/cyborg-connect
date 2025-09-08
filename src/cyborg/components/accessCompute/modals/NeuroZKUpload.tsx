@@ -15,7 +15,7 @@ import useService from '../../../hooks/useService'
 interface Props {
   onCancel: () => void
   minerAdress: string
-  minerId: number
+  minerId: bigint
 }
 
 const NeuroZkUpload: React.FC<Props> = ({

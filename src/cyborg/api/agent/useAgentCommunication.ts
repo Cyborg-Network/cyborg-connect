@@ -10,10 +10,11 @@ import {
 } from '../../util/non-bc-crypto/generateX25519KeyPair'
 import { processDiffieHellmanAuth } from '../../util/non-bc-crypto/processDiffieHellmanAuth'
 import { LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
+import { UserMiner } from '../parachain/useWorkersQuery'
 
 const CYBORG_SERVER_URL = process.env.REACT_APP_CYBORG_PROXY_URL
 
-export const useAgentCommunication = (metadata: any) => {
+export const useAgentCommunication = (miner: UserMiner) => {
   const navigate = useNavigate()
 
   const [keys, setKeys] = useState<X25519KeyPair | null>(null)
@@ -35,10 +36,10 @@ export const useAgentCommunication = (metadata: any) => {
   })
 
   useEffect(() => {
-    if (metadata) {
-      setAgentUrl(`${metadata.api.domain.replace('https://', 'wss://')}/agent-usage`)
+    if (miner) {
+      setAgentUrl(`${miner.api.asText().replace('https://', 'wss://')}/agent-usage`)
     }
-  }, [metadata])
+  }, [miner])
 
   const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -113,6 +114,8 @@ export const useAgentCommunication = (metadata: any) => {
               messageData.nonce_hex,
               diffieHellmanSecret
             )
+            console.log(errorJson)
+            if(!errorJson) break
             const error = JSON.parse(errorJson)
             toast(error.error_message)
           }
@@ -137,7 +140,7 @@ export const useAgentCommunication = (metadata: any) => {
         constructAgentApiRequest(agentUrl, 'Init')
       )
     }
-  }, [diffieHellmanSecret, metadata, sendMessage, agentUrl])
+  }, [diffieHellmanSecret, miner, sendMessage, agentUrl])
 
   useEffect(() => {
     if (agentSpecs) {
@@ -146,7 +149,7 @@ export const useAgentCommunication = (metadata: any) => {
         constructAgentApiRequest(agentUrl, 'Usage')
       )
     }
-  }, [agentSpecs, metadata, sendMessage, agentUrl])
+  }, [agentSpecs, miner, sendMessage, agentUrl])
 
   useEffect(() => {
     let isMounted = true
@@ -171,9 +174,10 @@ export const useAgentCommunication = (metadata: any) => {
       try {
         const message = await constructAgentAuthRequest(
           agentUrl,
-          metadata.lastTask,
+          miner.lastTask,
           keys.publicKey
         )
+        console.log(message)
         sendMessage(message)
         setLockState({ ...lockState, isLoading: true })
       } catch (e) {

@@ -14,6 +14,7 @@ import NeuroZkUpload from '../modals/NeuroZKUpload'
 import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import FlashInferUpload from '../modals/FlashInferUpload'
+import { MinerReactRouterStateWithLocation } from '../../../types/miner'
 //import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
@@ -29,7 +30,7 @@ const SelectNodePage: React.FC = () => {
 
   const location = useLocation()
 
-  const { userLocation, preSelectedNode } = location.state || {}
+  const { userLocation, selectedNodeId } = (location.state as MinerReactRouterStateWithLocation) || {}
 
   const {
     data: workers,
@@ -43,34 +44,40 @@ const SelectNodePage: React.FC = () => {
     //error: userComputeHoursError 
   } = useUserComputeHoursQuery();
 
-  const [nearbyNodes, setNearbyNodes] = useState([])
-  const [selectedNodes, setSelectedNodes] = useState([])
+  const [nearbyNodes, setNearbyNodes] = useState<MinerReactRouterStateWithLocation['selectedNodeId'][]>([])
+  const [selectedNodes, setSelectedNodes] = useState<MinerReactRouterStateWithLocation['selectedNodeId'][]>([])
   const [deploymentStage, setDeploymentStage] = useState(DEPLOYMENT_STAGES.INIT)
 
   useEffect(() => {
-    if (preSelectedNode)
-      setSelectedNodes(prev => [
-        { owner: preSelectedNode.owner, id: preSelectedNode.id },
-        ...prev,
-      ])
-  }, [preSelectedNode])
+    if (selectedNodeId)
+      setSelectedNodes(prev => {
+        const exists = prev.some(
+          n => n.id === selectedNodeId.id && n.owner === selectedNodeId.owner
+        )
+        return exists ? prev : [selectedNodeId, ...prev]
+      })
+  }, [selectedNodeId])
+
+  useEffect(() => {
+    console.log(selectedNodes)
+  }, [selectedNodes])
 
   //TODO: This is another thing that should be fixed from the parachain side, perhaps with geohashes
   useEffect(() => {
     const getOtherNearbyNodes = () => {
       const fourNearest = []
 
-      if (preSelectedNode) {
-        fourNearest.push(preSelectedNode)
+      if (selectedNodeId) {
+        fourNearest.push(selectedNodeId)
       }
 
       const userLoc = {
-        latitude: userLocation.lat,
-        longitude: userLocation.lon,
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
       }
 
       workers.forEach(currentNode => {
-        if (fourNearest.length < 4 && currentNode.id !== preSelectedNode.id) {
+        if (fourNearest.length < 4 && currentNode.id !== selectedNodeId.id) {
           fourNearest.push(currentNode)
           return
         }
@@ -83,7 +90,7 @@ const SelectNodePage: React.FC = () => {
         const currentHaversine = haversineDistance(userLoc, nodeLoc)
 
         fourNearest.forEach((currentNearest, index) => {
-          if (currentNode.id !== preSelectedNode.id) {
+          if (currentNode.id !== selectedNodeId.id) {
             fourNearest[index] = {
               ...currentNode,
               haversine: currentHaversine,
@@ -93,7 +100,7 @@ const SelectNodePage: React.FC = () => {
           if (
             currentHaversine < currentNearest.haversine &&
             currentNode.id !== currentNearest.id &&
-            currentNode.id !== preSelectedNode.id
+            currentNode.id !== selectedNodeId.id
           ) {
             fourNearest[index] = currentNode
           }
@@ -102,7 +109,7 @@ const SelectNodePage: React.FC = () => {
       setNearbyNodes(fourNearest)
     }
     if (userLocation && workers) getOtherNearbyNodes()
-  }, [workers, userLocation, preSelectedNode])
+  }, [workers, userLocation, selectedNodeId])
 
   const startTransaction = () => {
     setDeploymentStage(DEPLOYMENT_STAGES.PAYMENT)
@@ -178,7 +185,7 @@ const SelectNodePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {nearbyNodes.map(node => (
               <SelectionNodeCard
-                node={node}
+                nodeId={node}
                 key={node.id}
                 onClick={() =>
                   toggleNodeSelection({ owner: node.owner, id: node.id })

@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 
 interface TerminalProps {
   link: string
-  taskId: number
+  taskId: bigint
   logs: string[]
 }
 

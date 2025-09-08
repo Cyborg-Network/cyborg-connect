@@ -3,24 +3,45 @@ import { FaCheck } from 'react-icons/fa6'
 import Button from '../../general/buttons/Button'
 import server from '../../../../../public/assets/icons/server.svg'
 import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { Miner, useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
+import useService from '../../../hooks/useService'
+import { MinerReactRouterStateWithLocation } from '../../../types/miner'
 
 interface Props {
-  node: any
+  nodeId: MinerReactRouterStateWithLocation["selectedNodeId"]
   onClick: () => void
   isSelected: boolean
 }
 
 const SelectionNodeCard: React.FC<Props> = ({
-  node,
+  nodeId,
   onClick,
   isSelected,
 }: Props) => {
+
+  const [worker, setWorker] = useState<Miner | null>(null);
+
   const {
     data: computeHourPrice,
     //isLoading: computeHourPriceIsLoading,
     //error: computeHourPriceError
   } = usePriceQuery()
+
+  const { service } = useService()
+  const {
+    data: workers,
+    //isLoading: workersIsLoading,
+    //error: workersError
+  } = useWorkersQuery(service)
+
+  // TODO: ugly workaround until the attestation based approach is implemented
+  useEffect(() => {
+    if(workers) {
+      let current = workers.filter(w => (w.id === nodeId.id && w.owner === nodeId.owner))
+      setWorker(current[0]);
+    }
+  }, [workers])
 
   return (
     <Button
@@ -61,27 +82,38 @@ const SelectionNodeCard: React.FC<Props> = ({
         <div className="grid grid-cols-4 gap-4">
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'CPU'}</div>
-            <div className="text-gray-400 text-sm">{node.specs.cpu} Cores</div>
+            <div className="text-gray-400 text-sm">
+              {
+              worker && worker.specs && worker.specs.cpu
+              ? 
+                `${worker.specs.cpu} Cores`
+              : 
+                "Loading"
+              }
+            </div>
           </div>
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'Storage'}</div>
             <div className="text-gray-400 text-sm">
-              {(
-                parseInt(node.specs.storage.replace(/,/g, '')) /
-                1024 /
-                1024 /
-                1024
-              ).toFixed(2)}{' '}
-              GB
+              {
+              worker && worker.specs && worker.specs.storage
+              ?
+                `${(worker.specs.storage / 1024n / 1024n / 1024n)} GB`
+              :
+                "Loading"
+              }
             </div>
           </div>
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'Memory'}</div>
             <div className="text-gray-400 text-sm">
-              {Math.round(
-                parseInt(node.specs.ram.replace(/,/g, '')) / 1024 / 1024
-              )}{' '}
-              MB
+              {
+              worker && worker.specs && worker.specs.ram
+              ?
+                `${(worker.specs.ram / 1024n / 1024n / 1024n)} GB`
+              :
+              "Loading"
+              }
             </div>
           </div>
         </div>

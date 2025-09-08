@@ -55,10 +55,10 @@ export const ServerSpecs: React.FC<ServerSpecsProps> = ({
             {specs
               ? `
                   ${i32CoordinateToFloatCoordinate(
-                    specs.location.coordinates[0].toString()
+                    specs.location.coordinates[0]
                   )}, 
                   ${i32CoordinateToFloatCoordinate(
-                    specs.location.coordinates[1].toString()
+                    specs.location.coordinates[1]
                   )}
                 `
               : null}

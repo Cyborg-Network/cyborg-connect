@@ -1,4 +1,3 @@
-import { FaRegClock } from 'react-icons/fa6'
 import { FaCheck } from 'react-icons/fa6'
 import { useUi } from '../../../context/UiContext'
 import { truncateAddress } from '../../../util/truncateAddress'
@@ -9,15 +8,16 @@ import Button from '../buttons/Button'
 import WarnConfirmModal from '../modals/WarnConfirm'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useParachain } from '../../../context/PapiContext'
-import { safeBigIntTransform } from '../../../util/safeBigIntTransform'
-import { toast } from 'react-hot-toast'
+import { Miner } from '../../../api/parachain/useWorkersQuery'
+import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '../../../../index'
 
 interface MetaDataHeaderProps {
   owner: string
-  id: number
-  taskId: number
-  domain: string
-  status: string
+  id: bigint
+  taskId: bigint
+  domain: Miner["api"]
+  status: Miner["status"]
   lastCheck: number
 }
 
@@ -29,6 +29,29 @@ const FlexContainer: React.FC<{ children: ReactNode }> = ({
   return <div className="flex items-center gap-1">{children}</div>
 }
 
+const STATUS_STYLES = {
+  Active: {
+    bg: "bg-green-400",
+    border: "border-green-500",
+    dot: "bg-green-500",
+  },
+  Busy: {
+    bg: "bg-red-400",
+    border: "border-red-500",
+    dot: "bg-red-500",
+  },
+  Inactive: {
+    bg: "bg-gray-400",
+    border: "border-gray-500",
+    dot: "bg-gray-500",
+  },
+  Suspended: {
+    bg: "bg-gray-400",
+    border: "border-gray-500",
+    dot: "bg-gray-500",
+  },
+} as const
+
 export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
   owner,
   id,
@@ -37,30 +60,33 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
   status,
   lastCheck,
 }: MetaDataHeaderProps) => {
-  const isOnline = status === 'Active' || status === 'busy' ? true : false
-  const isBusy = status === 'Inactive' || status !== 'active' ? true : false
+
+  const styles = STATUS_STYLES[status.type]
 
   const { sidebarIsActive } = useUi()
   const { service } = useService()
   const { parachainApi, account } = useParachain()
   const { handleTransaction, isLoading } = useTransaction()
+  const navigate = useNavigate()
 
   const [confirmModalVisible, setConfirmModalVisible] = useState(false)
 
-  const stopTask = async (taskId: number) => {
-    let bigInt = safeBigIntTransform(taskId)
-    if(!bigInt){
-      toast("Cannot stop task, Task ID is not a valid number.")
-    }
+  const navigateToDashboard = () => {
+    navigate(ROUTES.DASHBOARD)
+  }
+
+  const stopTask = async (taskId: bigint) => {
     const tx = parachainApi.tx.TaskManagement.stop_task_and_vacate_miner(
-      {task_id: bigInt}
+      {task_id: taskId}
     )
+
+    setConfirmModalVisible(false)
 
     await handleTransaction({
       tx,
       account,
-      onSuccess: () => {},
-      txName: "Stop Task"
+      txName: "Stop Task",
+      onSuccessFn: navigateToDashboard
     })
   }
 
@@ -82,16 +108,10 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
           <div className="text-nowrap flex gap-1">
             RPC Node |
             <span>
-              {!isBusy ? (
-                <FlexContainer>
-                  Available
-                  <FaCheck />
-                </FlexContainer>
-              ) : (
-                <FlexContainer>
-                  Busy <FaRegClock />
-                </FlexContainer>
-              )}
+              <FlexContainer>
+                {status.type}
+                <FaCheck />
+              </FlexContainer>
             </span>
           </div>
         </div>
@@ -113,27 +133,15 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
             Stop Task
           </Button>
           <div className="text-opacity-50 text-white">
-            IP Address:{' '}
+            Domain:{' '}
             <span className="text-white text-opacity-100">
-              {/*{domain}*/ '16.171.249.42'}
+              {domain.asText()}
             </span>
           </div>
           <div className="bg-cb-gray-600 w-fit text-md rounded-full text-white">
-            <div
-              className={`h-full w-fit rounded-full border ${
-                isOnline
-                  ? 'bg-green-400 border-green-500'
-                  : 'bg-red-500 border-red-500'
-              }  bg-opacity-15 flex  gap-2 py-1 px-3 items-center`}
-            >
-              <div
-                className={`h-3 aspect-square rounded-full ${
-                  isOnline ? 'bg-green-500' : 'bg-red-500'
-                } `}
-              />
-              <div>{`${
-                isOnline ? 'Online' : 'Offline'
-              }, Last Check: ${lastCheck}`}</div>
+            <div className={`h-full w-fit rounded-full border ${styles.bg} ${styles.border} bg-opacity-15 flex  gap-2 py-1 px-3 items-center`}>
+              <div className={`h-3 aspect-square rounded-full ${styles.dot}`}/>
+              <div>{`${status.type}, Last Check: ${lastCheck}`}</div>
             </div>
           </div>
         </div>

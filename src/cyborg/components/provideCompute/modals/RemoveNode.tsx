@@ -1,4 +1,3 @@
-import { toast } from 'react-hot-toast'
 import Modal from '../../general/modals/Modal'
 import CloseButton from '../../general/buttons/CloseButton'
 import Button from '../../general/buttons/Button'
@@ -8,10 +7,9 @@ import useTransaction from '../../../api/parachain/useTransaction'
 import React from 'react'
 import { useParachain } from '../../../context/PapiContext'
 import { Enum } from 'polkadot-api'
-import { safeBigIntTransform } from '../../../util/safeBigIntTransform'
 
 interface Props {
-  nodeInfo: { workerType: string; id: number }
+  nodeInfo: { workerType: string; id: bigint }
   onCancel: () => void
 }
 
@@ -23,24 +21,16 @@ const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
   console.log(nodeInfo)
 
   const submitTransaction = async () => {
-    const bigInt = safeBigIntTransform(nodeInfo.id)
-    if(!bigInt){
-      toast("Cannot remove miner, MinerId is an invalid number!")
-      return
-    }
     const tx = parachainApi.tx.EdgeConnect.remove_worker(
       {
         worker_type: Enum("Executable", undefined),
-        worker_id: bigInt
+        worker_id: nodeInfo.id
       }
     )
 
     await handleTransaction({
       tx,
       account,
-      onSuccess: () => {
-        toast('Node Successfully Removed.')
-      },
       txName: "Remove Miner"
     })
   }

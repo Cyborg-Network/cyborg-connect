@@ -21,12 +21,18 @@ interface ContextProviderProps {
 
 const createParachainApi = () => {
     const socket =  process.env.REACT_APP_PARACHAIN_URL;
-    console.log(`Connected to node: ${socket}`)
+
+    if(!socket) {
+        throw(new Error('Cannot connect to parachain node - "REACT_APP_PARACHAIN_URL" is missing!'))
+    }
+
     const client = createClient(
         withPolkadotSdkCompat(
             getWsProvider(socket)
         )
     );
+
+    console.log(`Connected to node: ${socket}`)
 
     const parachainApi = client.getTypedApi(cyborgParachain);
 
@@ -65,6 +71,10 @@ const ParachainContextProvider = ({ children }: ContextProviderProps) => {
     )
 }
 
-const useParachain = () => useContext(ParachainContext)
+const useParachain = () => {
+    const ctx = useContext(ParachainContext)
+    if (!ctx) throw new Error("useParachain must be used witin ParachainContextProvider")
+    return ctx
+}
 
 export { ParachainContextProvider, useParachain }

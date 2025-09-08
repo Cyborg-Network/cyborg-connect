@@ -1,27 +1,83 @@
 import { cyborgParachain } from "@polkadot-api/descriptors";
 import { InvalidTxError, TransactionValidityError, TxEvent } from "polkadot-api";
 import { CyborgParachainDispatchError } from "@polkadot-api/descriptors";
-import toast from "react-hot-toast";
+import { ToastMessage } from "../context/ToastContext";
 
-export const processEvent = (event: TxEvent, txName: string) => {
+type Input = {
+    event: TxEvent,
+    txName: string,
+    showToast: (msg: ToastMessage) => void,
+    userCallToAction?: {
+        fn: () => void,
+        text: string
+    }
+}
+
+export const processEvent = ({event, txName, showToast, userCallToAction}: Input) => {
     switch (event.type) {
         case "signed":
         case "broadcasted":
             console.log(`Event for ${event.txHash}: ${event.type}`)
-            toast(`${txName} transaction ${event.txHash} ${event.type}!`)
+            showToast(
+                {
+                    title: "Transaction Update",
+                    type: "tx", 
+                    txHash: event.txHash,
+                    text: `Transaction ${txName} is ${event.type}!`, 
+                }
+            )
             break
 
         case "txBestBlocksState":
             if(event.found) {
                 if(event.ok){
                     console.log(`Event for ${txName} transaction: ${event.txHash}: ${event.type}`)
-                    toast(`${txName} transaction ${event.txHash} is in the best block!`)
+                    if(!userCallToAction){
+                        showToast(
+                            {
+                                title: "Transaction Update",
+                                type: "tx", 
+                                txHash: event.txHash,
+                                text: `Transaction ${txName} is in best block!`, 
+                            }
+                        )
+                        return
+                    }
+                    showToast(
+                        {
+                            title: "Transaction Update",
+                            type: "tx", 
+                            text: `Transaction ${txName} is in best block!`, 
+                            txHash: event.txHash,
+                            action: {
+                                fn: userCallToAction.fn,
+                                text: userCallToAction.text
+                            }
+                        }
+                    )
                 } else if(!event.ok && event.dispatchError) {
-                    toast(`${txName} transaction ${event.txHash} failed! Check the console for dispatch error!`)
                     const err = event.dispatchError as CyborgParachainDispatchError
-                    console.error(`Dispatch Error: ${formatDispatchError(err)}`)
+                    const formattedError = formatDispatchError(err)
+                    showToast(
+                        {
+                            title: "Transaction Failed",
+                            txHash: event.txHash,
+                            type: "tx", 
+                            text: `Dispatch Error: ${formattedError}`, 
+                            isErr: true
+                        }
+                    )
+                    console.error(`Dispatch Error: ${formattedError}`)
                 } else {
-                    toast(`${txName} transaction ${event.txHash} failed without a dispatch error!`)
+                    showToast(
+                        {
+                            title: "Transaction Failed",
+                            type: "tx", 
+                            txHash: event.txHash,
+                            text: `${txName} transaction failed without a dispatch error!`, 
+                            isErr: true
+                        }
+                    )
                 }
             }
             break
@@ -29,25 +85,80 @@ export const processEvent = (event: TxEvent, txName: string) => {
         case "finalized":
             if(event.ok){
                     console.log(`Event for ${txName} transaction: ${event.txHash}: ${event.type}`)
-                    toast(`${txName} transaction ${event.txHash} is finalized!`)
+                    if(!userCallToAction){
+                        showToast(
+                            {
+                                title: "Transaction Update",
+                                type: "tx", 
+                                text: `Transaction ${txName} is finalized!`, 
+                                txHash: event.txHash,
+                            }
+                        )
+                        return
+                    }
+                    showToast(
+                        {
+                            title: "Transaction Update",
+                            type: "tx", 
+                            text: `Transaction ${txName} is finalized!`, 
+                            txHash: event.txHash,
+                            action: {
+                                fn: userCallToAction.fn,
+                                text: userCallToAction.text
+                            }
+                        }
+                    )
                 } else if(!event.ok && event.dispatchError) {
-                    toast(`${txName} transaction ${event.txHash} failed! Check the console for dispatch error!`)
                     const err = event.dispatchError as CyborgParachainDispatchError
-                    console.error(`Dispatch Error: ${formatDispatchError(err)}`)
+                    const formattedError = formatDispatchError(err)
+                    showToast(
+                        {
+                            title: "Transaction Failed",
+                            txHash: event.txHash,
+                            type: "tx", 
+                            text: `Dispatch Error: ${formattedError}`, 
+                            isErr: true
+                        }
+                    )
+                    console.error(`Dispatch Error: ${formattedError}`)
                 } else {
-                    toast(`${txName} transaction ${event.txHash} failed without a dispatch error!`)
-            }
-            break
+                    showToast(
+                        {
+                            title: "Transaction Failed",
+                            txHash: event.txHash,
+                            type: "tx", 
+                            text: `${txName} transaction failed without a dispatch error!`, 
+                            isErr: true
+                        }
+                    )
+                }
+                break
     }
 }
 
-export const processError = (error: any, txName: string) => {
+export const processError = (error: any, txName: string, showToast: (msg: ToastMessage) => void) => {
     if (error instanceof InvalidTxError) {
         const typedError: TransactionValidityError<typeof cyborgParachain> = error.error
-        toast(`${txName} transaction is invalid (eg. due to a invalid nonce.), please try again.`)
+        showToast(
+            {
+                title: "Transaction Failed",
+                txHash: "N/A",
+                type: "tx", 
+                text: `${txName} transaction is invalid (eg. due to a invalid nonce.), please try again.`, 
+                isErr: true
+            }
+        )
         console.log(typedError)
     } else {
-        toast(`${txName} transaction failed, please try again. More information can be found in the console.`)
+        showToast(
+            {
+                title: "Transaction Failed",
+                txHash: "N/A",
+                type: "tx", 
+                text: `${txName} transaction failed, please try again. More information can be found in the console.`, 
+                isErr: true
+            }
+        )
         console.log(error)
     }
 }

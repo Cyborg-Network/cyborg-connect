@@ -3,6 +3,7 @@ import { TaskId } from '../../types/task'
 import { X25519PubKey } from '../../util/non-bc-crypto/generateX25519KeyPair'
 import { signTimestampWithWallet } from '../../util/non-bc-crypto/signTimestampWithWallet'
 import sodium from 'libsodium-wrappers'
+import { safeBigIntToNumberTransform } from '../../util/numberOperations'
 
 export const constructAgentApiRequest = (
   target_ip: IpAddress,
@@ -28,7 +29,8 @@ export const constructAgentAuthRequest = async (
   const request = JSON.stringify({
     target_ip: target_ip,
     endpoint: 'Auth',
-    task_id: taskId,
+    // This should change once the task id becomes a uuid since it is not exactly prod safe
+    task_id: safeBigIntToNumberTransform(taskId),
     signed_timestamp: signedTimestamp,
     signed_timestamp_signature: signature,
     ephemeral_public_key: sodium.to_hex(ephemeral_public_key),

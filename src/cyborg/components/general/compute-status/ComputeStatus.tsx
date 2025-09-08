@@ -10,17 +10,15 @@ import { useUi } from '../../../context/UiContext'
 import SigntoUnlockModal from '../modals/SignToUnlock'
 import { useAgentCommunication } from '../../../api/agent/useAgentCommunication'
 import { parseGaugeMetric } from './util'
-import { useUserWorkersQuery } from '../../../api/parachain/useWorkersQuery'
+import { UserMiner, useUserWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import { MetricName, SelectedGaugeState } from '../../../types/compute_status'
 import { Data } from '../Chart'
 import { Step, Stepper } from 'react-form-stepper'
 import Button from '../buttons/Button'
 import useTransaction from '../../../api/parachain/useTransaction'
-import toast from 'react-hot-toast'
 import { useSubstrateState } from '../../../../substrate-lib'
 import useService, { SERVICES } from '../../../hooks/useService'
 import { useParachain } from '../../../context/PapiContext'
-import { safeBigIntTransform } from '../../../util/safeBigIntTransform'
 
 interface ComputeStatusProps {
   perspective: 'provider' | 'accessor'
@@ -40,7 +38,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   const { api } = useSubstrateState()
   const { account, parachainApi} = useParachain()
 
-  const [metadata, setMetadata] = useState(null)
+  const [worker, setWorker] = useState<UserMiner | null>(null)
   const [selectedGauge, setSelectedGauge] = useState<SelectedGaugeState>({
     name: 'CPU',
     color: 'var(--gauge-red)',
@@ -50,7 +48,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   const [proofRequested, setProofRequested] = useState<boolean>(false);
 
   const { usageData, agentSpecs, logs, lockState, authenticateWithAgent } =
-    useAgentCommunication(metadata)
+    useAgentCommunication(worker)
 
   useEffect(() => {
     if (usageData) {
@@ -68,24 +66,24 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     data: executableWorkers,
     //isLoading: executableWorkersIsLoading,
     //error: executableWorkersError
-  } = useUserWorkersQuery(false, 'executableWorkers')
+  } = useUserWorkersQuery('executableWorkers')
 
   const {
     data: workerClusters,
     //isLoading: workerClustersIsLoading,
     //error: workerClustersError
-  } = useUserWorkersQuery(false, 'workerClusters')
+  } = useUserWorkersQuery('workerClusters')
 
   useEffect(() => {
    async function queryProofStage() {
-      if(metadata){
+      if(worker){
         if(
-          metadata.lastTask && 
-          typeof metadata.lastTask === "number" && 
-          Number.isFinite(metadata.lastTask) && 
-          Number.isInteger(metadata.lastTask)
+          worker.lastTask && 
+          typeof worker.lastTask === "number" && 
+          Number.isFinite(worker.lastTask) && 
+          Number.isInteger(worker.lastTask)
         ){
-          const task = await parachainApi.query.TaskManagement.Tasks.getValue(metadata.lastTask)
+          const task = await parachainApi.query.TaskManagement.Tasks.getValue(worker.lastTask)
 
           switch (task.task_kind.type) {
             case "NeuroZK": {
@@ -107,7 +105,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
       }
    } 
    queryProofStage();
-  }, [metadata])
+  }, [worker])
 
   const transformUsageDataToChartData = (usageType: MetricName): Data => {
     let truncatedUsageData
@@ -177,29 +175,23 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   useEffect(() => {
     if (!executableWorkers || !workerClusters) return
     //This is necessary because if the user tries to share a link to the current node, it will not have the data otherwise
-    const currentWorker = [...executableWorkers, ...workerClusters].find(
-      node => node.api.domain === `https://${domain}`
+    const currentWorker: UserMiner = [...executableWorkers, ...workerClusters].find(
+      node => node.api.asText() === `https://${domain}`
     )
-    if (currentWorker) {
-      setMetadata(currentWorker)
+    if (currentWorker && currentWorker.lastTask !== undefined && currentWorker.lastTask !== null) {
+      setWorker(currentWorker)
     }
-  }, [executableWorkers, workerClusters, setMetadata, domain])
+  }, [executableWorkers, workerClusters, setWorker, domain])
 
   const { handleTransaction, isLoading } = useTransaction()
 
-  const requestProof = async (taskId: number) => {
-    const bigInt = safeBigIntTransform(taskId);
-    if (!bigInt) {
-      toast("Task id is not a valid number, tx aborted.")
-      return
-    }
-
-    const tx = parachainApi.tx.NeuroZk.request_proof({ task_id: BigInt(bigInt) })
+  const requestProof = async (taskId: bigint) => {
+    const tx = parachainApi.tx.NeuroZk.request_proof({ task_id: taskId })
 
     await handleTransaction({
       tx,
       account,
-      onSuccess: () => {
+      onSuccessFn: () => {
         setProofStage(1);
         setProofRequested(true)
         pollTaskStatus(taskId, api, setProofStage);
@@ -225,19 +217,19 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   }
 
   useEffect(() => {
-    if (!api || !metadata) {
+    if (!api || !worker) {
       return;
     }
 
-    if (metadata.lastTask == null || metadata.lastTask === undefined) {
+    if (worker.lastTask == null || worker.lastTask === undefined) {
       return;
     }
 
-    const cleanup = pollTaskStatus(api, metadata.lastTask, setProofStage);
+    const cleanup = pollTaskStatus(api, worker.lastTask, setProofStage);
     return () => cleanup();
-  }, [api, metadata]);
+  }, [api, worker]);
 
-  function pollTaskStatus(api: any, taskId: number, setProofStage: (n: number) => void): () => void {
+  function pollTaskStatus(api: any, taskId: bigint, setProofStage: (n: number) => void): () => void {
     console.log('Starting pollTaskStatus for taskId:', taskId);
     let intervalId = setInterval(async () => {
       console.log('Polling task status for taskId:', taskId);
@@ -271,22 +263,22 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
           sidebarIsActive ? 'lg:pl-96' : 'lg:pl-16'
         } transition-all duration-500 ease-in-out`}
       >
-        {metadata ? (
+        {worker ? (
           <>
             <MetaDataHeader
-              owner={metadata.owner}
-              taskId={metadata.lastTask}
-              id={metadata.id}
-              domain={metadata.api.domain}
-              status={metadata.status}
-              lastCheck={metadata.statusLastUpdated}
+              owner={worker.owner}
+              taskId={worker.lastTask}
+              domain={worker.api}
+              id={worker.id}
+              status={worker.status}
+              lastCheck={worker.status_last_updated}
             />
             {
               service === SERVICES.NZK
               ?
               <div className="text-white w-full bg-cb-gray-600 flex rounded-lg gap-4 items-center">
                 <Button
-                  onClick={() => requestProof(metadata.lastTask)}
+                  onClick={() => requestProof(worker.lastTask)}
                   type="button"
                   variation="primary"
                   selectable={false}
@@ -345,9 +337,9 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
                 }`}
               >
                 <Terminal
-                  link={metadata.api.domain}
+                  link={worker.api.asText()}
                   logs={logs}
-                  taskId={metadata.lastTask}
+                  taskId={worker.lastTask}
                 />
               </div>
               {usageData && (

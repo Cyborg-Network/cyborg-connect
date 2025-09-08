@@ -5,7 +5,6 @@ import CloseButton from '../../general/buttons/CloseButton'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
 import Button from '../../general/buttons/Button'
-import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useParachain } from '../../../context/PapiContext'
 import { Binary, Enum } from 'polkadot-api'
@@ -42,7 +41,7 @@ const UploadDockerImgURL: React.FC<Props> = ({
     navigate(ROUTES.DASHBOARD)
   }
 
-  const { handleTransaction, isLoading } = useTransaction()
+  const { handleTransaction } = useTransaction()
 
   const submitTransaction = async parsedHoursDeposit => {
     const tx = parachainApi.tx.TaskManagement.task_scheduler({
@@ -55,7 +54,11 @@ const UploadDockerImgURL: React.FC<Props> = ({
     await handleTransaction({
       tx, 
       account, 
-      onSuccess: navigateToDashboard,
+      userCallToAction: {
+        fn: navigateToDashboard,
+        text: "Navigate To Dashboard"
+      },
+      onSuccessFn: navigateToDashboard,
       txName: "Open Inference Task"
     })
   }
@@ -71,68 +74,62 @@ const UploadDockerImgURL: React.FC<Props> = ({
   }
 
   return (
-    <>
-      {isLoading ? (
-        <LoadingModal text={'Processing Compute Request, Please Wait...'} />
-      ) : (
-        <Modal onOutsideClick={() => onCancel()}>
-          <CloseButton
-            type="button"
-            onClick={() => onCancel()}
-            additionalClasses="absolute top-6 right-6"
+    <Modal onOutsideClick={() => onCancel()}>
+      <CloseButton
+        type="button"
+        onClick={() => onCancel()}
+        additionalClasses="absolute top-6 right-6"
+      />
+      <div>
+        <h5 className="flex">{'Upload .ONNX model'}</h5>
+        <div className="mb-4">
+          <input
+            type="text"
+            id="url"
+            name="url"
+            placeholder={'Insert model location'}
+            onChange={e => handleUrlChange(e)}
+            className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
-          <div>
-            <h5 className="flex">{'Upload .ONNX model'}</h5>
-            <div className="mb-4">
-              <input
-                type="text"
-                id="url"
-                name="url"
-                placeholder={'Insert model location'}
-                onChange={e => handleUrlChange(e)}
-                className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <h5 className="flex">Deposit Compute Hours</h5>
-            <div className="mb-4">
-              <input
-                type="text"
-                id="url"
-                name="url"
-                placeholder="Insert Number of Compute Hours"
-                onChange={e => handleComputeHourDepositChange(e)}
-                className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
+        </div>
+        <h5 className="flex">Deposit Compute Hours</h5>
+        <div className="mb-4">
+          <input
+            type="text"
+            id="url"
+            name="url"
+            placeholder="Insert Number of Compute Hours"
+            onChange={e => handleComputeHourDepositChange(e)}
+            className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div className=" flex items-center justify-between">
-                <Button
-                  type="button"
-                  selectable={false}
-                  variation="secondary"
-                  onClick={() => setService(null)}
-                  additionalClasses="w-full"
-                >
-                  Close
-                </Button>
-              </div>
-              <div className=" flex items-center justify-between">
-                <Button
-                  type="button"
-                  selectable={false}
-                  variation="primary"
-                  onClick={() => handleSubmit()}
-                  additionalClasses="w-full"
-                >
-                  Submit
-                </Button>
-              </div>
-            </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className=" flex items-center justify-between">
+            <Button
+              type="button"
+              selectable={false}
+              variation="secondary"
+              onClick={() => setService(null)}
+              additionalClasses="w-full"
+            >
+              Close
+            </Button>
           </div>
-        </Modal>
-      )}
-    </>
+          <div className=" flex items-center justify-between">
+            <Button
+              type="button"
+              selectable={false}
+              variation="primary"
+              onClick={() => handleSubmit()}
+              additionalClasses="w-full"
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Modal>
   )
 }
 

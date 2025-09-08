@@ -7,13 +7,15 @@ import {
   Marker,
 } from 'react-simple-maps'
 import topoJson from '../../../../map-data/countries-1-to-50m-scale.json'
+import { Miner } from '../../../api/parachain/useWorkersQuery'
 import { Location } from '../../../types/location'
+import { MinerWithCountry } from './MapInteractor'
 
 interface MapProps {
   userCoordinates: Location
-  nodes: any[]
+  nodes: Miner[]
   handleSelectNode: (node: any) => void
-  selectedNode: any
+  selectedNode: MinerWithCountry
 }
 
 const calculateZoom = (screenSize: number) => {
@@ -26,6 +28,35 @@ const calculateMapHeight = (screenSize: number) => {
   const clampedScreenSize = Math.max(300, Math.min(screenSize, 2000))
   const output = 600 + (2000 * (2000 - clampedScreenSize)) / (2000 - 300)
   return Math.round(output)
+}
+
+const returnNodeColor = (node: Miner, selectedNode: MinerWithCountry) => {
+  switch (node.status.type) {
+    case "Active":
+      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+        return '#15E674'
+      } else {
+        return '#439448'
+      }
+    case "Inactive":
+      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+        return '#737373'
+      } else {
+        return '#5B5A5A'
+      }
+    case "Suspended":
+      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+        return '#737373'
+      } else {
+        return '#5B5A5A'
+      }
+    case "Busy":
+      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+        return '#D23232'
+      } else {
+        return '#C42928'
+      }
+  }
 }
 
 const Map: React.FC<MapProps> = ({
@@ -120,13 +151,7 @@ const Map: React.FC<MapProps> = ({
                   className="hover:cursor-pointer"
                   onClick={() => handleSelectNode(node)}
                   r={(1 / zoom) * 3}
-                  fill={
-                    selectedNode &&
-                    node.id === selectedNode.id &&
-                    node.owner === selectedNode.owner
-                      ? '#15E674'
-                      : '#439448'
-                  }
+                  fill={returnNodeColor(node, selectedNode)}
                   filter="url(#markerShadow)"
                 />
               </Marker>

@@ -27,6 +27,7 @@ import SelectNodePage from './cyborg/components/accessCompute/select-node/Select
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { ParachainContextProvider } from './cyborg/context/PapiContext';
+import { ToastProvider } from './cyborg/context/ToastContext';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -41,6 +42,7 @@ export const ROUTES = {
 
 const GlobalLayout = () => {
   const location = useLocation().pathname;
+
 
   const linkProperties = location === ROUTES.DEV_MODE ? 
     {
@@ -58,7 +60,7 @@ const GlobalLayout = () => {
       <Outlet />
       {/*<div className='fixed bottom-2 left-2 md:left-1/2 transform md:-translate-x-1/2 z-30'><RpcSelector /></div>*/}
       <Link to={linkProperties.route}>
-        <button className='fixed rounded-lg p-4 bottom-2 right-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
+        <button className='fixed rounded-lg p-4 bottom-2 left-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
       </Link>
     </>
   )
@@ -161,38 +163,40 @@ const root = createRoot(domNode);
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <SubstrateContextProvider>
-        <ParachainContextProvider>
-          <Auth0Provider
-            domain="dev-2x17egiyhkuudp5t.us.auth0.com"
-            clientId="s77Fg5QZqAPltjVm9d4NkWiUyEgzjNRD"
-            authorizationParams={{
-              redirect_uri: window.location.origin,
-              audience: "https://dev-2x17egiyhkuudp5t.us.auth0.com/api/v2/",
-              scope: "read:current_user update:current_user_metadata"
-            }}
-          >
-            <AccountContextProvider>
-              <CyborgContextProvider>
-                <UiContextProvider>
-                <Toaster
-                  position="top-center"
-                  reverseOrder={false}
-                  toastOptions={{
-                      style: {
-                        background: 'var(--cb-gray-600)',
-                        color: 'white',
-                        border: '1px solid var(--cb-green)'
-                      }
-                    }}
-                />
-                <RouterProvider router={router} />
-                </UiContextProvider>
-              </CyborgContextProvider>
-            </AccountContextProvider>
-          </Auth0Provider>
-        </ParachainContextProvider>
-      </SubstrateContextProvider>
+      <ToastProvider>
+        <SubstrateContextProvider>
+          <ParachainContextProvider>
+            <Auth0Provider
+              domain="dev-2x17egiyhkuudp5t.us.auth0.com"
+              clientId="s77Fg5QZqAPltjVm9d4NkWiUyEgzjNRD"
+              authorizationParams={{
+                redirect_uri: window.location.origin,
+                audience: "https://dev-2x17egiyhkuudp5t.us.auth0.com/api/v2/",
+                scope: "read:current_user update:current_user_metadata"
+              }}
+            >
+              <AccountContextProvider>
+                <CyborgContextProvider>
+                  <UiContextProvider>
+                  <Toaster
+                    position="top-center"
+                    reverseOrder={false}
+                    toastOptions={{
+                        style: {
+                          background: 'var(--cb-gray-600)',
+                          color: 'white',
+                          border: '1px solid var(--cb-green)'
+                        }
+                      }}
+                  />
+                  <RouterProvider router={router} />
+                  </UiContextProvider>
+                </CyborgContextProvider>
+              </AccountContextProvider>
+            </Auth0Provider>
+          </ParachainContextProvider>
+        </SubstrateContextProvider>
+      </ToastProvider>
     </QueryClientProvider>
   </React.StrictMode>
 )
