@@ -28,6 +28,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { ParachainContextProvider } from './cyborg/context/PapiContext';
 import { ToastProvider } from './cyborg/context/ToastContext';
+import { ConnectWalletComponent } from './cyborg/components/general/buttons/ConnectWallet';
 
 export const ROUTES = {
   CHOOSE_PATH: "/",
@@ -47,7 +48,7 @@ const GlobalLayout = () => {
   const linkProperties = location === ROUTES.DEV_MODE ? 
     {
       route: ROUTES.CHOOSE_PATH,
-      name: "Test Cyborg DApp",
+      name: "Test Cyborg Connect",
     }
     :
     {
@@ -62,6 +63,7 @@ const GlobalLayout = () => {
       <Link to={linkProperties.route}>
         <button className='fixed rounded-lg p-4 bottom-2 left-2 z-40 bg-white text-black border border-black'>{linkProperties.name}</button>
       </Link>
+      <ConnectWalletComponent />
     </>
   )
 }
