@@ -13,7 +13,8 @@ type Action = {
 type ToastTitle = 
     "Transaction Update" | 
     "Transaction Failed" | 
-    "Action Taken"
+    "Action Taken" | 
+    "Failed"
 
 type TxToastMessage = { 
     title: ToastTitle,
