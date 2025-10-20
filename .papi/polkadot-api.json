@@ -3,10 +3,10 @@
   "descriptorPath": ".papi/descriptors",
   "entries": {
     "cyborgParachain": {
-      "wsUrl": "wss://alphachain.cyborgnetwork.io",
+      "wsUrl": "ws://127.0.0.1:9988",
       "metadata": ".papi/metadata/cyborgParachain.scale",
-      "genesis": "0x793392bc58cb7f3a5292a135c79fe1fe7e31bd0d19fee0af67d48000c6b8a804",
-      "codeHash": "0x098996802630d8cac8746890888a1d87843fb1df5a72181e8ef99792a1f487a4"
+      "genesis": "0x4545454545454545454545454545454545454545454545454545454545454545",
+      "codeHash": "0x61851f2011278f4b22d8236b4b18f10dfb13f2b8e9da50992a760fd289188b73"
     }
   }
 }

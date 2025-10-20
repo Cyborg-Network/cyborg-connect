@@ -5,19 +5,20 @@ import TruncatedAddress from '../TruncatedAddress'
 import { useState } from 'react'
 import Modal from '../modals/Modal'
 import { toast } from 'react-hot-toast'
-import { transformToNumber, safeNumberToBigIntTransform } from '../../../util/numberOperations'
+// import { transformToNumber, safeNumberToBigIntTransform } from '../../../util/numberOperations'
 import { Miner } from '../../../api/parachain/useWorkersQuery'
+import { Binary } from 'polkadot-api'
 
 interface Props {
   node: Miner
   distance: number
   returntoNearestNode: () => void
   onNavigate: () => void
-  handleManualSelection: (nodeId: bigint, nodeOwner: string) => void
+  handleManualSelection: (nodeId: Binary, nodeOwner: string) => void
 }
 
 interface ManualSelectionModalProps {
-  handleManualSelection: (nodeId: bigint, nodeOwner: string) => void
+  handleManualSelection: (nodeId: Binary, nodeOwner: string) => void
 }
 
 const NodeInformationBar: React.FC<Props> = ({
@@ -34,14 +35,14 @@ const NodeInformationBar: React.FC<Props> = ({
     handleManualSelection,
   }: ManualSelectionModalProps) => {
     const [nodeInfo, setNodeInfo] = useState<{
-      id: null | number
+      id: null | Binary
       owner: null | string
     }>({ id: null, owner: null })
 
     const returnManualSelection = () => {
-      const bigIntId = safeNumberToBigIntTransform(nodeInfo.id)
-      if (bigIntId && nodeInfo.owner) {
-        handleManualSelection(bigIntId, nodeInfo.owner)
+      // const bigIntId = safeNumberToBigIntTransform(nodeInfo.id)
+      if (nodeInfo.id && nodeInfo.owner) {
+        handleManualSelection(nodeInfo.id, nodeInfo.owner)
         setManualSelectionModalIsActive(false)
       } else {
         toast('Please enter all of the required information!')
@@ -55,9 +56,9 @@ const NodeInformationBar: React.FC<Props> = ({
       >
         <div>Please enter the worker ID and the worker owner:</div>
         <input
-          value={nodeInfo.id}
+          value={nodeInfo.id.toString() || ''}
           onChange={e =>
-            setNodeInfo({ ...nodeInfo, id: transformToNumber(e.target.value) })
+            setNodeInfo({ ...nodeInfo, id: e.target.value as String as unknown as Binary })
           }
           placeholder="Worker ID"
           className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
@@ -118,7 +119,7 @@ const NodeInformationBar: React.FC<Props> = ({
           Find Nearest
         </Button>
         {
-          node.status.type === "Active"
+          node.oracle_status.type === "Online"
           ?
           <Button
             type="button"
@@ -142,7 +143,7 @@ const NodeInformationBar: React.FC<Props> = ({
             onClick={() => onNavigate()}
           >
             <div className="flex gap-2">
-              <div>{`Miner is ${node.status.type.toLowerCase()}`}</div>
+              <div>{`Miner is ${node.oracle_status.type.toLowerCase()}`}</div>
             </div>
           </Button>
         }
