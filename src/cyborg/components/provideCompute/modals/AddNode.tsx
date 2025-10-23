@@ -169,19 +169,19 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
           <div className="flex w-full justify-center gap-4">
             <Button
               type="button"
-              selectable={{ isSelected: nodeType === 'docker' }}
+              selectable={{ isSelected: nodeType === 'Edge' }}
               variation="secondary"
-              onClick={() => setNodeType('docker')}
+              onClick={() => setNodeType('Edge')}
             >
-              Docker
+              EdgeMiners
             </Button>
             <Button
               type="button"
-              selectable={{ isSelected: nodeType === 'executable' }}
+              selectable={{ isSelected: nodeType === 'Cloud' }}
               variation="secondary"
-              onClick={() => setNodeType('executable')}
+              onClick={() => setNodeType('Cloud')}
             >
-              Executable
+              CloudMiners
             </Button>
           </div>
           <div className="relative h-fit">

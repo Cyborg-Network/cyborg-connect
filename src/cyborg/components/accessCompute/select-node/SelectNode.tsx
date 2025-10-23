@@ -11,8 +11,6 @@ import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import NeuroZkUpload from '../modals/NeuroZKUpload'
-import { u8aToHex } from '@polkadot/util';
-import { u8aToBn } from '@polkadot/util';
 import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import FlashInferUpload from '../modals/FlashInferUpload'
@@ -190,7 +188,7 @@ const SelectNodePage: React.FC = () => {
             {nearbyNodes.map(node => (
               <SelectionNodeCard
                 nodeId={node}
-                // key={node.id}
+                key={node.id.toString()}
                 onClick={() =>
                   toggleNodeSelection({ owner: node.owner, id: node.id })
                 }
@@ -240,9 +238,7 @@ const SelectNodePage: React.FC = () => {
       service.id === SERVICES.NZK.id ? (
         <NeuroZkUpload
           onCancel={setDeploymentStageToInit}
-          minerId={Array.from(selectedNodes[0].id as unknown as Uint8Array)
-  .map(b => b.toString(16).padStart(2, '0'))
-  .join('')}
+          minerId={selectedNodes[0].id.toString()}
           minerAdress={selectedNodes[0].owner}
         />
       ) : (
