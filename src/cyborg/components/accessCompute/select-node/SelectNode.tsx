@@ -128,6 +128,8 @@ const SelectNodePage: React.FC = () => {
     setDeploymentStage(DEPLOYMENT_STAGES.DEPLOYMENT)
   }
 
+  
+
   const toggleNodeSelection = combinedId => {
     const index = selectedNodes.findIndex(item => {
       return combinedId.owner === item.owner && combinedId.id === item.id
@@ -186,7 +188,7 @@ const SelectNodePage: React.FC = () => {
             {nearbyNodes.map(node => (
               <SelectionNodeCard
                 nodeId={node}
-                key={node.id}
+                key={node.id.toString()}
                 onClick={() =>
                   toggleNodeSelection({ owner: node.owner, id: node.id })
                 }
@@ -236,7 +238,7 @@ const SelectNodePage: React.FC = () => {
       service.id === SERVICES.NZK.id ? (
         <NeuroZkUpload
           onCancel={setDeploymentStageToInit}
-          minerId={selectedNodes[0].id}
+          minerId={selectedNodes[0].id.toString()}
           minerAdress={selectedNodes[0].owner}
         />
       ) : (

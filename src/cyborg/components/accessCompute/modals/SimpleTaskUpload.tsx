@@ -46,8 +46,8 @@ const UploadDockerImgURL: React.FC<Props> = ({
   const submitTransaction = async parsedHoursDeposit => {
     const tx = parachainApi.tx.TaskManagement.task_scheduler({
       task_kind: Enum("OpenInference", {type: "Onnx", value: { storage_location_identifier: Binary.fromText(url) } }),
-      worker_owner: nodes[0].owner,
-      worker_id: nodes[0].id,
+      miner_owner: nodes[0].owner,
+      miner_id: nodes[0].id,
       compute_hours_deposit: parsedHoursDeposit
     });
 

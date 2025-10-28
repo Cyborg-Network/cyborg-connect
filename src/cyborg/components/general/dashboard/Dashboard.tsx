@@ -46,14 +46,14 @@ const Dashboard: React.FC = () => {
     refetch: refetchWorkerClusters,
     //isLoading: computeHourPriceIsLoading,
     //error: computeHourPriceError
-  } = useUserWorkersQuery('workerClusters')
+  } = useUserWorkersQuery('cloudMiners')
 
   const {
     data: userExecutableWorkers,
     refetch: refetchExecutableWorkers,
     //isLoading: computeHourPriceIsLoading,
     //error: computeHourPriceError
-  } = useUserWorkersQuery('executableWorkers')
+  } = useUserWorkersQuery('edgeMiners')
 
   const forceRefresh = () => {
     refetchWorkerClusters()

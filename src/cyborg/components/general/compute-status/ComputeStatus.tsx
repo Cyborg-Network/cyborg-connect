@@ -66,13 +66,13 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     data: executableWorkers,
     //isLoading: executableWorkersIsLoading,
     //error: executableWorkersError
-  } = useUserWorkersQuery('executableWorkers')
+  } = useUserWorkersQuery('edgeMiners')
 
   const {
     data: workerClusters,
     //isLoading: workerClustersIsLoading,
     //error: workerClustersError
-  } = useUserWorkersQuery('workerClusters')
+  } = useUserWorkersQuery('cloudMiners')
 
   useEffect(() => {
    async function queryProofStage() {
@@ -270,7 +270,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
               taskId={worker.lastTask}
               domain={worker.api}
               id={worker.id}
-              status={worker.status}
+              status={worker.oracle_status}
               lastCheck={worker.status_last_updated}
             />
             {

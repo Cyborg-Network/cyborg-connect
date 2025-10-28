@@ -11,13 +11,14 @@ import { useParachain } from '../../../context/PapiContext'
 import { Miner } from '../../../api/parachain/useWorkersQuery'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
+import { Binary } from 'polkadot-api'
 
 interface MetaDataHeaderProps {
   owner: string
-  id: bigint
+  id: Binary
   taskId: bigint
   domain: Miner["api"]
-  status: Miner["status"]
+  status: Miner["oracle_status"]
   lastCheck: number
 }
 
@@ -120,7 +121,9 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
         <div className="flex items-center gap-2 lg:text-xl justify-end">
           <div className="text-lg">Node Name: </div>
           <div className="text-cb-green">
-            {truncateAddress(owner, 600)}:{id}
+            {truncateAddress(owner, 600)}:{Array.from(id as unknown as Uint8Array)
+  .map(b => b.toString(16).padStart(2, '0'))
+  .join('')}
           </div>
         </div>
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">
