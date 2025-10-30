@@ -11,6 +11,8 @@ import { useParachain } from '../../../context/PapiContext'
 import { Miner } from '../../../api/parachain/useWorkersQuery'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
+import { AiOutlineDownload } from "react-icons/ai";
+import { useToast } from '../../../context/ToastContext'
 
 interface MetaDataHeaderProps {
   owner: string
@@ -67,6 +69,7 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
   const { service } = useService()
   const { parachainApi, account } = useParachain()
   const { handleTransaction, isLoading } = useTransaction()
+  const { showToast } = useToast()
   const navigate = useNavigate()
 
   const [confirmModalVisible, setConfirmModalVisible] = useState(false)
@@ -88,6 +91,10 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
       txName: "Stop Task",
       onSuccessFn: navigateToDashboard
     })
+  }
+
+  const retrieveKeypair = () => {
+    showToast({type: "general", title: "Action Taken", text: "Geting Keypair..."})
   }
 
   return (
@@ -126,9 +133,20 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">
           <Button
             type="button"
+            variation="primary"
+            selectable={false}
+            onClick={ () => { retrieveKeypair() } }
+          >
+            <div className='flex gap-2'>
+              <div>Download Keypair</div>
+              <AiOutlineDownload />
+            </div>
+          </Button>
+          <Button
+            type="button"
             variation="warning"
             selectable={false}
-            onClick={() => {setConfirmModalVisible(true)}}
+            onClick={ () => { setConfirmModalVisible(true) } }
           >
             Stop Task
           </Button>

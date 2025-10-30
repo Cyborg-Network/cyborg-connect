@@ -19,10 +19,16 @@ const ChooseServices: React.FC = () => {
       <h1 className="text-white">Choose Services</h1>
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row gap-4 p-2">
         <ServiceCard
+          logo={SERVICES.CYCL.icon}
+          title={SERVICES.CYCL.name}
+          description="Deploy AI to Cyborg Network"
+          onClick={() => handleSelectService(SERVICES.CYCL, ROUTES.MAP)}
+        />
+        <ServiceCard
           additionalClasses="sm:col-span-2 sm:justify-self-center"
           logo={SERVICES.FI.icon}
           title={SERVICES.FI.name}
-          description="Deploy Models Instantly"
+          description="Deploy Models Instantly on the Edge"
           onClick={() => handleSelectService(SERVICES.FI, ROUTES.MAP)}
         />
         <ServiceCard
@@ -30,12 +36,6 @@ const ChooseServices: React.FC = () => {
           title={SERVICES.NZK.name}
           description="Perform ZK Inference"
           onClick={() => handleSelectService(SERVICES.NZK, ROUTES.MAP)}
-        />
-        <ServiceCard
-          logo={SERVICES.OI.icon}
-          title={SERVICES.OI.name}
-          description="Deploy AI to Cyborg Network"
-          onClick={() => handleSelectService(SERVICES.OI, ROUTES.MAP)}
         />
       </div>
       <h4 className='text-white'>More coming soon...</h4>
