@@ -21,10 +21,10 @@ const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
   console.log(nodeInfo)
 
   const submitTransaction = async () => {
-    const tx = parachainApi.tx.EdgeConnect.remove_worker(
+    const tx = parachainApi.tx.EdgeConnect.remove_miner(
       {
-        worker_type: Enum("Executable", undefined),
-        worker_id: nodeInfo.id
+        miner_type: Enum("Edge", undefined),
+        miner_id: nodeInfo.id
       }
     )
 

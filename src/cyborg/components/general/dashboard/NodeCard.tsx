@@ -81,7 +81,7 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
             />
             <LI
               additionalClasses={`flex gap-2 ${
-                item.status ? 'text-cb-green' : 'text-red-600'
+                item.oracle_status ? 'text-cb-green' : 'text-red-600'
               }`}
             >
               <SPAN>Status:</SPAN>

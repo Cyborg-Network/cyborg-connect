@@ -21,6 +21,11 @@ export interface LockState {
   isLoading: boolean
 }
 
+export interface ContainerKeypair {
+  public_key: string
+  private_key: string
+}
+
 export type AgentRequestType = 'Auth' | 'Usage' | 'Init'
 
 export type Logs = string[]

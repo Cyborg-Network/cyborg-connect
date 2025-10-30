@@ -118,7 +118,7 @@ const NodeInformationBar: React.FC<Props> = ({
           Find Nearest
         </Button>
         {
-          node.status.type === "Active"
+          node.operational_status.type === "Available"
           ?
           <Button
             type="button"
@@ -142,7 +142,7 @@ const NodeInformationBar: React.FC<Props> = ({
             onClick={() => onNavigate()}
           >
             <div className="flex gap-2">
-              <div>{`Miner is ${node.status.type.toLowerCase()}`}</div>
+              <div>{`Miner is ${node.operational_status.type.toLowerCase()}`}</div>
             </div>
           </Button>
         }

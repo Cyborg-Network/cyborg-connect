@@ -9,18 +9,18 @@ import { useParachain } from '../../context/PapiContext'
 type workerType = 'executableWorkers' | 'workerClusters'
 
 export type Miner = 
-  CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["Value"] |
-  CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["Value"];
+  CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"] |
+  CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
 
 
 type WorkerCluster = {
-  keyArgs: CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["KeyArgs"]; 
-  value: CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["Value"];
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
 };
 
 type ExecutableWorker = {
-  keyArgs: CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["KeyArgs"]; 
-  value: CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["Value"];
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"];
 }
 
 export type UserMiner = Miner & { lastTask: bigint };
@@ -30,10 +30,10 @@ const getWorkers = async (api: TypedApi<CyborgParachain>, workerType: workerType
   let workerEntries: WorkerCluster[] | ExecutableWorker[]
   switch (workerType) {
     case "executableWorkers":
-      workerEntries = await api.query.EdgeConnect.ExecutableWorkers.getEntries();
+      workerEntries = await api.query.EdgeConnect.EdgeMiners.getEntries();
       break;
     case "workerClusters":
-      workerEntries = await api.query.EdgeConnect.WorkerClusters.getEntries();
+      workerEntries = await api.query.EdgeConnect.CloudMiners.getEntries();
       break;
   }
 

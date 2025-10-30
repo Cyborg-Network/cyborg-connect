@@ -31,18 +31,20 @@ const calculateMapHeight = (screenSize: number) => {
 }
 
 const returnNodeColor = (node: Miner, selectedNode: MinerWithCountry) => {
-  switch (node.status.type) {
-    case "Active":
-      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
-        return '#15E674'
-      } else {
-        return '#439448'
-      }
-    case "Inactive":
+  if (node.oracle_status.type === "Offline") {
       if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
         return '#737373'
       } else {
         return '#5B5A5A'
+    }
+  }
+
+  switch (node.operational_status.type) {
+    case "Available":
+      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+        return '#15E674'
+      } else {
+        return '#439448'
       }
     case "Suspended":
       if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {

@@ -19,8 +19,9 @@ interface MetaDataHeaderProps {
   id: bigint
   taskId: bigint
   domain: Miner["api"]
-  status: Miner["status"]
+  status: Miner["operational_status"]
   lastCheck: number
+  taskPubKeyDeposited: boolean
 }
 
 const FlexContainer: React.FC<{ children: ReactNode }> = ({
@@ -61,6 +62,7 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
   domain,
   status,
   lastCheck,
+  taskPubKeyDeposited,
 }: MetaDataHeaderProps) => {
 
   const styles = STATUS_STYLES[status.type]
@@ -142,6 +144,7 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
               <AiOutlineDownload />
             </div>
           </Button>
+          {taskPubKeyDeposited ? "Deposited" : "Not Deposited"}
           <Button
             type="button"
             variation="warning"

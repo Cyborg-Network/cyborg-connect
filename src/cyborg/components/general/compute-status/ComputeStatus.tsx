@@ -47,8 +47,14 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   const [proofStage, setProofStage] = useState<number>(0);
   const [proofRequested, setProofRequested] = useState<boolean>(false);
 
-  const { usageData, agentSpecs, logs, lockState, authenticateWithAgent } =
-    useAgentCommunication(worker)
+  const { 
+    usageData, 
+    agentSpecs, 
+    logs, 
+    lockState, 
+    authenticateWithAgent,
+    containerPubKeyDeposited 
+  } = useAgentCommunication(worker)
 
   useEffect(() => {
     if (usageData) {
@@ -270,8 +276,9 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
               taskId={worker.lastTask}
               domain={worker.api}
               id={worker.id}
-              status={worker.status}
+              status={worker.operational_status}
               lastCheck={worker.status_last_updated}
+              taskPubKeyDeposited={containerPubKeyDeposited}
             />
             {
               service === SERVICES.NZK

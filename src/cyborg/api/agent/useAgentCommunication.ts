@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
-import { constructAgentApiRequest, constructAgentAuthRequest } from './agent'
+import { constructAgentApiRequest, constructAgentAuthRequest, downloadSshKeyZip } from './agent'
 import { decryptMessage } from '../../util/non-bc-crypto/decryptMessage'
 import {
   generateX25519KeyPair,
   X25519KeyPair,
 } from '../../util/non-bc-crypto/generateX25519KeyPair'
 import { processDiffieHellmanAuth } from '../../util/non-bc-crypto/processDiffieHellmanAuth'
-import { LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
+import { ContainerKeypair, LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
 import { UserMiner } from '../parachain/useWorkersQuery'
+
+
 
 const CYBORG_SERVER_URL = process.env.REACT_APP_CYBORG_PROXY_URL
 
@@ -34,10 +36,15 @@ export const useAgentCommunication = (miner: UserMiner) => {
     isLocked: true,
     isLoading: false,
   })
+  const [containerPubKeyDeposited, setContainerPubKeyDeposited] = useState<boolean>(false)
 
   useEffect(() => {
     if (miner) {
-      setAgentUrl(`${miner.api.asText().replace('https://', 'wss://')}/agent-usage`)
+      if (miner.api.asText().includes("tail")) {
+        setAgentUrl(`${miner.api.asText().replace('https://', 'wss://')}/agent-usage`)
+      } else {
+        setAgentUrl(CYBORG_SERVER_URL)
+      }
     }
   }, [miner])
 
@@ -54,6 +61,27 @@ export const useAgentCommunication = (miner: UserMiner) => {
       const messageData = JSON.parse(message.data)
 
       switch (messageData.response_type) {
+        case 'KeyPairReturned': {
+          const keypair = await decryptMessage(
+            messageData.encrypted_data_hex,
+            messageData.nonce_hex,
+            diffieHellmanSecret
+          )
+          let keypairJson: ContainerKeypair = JSON.parse(keypair)
+          console.log('keypair: ', keypairJson.public_key)
+          downloadSshKeyZip(keypairJson)
+          break
+        }
+        case 'PubKeyDeposited' : {
+          const message = await decryptMessage(
+            messageData.encrypted_data_hex,
+            messageData.nonce_hex,
+            diffieHellmanSecret
+          )
+          console.log("Keypair deposited message: ", message)
+          setContainerPubKeyDeposited(true)
+          break
+        }
         case 'Usage': {
           const usageJson = await decryptMessage(
             messageData.encrypted_data_hex,
@@ -190,5 +218,5 @@ export const useAgentCommunication = (miner: UserMiner) => {
     }
   }
 
-  return { usageData, agentSpecs, logs, lockState, authenticateWithAgent }
+  return { usageData, agentSpecs, logs, lockState, authenticateWithAgent, containerPubKeyDeposited }
 }
