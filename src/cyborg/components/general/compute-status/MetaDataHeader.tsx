@@ -11,8 +11,7 @@ import { useParachain } from '../../../context/PapiContext'
 import { Miner } from '../../../api/parachain/useWorkersQuery'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
-import { AiOutlineDownload } from "react-icons/ai";
-import { useToast } from '../../../context/ToastContext'
+import ManageKeypairs from '../../accessCompute/modals/ManageKeypairs'
 
 interface MetaDataHeaderProps {
   owner: string
@@ -22,6 +21,8 @@ interface MetaDataHeaderProps {
   status: Miner["operational_status"]
   lastCheck: number
   taskPubKeyDeposited: boolean
+  depositContainerKey: (pubkey: string, task_id: string) => void
+  createContainerKeyPair: (task_id: string) => void
 }
 
 const FlexContainer: React.FC<{ children: ReactNode }> = ({
@@ -63,6 +64,8 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
   status,
   lastCheck,
   taskPubKeyDeposited,
+  depositContainerKey,
+  createContainerKeyPair
 }: MetaDataHeaderProps) => {
 
   const styles = STATUS_STYLES[status.type]
@@ -71,10 +74,11 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
   const { service } = useService()
   const { parachainApi, account } = useParachain()
   const { handleTransaction, isLoading } = useTransaction()
-  const { showToast } = useToast()
+
   const navigate = useNavigate()
 
   const [confirmModalVisible, setConfirmModalVisible] = useState(false)
+  const [keypairModalVisible, setKeypairModalVisible] = useState(false)
 
   const navigateToDashboard = () => {
     navigate(ROUTES.DASHBOARD)
@@ -95,8 +99,14 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
     })
   }
 
-  const retrieveKeypair = () => {
-    showToast({type: "general", title: "Action Taken", text: "Geting Keypair..."})
+  const showManageKeypairModal = () => {
+    setConfirmModalVisible(false)
+    setKeypairModalVisible(true)
+  }
+
+  const showConfirmModal = () => {
+    setKeypairModalVisible(false)
+    setConfirmModalVisible(true)
   }
 
   return (
@@ -137,19 +147,17 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
             type="button"
             variation="primary"
             selectable={false}
-            onClick={ () => { retrieveKeypair() } }
+            onClick={ () => showManageKeypairModal() }
           >
             <div className='flex gap-2'>
-              <div>Download Keypair</div>
-              <AiOutlineDownload />
+              <div>Manage Keypairs</div>
             </div>
           </Button>
-          {taskPubKeyDeposited ? "Deposited" : "Not Deposited"}
           <Button
             type="button"
             variation="warning"
             selectable={false}
-            onClick={ () => { setConfirmModalVisible(true) } }
+            onClick={ () => showConfirmModal() }
           >
             Stop Task
           </Button>
@@ -176,6 +184,18 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
         onClick={() => stopTask(taskId)}
         isLoading={isLoading}
         onCancel={() => {setConfirmModalVisible(false)}}
+      />
+      :
+      <></>
+    }
+    {
+      keypairModalVisible
+      ?
+      <ManageKeypairs
+        task_id={taskId.toString()}
+        depositContainerKey={depositContainerKey}
+        createContainerKeypair={createContainerKeyPair}
+        onCancel={() => {setKeypairModalVisible(false)}}
       />
       :
       <></>

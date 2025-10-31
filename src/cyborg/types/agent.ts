@@ -26,7 +26,25 @@ export interface ContainerKeypair {
   private_key: string
 }
 
-export type AgentRequestType = 'Auth' | 'Usage' | 'Init'
+type AgentEndpointSimple = "Auth" | "Usage" | "Init"
+
+type AgentEndpointCreateContainerKeypairRequest = {
+  CreateContainerKey: {
+    task_id: string;
+  };
+}
+
+export type AgentEndpointDepositContainerKeyRequest = {
+  DepositContainerKey: {
+    task_id: string;
+    key: string;
+  };
+};
+
+export type AgentRequestType = 
+  | AgentEndpointSimple 
+  | AgentEndpointCreateContainerKeypairRequest
+  | AgentEndpointDepositContainerKeyRequest;
 
 export type Logs = string[]
 

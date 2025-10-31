@@ -11,11 +11,13 @@ import {
 import { processDiffieHellmanAuth } from '../../util/non-bc-crypto/processDiffieHellmanAuth'
 import { ContainerKeypair, LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
 import { UserMiner } from '../parachain/useWorkersQuery'
+import { useToast } from '../../context/ToastContext'
 
 const CYBORG_SERVER_URL = process.env.REACT_APP_CYBORG_PROXY_URL
 
 export const useAgentCommunication = (miner: UserMiner) => {
   const navigate = useNavigate()
+  const { showToast } = useToast()
 
   const [keys, setKeys] = useState<X25519KeyPair | null>(null)
   const [agentUrl, setAgentUrl] = useState<string | null>(null)
@@ -73,6 +75,7 @@ export const useAgentCommunication = (miner: UserMiner) => {
           )
           let keypairJson: ContainerKeypair = JSON.parse(keypair)
           console.log('keypair: ', keypairJson.public_key)
+          showToast({type: "general", title: "Action Taken", text: "Keypair Successfully Generated"})
           downloadSshKeyZip(keypairJson)
           break
         }
@@ -82,7 +85,8 @@ export const useAgentCommunication = (miner: UserMiner) => {
             messageData.nonce_hex,
             diffieHellmanSecret
           )
-          console.log("Keypair deposited message: ", message)
+          console.log("Public key deposited: ", message)
+          showToast({type: "general", title: "Action Taken", text: "Public Key Successfully Deposited"})
           setContainerPubKeyDeposited(true)
           break
         }
@@ -222,5 +226,21 @@ export const useAgentCommunication = (miner: UserMiner) => {
     }
   }
 
-  return { usageData, agentSpecs, logs, lockState, authenticateWithAgent, containerPubKeyDeposited }
+  const depositContainerKey = (pubKey: string, task_id: string) => {
+    sendMessage(
+      constructAgentApiRequest(agentUrl, {
+        DepositContainerKey: { task_id, key: pubKey },
+      })
+    )
+  }
+
+  const createContainerKeypair = (task_id: string) => {
+    sendMessage(
+      constructAgentApiRequest(agentUrl, {
+        CreateContainerKey: { task_id },
+      })
+    )
+  }
+
+  return { usageData, agentSpecs, logs, lockState, authenticateWithAgent, containerPubKeyDeposited, depositContainerKey, createContainerKeypair }
 }

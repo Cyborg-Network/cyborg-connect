@@ -53,7 +53,9 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     logs, 
     lockState, 
     authenticateWithAgent,
-    containerPubKeyDeposited 
+    containerPubKeyDeposited,
+    depositContainerKey, 
+    createContainerKeypair
   } = useAgentCommunication(worker)
 
   useEffect(() => {
@@ -279,6 +281,8 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
               status={worker.operational_status}
               lastCheck={worker.status_last_updated}
               taskPubKeyDeposited={containerPubKeyDeposited}
+              createContainerKeyPair={createContainerKeypair}
+              depositContainerKey={depositContainerKey}
             />
             {
               service === SERVICES.NZK
