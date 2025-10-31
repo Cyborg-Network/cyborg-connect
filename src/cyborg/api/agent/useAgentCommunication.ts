@@ -12,8 +12,6 @@ import { processDiffieHellmanAuth } from '../../util/non-bc-crypto/processDiffie
 import { ContainerKeypair, LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
 import { UserMiner } from '../parachain/useWorkersQuery'
 
-
-
 const CYBORG_SERVER_URL = process.env.REACT_APP_CYBORG_PROXY_URL
 
 export const useAgentCommunication = (miner: UserMiner) => {
@@ -37,22 +35,28 @@ export const useAgentCommunication = (miner: UserMiner) => {
     isLoading: false,
   })
   const [containerPubKeyDeposited, setContainerPubKeyDeposited] = useState<boolean>(false)
+  const [minerNeedsProxy, setMinerNeedsProxy] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(miner)
+    setMinerNeedsProxy(!miner.api.asText().includes('tail'))
+  }, [miner])
 
   useEffect(() => {
     if (miner) {
-      if (miner.api.asText().includes("tail")) {
+      if (!minerNeedsProxy) {
         setAgentUrl(`${miner.api.asText().replace('https://', 'wss://')}/agent-usage`)
       } else {
-        setAgentUrl(CYBORG_SERVER_URL)
+        setAgentUrl(miner.api.asText())
       }
     }
-  }, [miner])
+  }, [miner, minerNeedsProxy])
 
   const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  const { sendMessage } = useWebSocket(agentUrl, {
+  const { sendMessage } = useWebSocket(minerNeedsProxy ? CYBORG_SERVER_URL : agentUrl, {
     shouldReconnect: () => !!agentUrl,
     onOpen: () => {
       console.log('Connection with cyborg-agent established')

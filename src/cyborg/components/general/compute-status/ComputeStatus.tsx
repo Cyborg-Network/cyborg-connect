@@ -182,7 +182,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     if (!executableWorkers || !workerClusters) return
     //This is necessary because if the user tries to share a link to the current node, it will not have the data otherwise
     const currentWorker: UserMiner = [...executableWorkers, ...workerClusters].find(
-      node => node.api.asText() === `https://${domain}`
+      node => node.api.asText() === domain
     )
     if (currentWorker && currentWorker.lastTask !== undefined && currentWorker.lastTask !== null) {
       setWorker(currentWorker)
