@@ -68,18 +68,20 @@ export const useAgentCommunication = (miner: UserMiner) => {
 
       switch (messageData.response_type) {
         case 'KeyPairReturned': {
+          console.log('KeyPairReturned')
           const keypair = await decryptMessage(
             messageData.encrypted_data_hex,
             messageData.nonce_hex,
             diffieHellmanSecret
           )
           let keypairJson: ContainerKeypair = JSON.parse(keypair)
-          console.log('keypair: ', keypairJson.public_key)
+          console.log('keypair: ', keypairJson.pub_key)
           showToast({type: "general", title: "Action Taken", text: "Keypair Successfully Generated"})
           downloadSshKeyZip(keypairJson)
           break
         }
         case 'PubKeyDeposited' : {
+          console.log('PubKeyDeposited')
           const message = await decryptMessage(
             messageData.encrypted_data_hex,
             messageData.nonce_hex,
@@ -235,6 +237,7 @@ export const useAgentCommunication = (miner: UserMiner) => {
   }
 
   const createContainerKeypair = (task_id: string) => {
+    console.log('createContainerKeypair called', task_id)
     sendMessage(
       constructAgentApiRequest(agentUrl, {
         CreateContainerKey: { task_id },

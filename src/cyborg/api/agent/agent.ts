@@ -45,8 +45,8 @@ export const downloadSshKeyZip = async (keypair: ContainerKeypair) => {
     if (!keypair) return;
   
     const zip = new JSZip();
-    zip.file('id_ed25519', keypair.private_key);
-    zip.file('id_ed25519.pub', keypair.public_key);
+    zip.file('id_ed25519', keypair.priv_key);
+    zip.file('id_ed25519.pub', keypair.pub_key);
   
     const content = await zip.generateAsync({ type: 'blob' });
     saveAs(content, 'cycloud-keypair.zip');

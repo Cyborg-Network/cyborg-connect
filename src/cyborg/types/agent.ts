@@ -22,8 +22,8 @@ export interface LockState {
 }
 
 export interface ContainerKeypair {
-  public_key: string
-  private_key: string
+  pub_key: string
+  priv_key: string
 }
 
 type AgentEndpointSimple = "Auth" | "Usage" | "Init"
