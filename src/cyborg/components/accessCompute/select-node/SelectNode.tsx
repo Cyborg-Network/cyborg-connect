@@ -15,6 +15,7 @@ import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import FlashInferUpload from '../modals/FlashInferUpload'
 import { MinerReactRouterStateWithLocation } from '../../../types/miner'
+import CyCloudTaskDeployment from '../modals/CyCloudDeployModal'
 //import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
@@ -225,6 +226,16 @@ const SelectNodePage: React.FC = () => {
       {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
       service.id === SERVICES.OI.id ? (
         <SimpleTaskUpload
+          setService={() => {}}
+          onCancel={setDeploymentStageToInit}
+          nodes={selectedNodes}
+        />
+      ) : (
+        <></>
+      )}
+      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
+      service.id === SERVICES.CYCL.id ? (
+        <CyCloudTaskDeployment
           setService={() => {}}
           onCancel={setDeploymentStageToInit}
           nodes={selectedNodes}

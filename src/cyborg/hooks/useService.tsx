@@ -20,7 +20,7 @@ export const SERVICES: Record<string, Service> = {
     name: 'CyCloud',
     icon: cycl,
     substrateEnumValue: 'executable',
-    workerType: 'executableWorkers',
+    workerType: 'workerClusters',
   },
   FI: {
     id: 'FI',
