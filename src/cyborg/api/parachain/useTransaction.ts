@@ -14,13 +14,21 @@ interface Input {
     text: string
   }
   txName: string,
+  assetId?: number,
 }
 
 export const useTransaction = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { showToast } = useToast()
 
-  const handleTransaction = async ({ tx, account, onSuccessFn, txName, userCallToAction }: Input) => {
+  const handleTransaction = async ({ 
+    tx, 
+    account, 
+    onSuccessFn, 
+    txName, 
+    userCallToAction,
+    assetId 
+  }: Input) => {
     setIsLoading(true);
     
     if (!account) {
@@ -28,14 +36,20 @@ export const useTransaction = () => {
       return
     }
 
+    // Add asset information to transaction tracking if available
+    const enhancedTxName = assetId ? `${txName} (Asset: ${assetId})` : txName
+
     tx.signSubmitAndWatch(account.polkadotSigner).subscribe({
       next: (event) => {
-        // To track the tx based on events and for errors that get returned after a while eg. dispatch errors
-        processEvent({event, txName, showToast, userCallToAction})
+        processEvent({
+          event, 
+          txName: enhancedTxName, 
+          showToast, 
+          userCallToAction
+        })
       },
       error: (error) => {
-        // For errors that get returned right away eg. invalid nonce
-        processError(error, txName, showToast) 
+        processError(error, enhancedTxName, showToast) 
       },
       complete() {
         setIsLoading(false)
