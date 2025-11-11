@@ -17,39 +17,39 @@ import { safeNumberToBigIntTransform } from '../../../util/numberOperations'
 
 // Asset configuration
 const ASSETS = [
-  { 
-    id: 0, 
-    name: 'ENTT', 
+  {
+    id: 0,
+    name: 'ENTT',
     symbol: 'ENTT',
-    icon: robo, 
-    isAvailable: true, 
+    icon: robo,
+    isAvailable: true,
     testnet: true,
     isNative: true
   },
-  { 
-    id: 1, 
-    name: 'USDT', 
+  {
+    id: 1,
+    name: 'USDT',
     symbol: 'USDT',
-    icon: crypto, 
-    isAvailable: true, 
+    icon: crypto,
+    isAvailable: true,
     testnet: false,
     isNative: false
   },
-  { 
-    id: 2, 
-    name: 'USDC', 
+  {
+    id: 2,
+    name: 'USDC',
     symbol: 'USDC',
-    icon: crypto, 
-    isAvailable: true, 
+    icon: crypto,
+    isAvailable: true,
     testnet: false,
     isNative: false
   },
-  { 
-    id: 3, 
-    name: 'BORG', 
+  {
+    id: 3,
+    name: 'BORG',
     symbol: 'BORG',
-    icon: crypto, 
-    isAvailable: true, 
+    icon: crypto,
+    isAvailable: true,
     testnet: false,
     isNative: false
   },
@@ -94,9 +94,9 @@ const PaymentModal: React.FC<Props> = ({
   useEffect(() => {
     const calcTotalSubscriptionCost = (): void => {
       if (
-        computeHourPrice === undefined || 
+        computeHourPrice === undefined ||
         hoursSelected === undefined ||
-        computeHourPrice === null || 
+        computeHourPrice === null ||
         hoursSelected === null
       ) {
         setTotalSubscriptionCost(null)
@@ -139,9 +139,9 @@ const PaymentModal: React.FC<Props> = ({
 
   const setHoursSelected = (hours: string) => {
     let numberHours = transformToNumber(hours)
-    
-    if(numberHours !== undefined && numberHours !== null)
-    setHoursSelectedNumber(numberHours)
+
+    if (numberHours !== undefined && numberHours !== null)
+      setHoursSelectedNumber(numberHours)
   }
 
   const { handleTransaction } = useTransaction()
@@ -153,10 +153,10 @@ const PaymentModal: React.FC<Props> = ({
     }
 
     let tx;
-    
+
     if (selectedAsset.isNative) {
       // Use native token transaction
-      tx = userComputeHours > 0 
+      tx = userComputeHours > 0
         ? parachainApi.tx.Payment.add_hours({ extra_hours: hoursSelected })
         : parachainApi.tx.Payment.subscribe({ hours: hoursSelected })
     } else {
@@ -178,8 +178,8 @@ const PaymentModal: React.FC<Props> = ({
       tx,
       account,
       onSuccessFn: () => {
-          onConfirm()
-          refetch()
+        onConfirm()
+        refetch()
       },
       txName: selectedAsset.isNative ? "Top Up" : `Top Up with ${selectedAsset.symbol}`,
       assetId: selectedAsset.id
@@ -203,7 +203,7 @@ const PaymentModal: React.FC<Props> = ({
           />
         </div>
         <Separator colorClass={'bg-cb-gray-400'} />
-        
+
         {/* Hours Input */}
         <div className="flex flex-col gap-2">
           <label className="text-white">Number of Hours</label>
@@ -216,7 +216,7 @@ const PaymentModal: React.FC<Props> = ({
         </div>
 
         <Separator colorClass={'bg-cb-gray-400'} />
-        
+
         {/* Payment Method Selection */}
         <div className="flex flex-col gap-4">
           <div className="text-xl font-bold">Payment Method</div>
@@ -301,26 +301,26 @@ const PaymentModal: React.FC<Props> = ({
         )}
 
         <Separator colorClass={'bg-cb-gray-400'} />
-        
+
         {/* Pricing Information */}
         <div className="text-xl font-bold">Fixed Pricing</div>
         <div className="flex justify-between">
           <div>Hourly Rate:</div>
           <div className="text-right">
-            {selectedAsset.isNative 
+            {selectedAsset.isNative
               ? `${computeHourPrice ? computeHourPrice : 0} ${selectedAsset.symbol} / hour`
               : `Variable ${selectedAsset.symbol} / hour` // We need to implement asset price fetching
             }
           </div>
         </div>
-        
+
         <Separator colorClass={'bg-cb-gray-400'} />
-        
+
         {/* Total Cost */}
         <div className="flex justify-between text-xl font-bold">
           <div>Total:</div>
           <div>
-            {selectedAsset.isNative 
+            {selectedAsset.isNative
               ? `${totalSubscriptionCost} ${selectedAsset.symbol}`
               : `Variable ${selectedAsset.symbol}` // We need to implement asset price calculation
             }
