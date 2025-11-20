@@ -6,21 +6,27 @@ import { CyborgParachain, CyborgParachainQueries } from '@polkadot-api/descripto
 import { InjectedPolkadotAccount } from 'polkadot-api/dist/reexports/pjs-signer'
 import { useParachain } from '../../context/PapiContext'
 
-type workerType = 'executableWorkers' | 'workerClusters'
+type workerType = 'edgeMiners' | 'cloudMiners'
 
-export type Miner = 
+export type SubstrateMiner = 
   CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"] |
   CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
 
+export type Miner = Omit<SubstrateMiner, "id"> & {
+  id: string;
+  workerType: workerType;
+  lastTask: bigint | null;
+}
+
 
 type WorkerCluster = {
-  keyArgs: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["KeyArgs"]; 
-  value: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"];
 };
 
 type ExecutableWorker = {
-  keyArgs: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["KeyArgs"]; 
-  value: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"];
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
 }
 
 export type UserMiner = Miner & { lastTask: bigint };
@@ -29,10 +35,10 @@ export type UserMiner = Miner & { lastTask: bigint };
 const getWorkers = async (api: TypedApi<CyborgParachain>, workerType: workerType): Promise<Miner[]>  => {
   let workerEntries: WorkerCluster[] | ExecutableWorker[]
   switch (workerType) {
-    case "executableWorkers":
+    case "edgeMiners":
       workerEntries = await api.query.EdgeConnect.EdgeMiners.getEntries();
       break;
-    case "workerClusters":
+    case "cloudMiners":
       workerEntries = await api.query.EdgeConnect.CloudMiners.getEntries();
       break;
   }
@@ -40,6 +46,7 @@ const getWorkers = async (api: TypedApi<CyborgParachain>, workerType: workerType
   const workers = workerEntries.map(({value}) => {
     return {
       ...value,
+      id: value.id.asText(),
       location: {
         latitude: i32CoordinateToFloatCoordinate(value.location.latitude),
         longitude: i32CoordinateToFloatCoordinate(value.location.longitude),

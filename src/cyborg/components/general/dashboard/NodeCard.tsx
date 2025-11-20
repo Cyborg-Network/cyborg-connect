@@ -59,7 +59,9 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
               </a>
               <button className="pl-3 flex flex-col items-start">
                 <p className="mt-0 text-lg lg:text-sm">
-                  ID:{item.owner.slice(0, 16)}:{item.id}
+                  ID:{item.owner.slice(0, 16)}:{Array.from(item.id as unknown as Uint8Array)
+  .map(b => b.toString(16).padStart(2, '0'))
+  .join('')}
                 </p>
               </button>
             </li>

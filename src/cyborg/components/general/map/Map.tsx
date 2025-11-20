@@ -31,7 +31,14 @@ const calculateMapHeight = (screenSize: number) => {
 }
 
 const returnNodeColor = (node: Miner, selectedNode: MinerWithCountry) => {
-  if (node.oracle_status.type === "Offline") {
+  switch (node.oracle_status.type) {
+    case "Online":
+      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+        return '#15E674'
+      } else {
+        return '#439448'
+      }
+    case "Offline":
       if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
         return '#737373'
       } else {
@@ -39,6 +46,7 @@ const returnNodeColor = (node: Miner, selectedNode: MinerWithCountry) => {
     }
   }
 
+  /*
   switch (node.operational_status.type) {
     case "Available":
       if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
@@ -46,19 +54,20 @@ const returnNodeColor = (node: Miner, selectedNode: MinerWithCountry) => {
       } else {
         return '#439448'
       }
-    case "Suspended":
-      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
-        return '#737373'
-      } else {
-        return '#5B5A5A'
-      }
-    case "Busy":
-      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
-        return '#D23232'
-      } else {
-        return '#C42928'
-      }
+    // case "Suspended":
+    //   if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+    //     return '#737373'
+    //   } else {
+    //     return '#5B5A5A'
+    //   }
+    // case "Busy":
+    //   if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+    //     return '#D23232'
+    //   } else {
+    //     return '#C42928'
+    //   }
   }
+  */
 }
 
 const Map: React.FC<MapProps> = ({

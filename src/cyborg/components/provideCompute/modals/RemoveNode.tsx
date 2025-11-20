@@ -6,10 +6,11 @@ import LoadingModal from '../../general/modals/Loading'
 import useTransaction from '../../../api/parachain/useTransaction'
 import React from 'react'
 import { useParachain } from '../../../context/PapiContext'
-import { Enum } from 'polkadot-api'
+import { Binary, Enum } from 'polkadot-api'
+import { Miner } from '../../../api/parachain/useWorkersQuery'
 
 interface Props {
-  nodeInfo: { workerType: string; id: bigint }
+  nodeInfo: { workerType: string; id: Miner["id"] }
   onCancel: () => void
 }
 
@@ -23,8 +24,8 @@ const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
   const submitTransaction = async () => {
     const tx = parachainApi.tx.EdgeConnect.remove_miner(
       {
-        miner_type: Enum("Edge", undefined),
-        miner_id: nodeInfo.id
+        miner_type: Enum("Cloud"),
+        miner_id: Binary.fromText(nodeInfo.id)
       }
     )
 
@@ -53,7 +54,7 @@ const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
           </div>
           <Separator colorClass={'bg-cb-gray-500'} />
           <div>
-            <div>Worker ID: {nodeInfo.id}</div>
+            <div>Worker ID: {nodeInfo.id.toString()}</div>
           </div>
           <Separator colorClass={'bg-cb-gray-500'} />
           <Button

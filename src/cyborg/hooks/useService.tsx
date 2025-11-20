@@ -11,7 +11,7 @@ export interface Service {
   name: string
   icon: string
   substrateEnumValue: string
-  workerType: 'executableWorkers' | 'workerClusters'
+  workerType: 'edgeMiners' | 'cloudMiners'
 }
 
 export const SERVICES: Record<string, Service> = {
@@ -27,21 +27,21 @@ export const SERVICES: Record<string, Service> = {
     name: 'Flash Infer',
     icon: oi,
     substrateEnumValue: 'executable',
-    workerType: 'executableWorkers',
+    workerType: 'edgeMiners',
   },
   OI: {
     id: 'OI',
     name: 'Open Inference',
     icon: oi,
     substrateEnumValue: 'executable',
-    workerType: 'executableWorkers',
+    workerType: 'edgeMiners',
   },
   NZK: {
     id: 'NZK',
     name: 'Neuro ZK',
     icon: nzk,
     substrateEnumValue: 'executable',
-    workerType: 'executableWorkers',
+    workerType: 'edgeMiners',
   },
 }
 

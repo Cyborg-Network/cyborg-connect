@@ -5,8 +5,8 @@
     "cyborgParachain": {
       "wsUrl": "wss://alphachain.cyborgnetwork.io",
       "metadata": ".papi/metadata/cyborgParachain.scale",
-      "genesis": "0xde25c49b0601e1e4687856262e409ed5b2394136023569f0646364c80d440051",
-      "codeHash": "0x4cda1c8bf3f3b6134120ecbf0ba862b5aebc61c897f690c9b832ad897b094951"
+      "genesis": "0x47c64bb9a84ee845b77b59ab3b652b58901dde6088ea077e45bd9be161f2a8c3",
+      "codeHash": "0xe2771be19e696bd7fa85594024f4b99ce811ae902e086c6799889cf0ad71e7c2"
     }
   }
 }

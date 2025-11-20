@@ -15,10 +15,10 @@ import ManageKeypairs from '../../accessCompute/modals/ManageKeypairs'
 
 interface MetaDataHeaderProps {
   owner: string
-  id: bigint
+  id: Miner["id"]
   taskId: bigint
   domain: Miner["api"]
-  status: Miner["operational_status"]
+  status: Miner["oracle_status"]
   lastCheck: number
   taskPubKeyDeposited: boolean
   depositContainerKey: (pubkey: string, task_id: string) => void
@@ -139,7 +139,9 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
         <div className="flex items-center gap-2 lg:text-xl justify-end">
           <div className="text-lg">Node Name: </div>
           <div className="text-cb-green">
-            {truncateAddress(owner, 600)}:{id}
+            {truncateAddress(owner, 600)}:{Array.from(id as unknown as Uint8Array)
+  .map(b => b.toString(16).padStart(2, '0'))
+  .join('')}
           </div>
         </div>
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">
