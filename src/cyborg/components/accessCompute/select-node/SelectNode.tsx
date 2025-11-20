@@ -52,7 +52,7 @@ const SelectNodePage: React.FC = () => {
     if (selectedNodeId)
       setSelectedNodes(prev => {
         const exists = prev.some(
-          n => n.id === selectedNodeId.id && n.owner === selectedNodeId.owner
+          n => n === selectedNodeId
         )
         return exists ? prev : [selectedNodeId, ...prev]
       })
@@ -77,7 +77,7 @@ const SelectNodePage: React.FC = () => {
       }
 
       workers.forEach(currentNode => {
-        if (fourNearest.length < 4 && currentNode.id !== selectedNodeId.id) {
+        if (fourNearest.length < 4 && currentNode.id !== selectedNodeId) {
           fourNearest.push(currentNode)
           return
         }
@@ -90,7 +90,7 @@ const SelectNodePage: React.FC = () => {
         const currentHaversine = haversineDistance(userLoc, nodeLoc)
 
         fourNearest.forEach((currentNearest, index) => {
-          if (currentNode.id !== selectedNodeId.id) {
+          if (currentNode.id !== selectedNodeId) {
             fourNearest[index] = {
               ...currentNode,
               haversine: currentHaversine,
@@ -100,7 +100,7 @@ const SelectNodePage: React.FC = () => {
           if (
             currentHaversine < currentNearest.haversine &&
             currentNode.id !== currentNearest.id &&
-            currentNode.id !== selectedNodeId.id
+            currentNode.id !== selectedNodeId
           ) {
             fourNearest[index] = currentNode
           }
@@ -132,7 +132,7 @@ const SelectNodePage: React.FC = () => {
 
   const toggleNodeSelection = combinedId => {
     const index = selectedNodes.findIndex(item => {
-      return combinedId.owner === item.owner && combinedId.id === item.id
+      return combinedId.id === item
     })
     if (index === -1) {
       setSelectedNodes([...selectedNodes, combinedId])
@@ -188,14 +188,12 @@ const SelectNodePage: React.FC = () => {
             {nearbyNodes.map(node => (
               <SelectionNodeCard
                 nodeId={node}
-                key={node.id.toString()}
+                key={node.toString()}
                 onClick={() =>
-                  toggleNodeSelection({ owner: node.owner, id: node.id })
+                  toggleNodeSelection({ id: node })
                 }
                 isSelected={selectedNodes.some(combinedId => {
-                  return (
-                    combinedId.owner === node.owner && combinedId.id === node.id
-                  )
+                  return (combinedId === node)
                 })}
               />
             ))}
@@ -238,8 +236,7 @@ const SelectNodePage: React.FC = () => {
       service.id === SERVICES.NZK.id ? (
         <NeuroZkUpload
           onCancel={setDeploymentStageToInit}
-          minerId={selectedNodes[0].id.toString()}
-          minerAdress={selectedNodes[0].owner}
+          minerId={selectedNodes[0].toString()}
         />
       ) : (
         <></>

@@ -11,11 +11,10 @@ import { useParachain } from '../../../context/PapiContext'
 import { Miner } from '../../../api/parachain/useWorkersQuery'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
-import { Binary } from 'polkadot-api'
 
 interface MetaDataHeaderProps {
   owner: string
-  id: Binary
+  id: Miner["id"]
   taskId: bigint
   domain: Miner["api"]
   status: Miner["oracle_status"]

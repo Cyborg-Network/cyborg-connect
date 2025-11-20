@@ -62,7 +62,7 @@ const useFileUpload = () => {
     }
   }, [uploadId])
 
-  const uploadFile = useCallback(async (formData: FormData, minerAdress: string, minerId: string) => {
+  const uploadFile = useCallback(async (formData: FormData, minerId: string) => {
     if (!formData) return
 
     setProgress('Initiating Upload')
@@ -75,7 +75,6 @@ const useFileUpload = () => {
     try {
       const response = await fetch(uploadUrl, {
         headers: {
-          'miner-account': minerAdress,
           'miner-id': String(minerId)
         },
         method: 'POST',

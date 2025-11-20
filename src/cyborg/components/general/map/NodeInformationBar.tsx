@@ -7,18 +7,17 @@ import Modal from '../modals/Modal'
 import { toast } from 'react-hot-toast'
 // import { transformToNumber, safeNumberToBigIntTransform } from '../../../util/numberOperations'
 import { Miner } from '../../../api/parachain/useWorkersQuery'
-import { Binary } from 'polkadot-api'
 
 interface Props {
   node: Miner
   distance: number
   returntoNearestNode: () => void
   onNavigate: () => void
-  handleManualSelection: (nodeId: Binary, nodeOwner: string) => void
+  handleManualSelection: (nodeId: Miner["id"], nodeOwner: string) => void
 }
 
 interface ManualSelectionModalProps {
-  handleManualSelection: (nodeId: Binary, nodeOwner: string) => void
+  handleManualSelection: (nodeId: Miner["id"], nodeOwner: string) => void
 }
 
 const NodeInformationBar: React.FC<Props> = ({
@@ -35,7 +34,7 @@ const NodeInformationBar: React.FC<Props> = ({
     handleManualSelection,
   }: ManualSelectionModalProps) => {
     const [nodeInfo, setNodeInfo] = useState<{
-      id: null | Binary
+      id: null | Miner["id"]
       owner: null | string
     }>({ id: null, owner: null })
 
@@ -58,7 +57,7 @@ const NodeInformationBar: React.FC<Props> = ({
         <input
           value={nodeInfo.id.toString() || ''}
           onChange={e =>
-            setNodeInfo({ ...nodeInfo, id: e.target.value as String as unknown as Binary })
+            setNodeInfo({ ...nodeInfo, id: e.target.value as string })
           }
           placeholder="Worker ID"
           className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"

@@ -8,9 +8,15 @@ import { useParachain } from '../../context/PapiContext'
 
 type workerType = 'edgeMiners' | 'cloudMiners'
 
-export type Miner = 
+export type SubstrateMiner = 
   CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"] |
   CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
+
+export type Miner = Omit<SubstrateMiner, "id"> & {
+  id: string;
+  workerType: workerType;
+  lastTask: bigint | null;
+}
 
 
 type WorkerCluster = {
@@ -40,6 +46,7 @@ const getWorkers = async (api: TypedApi<CyborgParachain>, workerType: workerType
   const workers = workerEntries.map(({value}) => {
     return {
       ...value,
+      id: value.id.asText(),
       location: {
         latitude: i32CoordinateToFloatCoordinate(value.location.latitude),
         longitude: i32CoordinateToFloatCoordinate(value.location.longitude),

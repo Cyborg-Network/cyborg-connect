@@ -7,9 +7,10 @@ import useTransaction from '../../../api/parachain/useTransaction'
 import React from 'react'
 import { useParachain } from '../../../context/PapiContext'
 import { Binary, Enum } from 'polkadot-api'
+import { Miner } from '../../../api/parachain/useWorkersQuery'
 
 interface Props {
-  nodeInfo: { workerType: string; id: Binary }
+  nodeInfo: { workerType: string; id: Miner["id"] }
   onCancel: () => void
 }
 
@@ -24,7 +25,7 @@ const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
     const tx = parachainApi.tx.EdgeConnect.remove_miner(
       {
         miner_type: Enum("Cloud"),
-        miner_id: nodeInfo.id
+        miner_id: Binary.fromText(nodeInfo.id)
       }
     )
 
