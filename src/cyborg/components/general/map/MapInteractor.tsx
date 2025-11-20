@@ -13,7 +13,6 @@ import { Miner, useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import { Country, Location } from '../../../types/location'
 import useService from '../../../hooks/useService'
 import { MinerReactRouterStateWithLocation } from '../../../types/miner'
-import { Binary } from 'polkadot-api'
 const crg = require('country-reverse-geocoding').country_reverse_geocoding()
 
 // At some point this will need an algo that calculates a favourable balance between distance, reputation and specs
@@ -73,7 +72,7 @@ const MapInteractor: React.FC = () => {
     setSelectedNode({ ...node, country: getNodeCountry(node) })
   }
 
-  const handleManualSelection = (id: Binary, owner: string) => {
+  const handleManualSelection = (id: string, owner: string) => {
     const node = workers.find(node => node.owner === owner && node.id === id)
 
     if (node) {
@@ -164,7 +163,7 @@ const MapInteractor: React.FC = () => {
     // Simulates typesafety for react router
     const MinerReactRouterState: MinerReactRouterStateWithLocation = { 
       userLocation, 
-      selectedNodeId: {  id: selectedNode.id, owner: selectedNode.owner } 
+      selectedNodeId: selectedNode.id.toString()
     }
     navigate(ROUTES.MODAL_NODES, {
       state: MinerReactRouterState,

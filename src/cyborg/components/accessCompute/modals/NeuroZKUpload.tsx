@@ -14,16 +14,13 @@ import useService from '../../../hooks/useService'
 
 interface Props {
   onCancel: () => void
-  minerAdress: string
   minerId: string
 }
 
 const NeuroZkUpload: React.FC<Props> = ({
   onCancel,
-  minerAdress,
   minerId,
 }: Props) => {
-  console.log('minerAdress: ', minerAdress)
   console.log('minerId: ', minerId)
   const navigate = useNavigate()
 
@@ -76,7 +73,7 @@ const NeuroZkUpload: React.FC<Props> = ({
     formData.append('model.onnx', zkFiles.model)
     formData.append('publicInput.json', zkFiles.publicInput)
 
-    uploadFile(formData, minerAdress, minerId);
+    uploadFile(formData, minerId);
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

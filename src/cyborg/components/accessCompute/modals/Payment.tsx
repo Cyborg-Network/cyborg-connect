@@ -277,7 +277,7 @@ const PaymentModal: React.FC<Props> = ({
                     onClick={() => {
                       if (asset.isAvailable) setSelectedAsset(asset)
                     }}
-                    additionalClasses="h-24"
+                    additionalClasses="h-full"
                   >
                     <div className="flex flex-col justify-center items-center gap-2">
                       <img
