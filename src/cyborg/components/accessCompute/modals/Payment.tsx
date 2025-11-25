@@ -9,6 +9,7 @@ import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
 import robo from '../../../../../public/assets/icons/robo.png'
 import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
+import { useAssetPriceQuery } from '../../../api/parachain/useAssetPriceQuery'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import { transformToNumber } from '../../../util/numberOperations'
@@ -73,9 +74,7 @@ const PaymentModal: React.FC<Props> = ({
   const { account, parachainApi } = useParachain()
 
   const {
-    data: computeHourPrice,
-    //isLoading: computeHourPriceIsLoading,
-    //error: computeHourPriceError
+    data: nativeComputeHourPrice,
   } = usePriceQuery()
 
   const {
@@ -90,13 +89,24 @@ const PaymentModal: React.FC<Props> = ({
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
   const [hoursSelected, setHoursSelectedNumber] = useState<number | undefined>(undefined)
   const [totalSubscriptionCost, setTotalSubscriptionCost] = useState<bigint | null>(null)
+  const [assetPrice, setAssetPrice] = useState<bigint | null>(null)
+
+  // Fetch asset price when asset changes
+  const { data: assetPriceData } = useAssetPriceQuery(selectedAsset.id)
+
+  useEffect(() => {
+    if (selectedAsset.isNative) {
+      setAssetPrice(nativeComputeHourPrice || null)
+    } else {
+      setAssetPrice(assetPriceData || null)
+    }
+  }, [selectedAsset, nativeComputeHourPrice, assetPriceData])
 
   useEffect(() => {
     const calcTotalSubscriptionCost = (): void => {
       if (
-        computeHourPrice === undefined ||
+        assetPrice === null ||
         hoursSelected === undefined ||
-        computeHourPrice === null ||
         hoursSelected === null
       ) {
         setTotalSubscriptionCost(null)
@@ -110,13 +120,11 @@ const PaymentModal: React.FC<Props> = ({
         return
       }
 
-      // For native token, use the existing price query
-      // For other assets, we'll need to fetch their specific prices
-      setTotalSubscriptionCost(computeHourPrice * hoursBigInt)
+      setTotalSubscriptionCost(assetPrice * hoursBigInt)
     }
 
     calcTotalSubscriptionCost()
-  }, [computeHourPrice, hoursSelected, selectedAsset])
+  }, [assetPrice, hoursSelected, selectedAsset])
 
   const startTransaction = () => {
     if (!termsAreAccepted) {
@@ -131,6 +139,11 @@ const PaymentModal: React.FC<Props> = ({
 
     if (hoursSelected && hoursSelected <= 0) {
       toast('Please select a valid number of hours!')
+      return
+    }
+
+    if (!assetPrice || assetPrice === 0n) {
+      toast('Price information not available for selected asset!')
       return
     }
 
@@ -277,7 +290,7 @@ const PaymentModal: React.FC<Props> = ({
                     onClick={() => {
                       if (asset.isAvailable) setSelectedAsset(asset)
                     }}
-                    additionalClasses="h-full"
+                    additionalClasses="h-24"
                   >
                     <div className="flex flex-col justify-center items-center gap-2">
                       <img
@@ -307,9 +320,9 @@ const PaymentModal: React.FC<Props> = ({
         <div className="flex justify-between">
           <div>Hourly Rate:</div>
           <div className="text-right">
-            {selectedAsset.isNative
-              ? `${computeHourPrice ? computeHourPrice : 0} ${selectedAsset.symbol} / hour`
-              : `Variable ${selectedAsset.symbol} / hour` // We need to implement asset price fetching
+            {assetPrice !== null 
+              ? `${assetPrice} ${selectedAsset.symbol} / hour`
+              : `Loading...`
             }
           </div>
         </div>
@@ -320,9 +333,9 @@ const PaymentModal: React.FC<Props> = ({
         <div className="flex justify-between text-xl font-bold">
           <div>Total:</div>
           <div>
-            {selectedAsset.isNative
+            {totalSubscriptionCost !== null
               ? `${totalSubscriptionCost} ${selectedAsset.symbol}`
-              : `Variable ${selectedAsset.symbol}` // We need to implement asset price calculation
+              : `Calculating...`
             }
           </div>
         </div>
