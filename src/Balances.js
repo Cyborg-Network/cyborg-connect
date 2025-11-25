@@ -42,21 +42,29 @@ export default function Main(props) {
     return () => unsubscribeAll && unsubscribeAll()
   }, [api, keyring, setBalances])
 
-  //  fetch asset balances
+  // Fetch asset balances for non-native assets
   const fetchAssetBalances = async (assetId) => {
     if (assetId === 0) return // Native token is already handled
-
+    
     try {
       const addresses = keyring.getPairs().map(account => account.address)
       const assetBalancesMap = {}
-
+      
       for (const address of addresses) {
-        // asset storage structure
-        const balanceEntry = await api.query.assets.account(assetId, address);
-        const balance = balanceEntry?.unwrapOrDefault()?.balance;
-        assetBalancesMap[address] = balance?.balance?.toHuman() || '0'
+        try {
+          const balanceEntry = await api.query.assets.account(assetId, address);
+          if (balanceEntry && balanceEntry.isSome) {
+            const balanceData = balanceEntry.unwrap();
+            assetBalancesMap[address] = balanceData.balance.toHuman() || '0'
+          } else {
+            assetBalancesMap[address] = '0'
+          }
+        } catch (error) {
+          console.error(`Error fetching asset balance for ${address}:`, error)
+          assetBalancesMap[address] = '0'
+        }
       }
-
+      
       setAssetBalances(assetBalancesMap)
     } catch (error) {
       console.error('Error fetching asset balances:', error)
