@@ -85,7 +85,7 @@ const getUserWorkers = async (
 
   const tasks = taskEntries.map(({keyArgs, value}) => {
     return {
-      taskExecutor: value[0],
+      taskExecutor: value[1],
       workerId: value[1],
       taskId: keyArgs[0],
     }

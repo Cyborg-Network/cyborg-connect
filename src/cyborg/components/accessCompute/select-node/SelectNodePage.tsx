@@ -15,7 +15,7 @@ import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import FlashInferUpload from '../modals/FlashInferUpload'
 import { MinerReactRouterStateWithLocation } from '../../../types/miner'
-import CyCloudTaskDeployment from '../modals/CyCloudDeployModal'
+import CyCloudTaskDeployment from '../modals/CyCloudTaskDeployment'
 //import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
@@ -78,7 +78,7 @@ const SelectNodePage: React.FC = () => {
       }
 
       workers.forEach(currentNode => {
-        if (fourNearest.length < 4 && currentNode.id !== selectedNodeId) {
+        if (fourNearest.length < 4 && currentNode.id !== selectedNodeId.id) {
           fourNearest.push(currentNode)
           return
         }
@@ -91,7 +91,7 @@ const SelectNodePage: React.FC = () => {
         const currentHaversine = haversineDistance(userLoc, nodeLoc)
 
         fourNearest.forEach((currentNearest, index) => {
-          if (currentNode.id !== selectedNodeId) {
+          if (currentNode.id !== selectedNodeId.id) {
             fourNearest[index] = {
               ...currentNode,
               haversine: currentHaversine,
@@ -101,7 +101,7 @@ const SelectNodePage: React.FC = () => {
           if (
             currentHaversine < currentNearest.haversine &&
             currentNode.id !== currentNearest.id &&
-            currentNode.id !== selectedNodeId
+            currentNode.id !== selectedNodeId.id
           ) {
             fourNearest[index] = currentNode
           }
@@ -238,7 +238,7 @@ const SelectNodePage: React.FC = () => {
         <CyCloudTaskDeployment
           setService={() => {}}
           onCancel={setDeploymentStageToInit}
-          nodes={selectedNodes}
+          nodes={selectedNodes[0]}
         />
       ) : (
         <></>

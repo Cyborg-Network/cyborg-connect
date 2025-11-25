@@ -23,7 +23,7 @@ import PageNotFound from './cyborg/components/general/PageNotFound';
 import PageWrapper from './cyborg/components/general/layouts/page-wrapper/PageWrapper';
 import { UiContextProvider } from './cyborg/context/UiContext';
 import MapInteractor from './cyborg/components/general/map/MapInteractor';
-import SelectNodePage from './cyborg/components/accessCompute/select-node/SelectNode';
+import SelectNodePage from './cyborg/components/accessCompute/select-node/SelectNodePage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { ParachainContextProvider } from './cyborg/context/PapiContext';

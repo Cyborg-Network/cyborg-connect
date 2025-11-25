@@ -3,7 +3,7 @@ import { Location } from './location'
 
 export interface MinerReactRouterStateWithLocation {
   userLocation: Location,
-  selectedNodeId: Miner["id"]
+  selectedNodeId: MinerReactRouterState
 }
 
 export interface MinerReactRouterState {
