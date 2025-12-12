@@ -7,7 +7,14 @@ const getAssetSubscriptionFee = async (
   api: TypedApi<CyborgParachain>, 
   assetId: number
 ): Promise<bigint> => {
-  return await api.query.Payment.AssetSubscriptionFees.getValue(assetId)
+  if (assetId === 0) {
+    // Native token - use the main subscription fee
+    return await api.query.Payment.SubscriptionFee.getValue()
+  } else {
+    // Asset-based fee
+    const fee = await api.query.Payment.AssetSubscriptionFees.getValue(assetId)
+    return fee || 0n
+  }
 }
 
 export const useAssetPriceQuery = (assetId: number) => {
@@ -15,7 +22,7 @@ export const useAssetPriceQuery = (assetId: number) => {
 
   return useQuery({
     queryKey: ['assetSubscriptionFee', assetId],
-    enabled: !!(parachainApi && assetId > 0),
+    enabled: !!(parachainApi),
     queryFn: () => getAssetSubscriptionFee(parachainApi, assetId),
   })
 }
