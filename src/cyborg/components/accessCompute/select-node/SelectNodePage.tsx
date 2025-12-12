@@ -10,13 +10,11 @@ import { DEPLOY_STATUS, useCyborgState } from '../../../CyborgContext'
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
-import NeuroZkUpload from '../modals/NeuroZKUpload'
 import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import FlashInferUpload from '../modals/FlashInferUpload'
 import { MinerReactRouterStateWithLocation } from '../../../types/miner'
 import CyCloudTaskDeployment from '../modals/CyCloudTaskDeployment'
-//import NeuroZkUpload from '../modals/NeuroZKUpload'
 
 const DEPLOYMENT_STAGES = {
   INIT: 'INIT',
@@ -239,15 +237,6 @@ const SelectNodePage: React.FC = () => {
           setService={() => {}}
           onCancel={setDeploymentStageToInit}
           nodes={selectedNodes[0]}
-        />
-      ) : (
-        <></>
-      )}
-      {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
-      service.id === SERVICES.NZK.id ? (
-        <NeuroZkUpload
-          onCancel={setDeploymentStageToInit}
-          minerId={selectedNodes[0].toString()}
         />
       ) : (
         <></>

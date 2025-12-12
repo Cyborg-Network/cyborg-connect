@@ -21,9 +21,10 @@ const ChooseServices: React.FC = () => {
         <ServiceCard
           logo={SERVICES.CYCL.icon}
           title={SERVICES.CYCL.name}
-          description="Deploy AI to Cyborg Network"
+          description="Deploy Compute to Cyborg Network"
           onClick={() => handleSelectService(SERVICES.CYCL, ROUTES.MAP)}
         />
+        {/*
         <ServiceCard
           additionalClasses="sm:col-span-2 sm:justify-self-center"
           logo={SERVICES.FI.icon}
@@ -37,6 +38,7 @@ const ChooseServices: React.FC = () => {
           description="Perform ZK Inference"
           onClick={() => handleSelectService(SERVICES.NZK, ROUTES.MAP)}
         />
+        */}
       </div>
       <h4 className='text-white'>More coming soon...</h4>
     </div>

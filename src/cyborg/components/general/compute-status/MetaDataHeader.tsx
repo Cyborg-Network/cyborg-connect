@@ -1,6 +1,5 @@
 import { FaCheck } from 'react-icons/fa6'
 import { useUi } from '../../../context/UiContext'
-import { truncateAddress } from '../../../util/truncateAddress'
 import React, { ReactNode, useState } from 'react'
 import useService from '../../../hooks/useService'
 import comingsoon from '../../../../../public/assets/icons/comingsoon.svg'
@@ -124,7 +123,7 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
         </div>
         <div className="justify-end md:justify-start flex flex-col gap-1">
           <div className="text-xl font-bold text-right md:text-left">
-            { service ? service.name : 'Neuro ZK' }
+            { service ? service.name : 'Unknown Service' }
           </div>
           <div className="text-nowrap flex gap-1">
             RPC Node |

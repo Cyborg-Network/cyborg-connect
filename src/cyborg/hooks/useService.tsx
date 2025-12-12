@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import oi from '../../../public/assets/icons/cyberdock.svg'
-import nzk from '../../../public/assets/icons/neuro-zk.svg'
 import cycl from '../../../public/assets/icons/comingsoon.svg'
 import toast from 'react-hot-toast'
 
@@ -33,13 +32,6 @@ export const SERVICES: Record<string, Service> = {
     id: 'OI',
     name: 'Open Inference',
     icon: oi,
-    substrateEnumValue: 'executable',
-    workerType: 'edgeMiners',
-  },
-  NZK: {
-    id: 'NZK',
-    name: 'Neuro ZK',
-    icon: nzk,
     substrateEnumValue: 'executable',
     workerType: 'edgeMiners',
   },

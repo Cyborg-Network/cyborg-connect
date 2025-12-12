@@ -7,9 +7,9 @@ import { ROUTES } from '../../../../index'
 import Button from '../../general/buttons/Button'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useParachain } from '../../../context/PapiContext'
-import { Binary, Enum, EnumVariant } from 'polkadot-api'
+import { Binary, Enum} from 'polkadot-api'
 import { useToast } from '../../../context/ToastContext'
-import * as Select from "@radix-ui/react-select"
+//import * as Select from "@radix-ui/react-select"
 import { MinerReactRouterState } from '../../../types/miner'
 
 interface Props {
@@ -18,15 +18,18 @@ interface Props {
   nodes: MinerReactRouterState
 }
 
+/*
 interface CyCloudTaskDropdownProps {
   selectedDeploymentType: CyCloudTaskType
   handleSelectDeploymentType: (cyCloudTaskType: CyCloudTaskType, userIdentifier: string) => void
   userIdentifier: string
 }
+*/
 
-type CyCloudEnum = EnumVariant<{type: string; value: any;}, "CyCloud">;
-type CyCloudTaskType = "Vm" | "Container" | "Native";
+//type CyCloudEnum = EnumVariant<{type: string; value: any;}, "CyCloud">;
+//type CyCloudTaskType = "Vm" | "Container" | "Native";
 
+/*
 const CyCloudTaskDropdown: React.FC<CyCloudTaskDropdownProps> = ( {
   selectedDeploymentType, 
   handleSelectDeploymentType,
@@ -70,6 +73,7 @@ const CyCloudTaskDropdown: React.FC<CyCloudTaskDropdownProps> = ( {
     </div>
   )
 }
+*/
 
 const CyCloudTaskDeployment: React.FC<Props> = ({
   setService,
@@ -83,12 +87,8 @@ const CyCloudTaskDeployment: React.FC<Props> = ({
   const { handleTransaction } = useTransaction()
 
   const [computeHoursDeposit, setComputeHoursDeposit] = useState('')
-  const [cyCloudTaskType, setCyCloudTaskType] = useState<CyCloudTaskType | null>()
+  //const [cyCloudTaskType, setCyCloudTaskType] = useState<CyCloudTaskType | null>()
   const [userIdentifier, setUserIdentifier] = useState<string | null>(null)
-
-  useEffect(() => {
-    console.log(cyCloudTaskType)
-  }, [cyCloudTaskType])
 
   useEffect(() => {
     console.log(userIdentifier)
@@ -107,9 +107,11 @@ const CyCloudTaskDeployment: React.FC<Props> = ({
     setUserIdentifier(e.target.value);
   }
 
+  /*
   const handleSetCyCloudTaskType = (cyCloudTaskType: CyCloudTaskType) => {
     setCyCloudTaskType(cyCloudTaskType);
   }
+  */
 
   const navigateToDashboard = () => {
     navigate(ROUTES.DASHBOARD)
@@ -121,6 +123,7 @@ const CyCloudTaskDeployment: React.FC<Props> = ({
       return
     }
 
+    /*
     if (!cyCloudTaskType) {
       showToast({isErr: true, title: "Failed", text: "No CyCloud task type selected" , type: "general"})
       return
@@ -138,6 +141,9 @@ const CyCloudTaskDeployment: React.FC<Props> = ({
         taskType =  Enum("CyCloud", { type: "Container", value: Binary.fromText(userIdentifier) } )
         break;
     }
+    */
+
+   let taskType = Enum("CyCloud", { type: "Native", value: Binary.fromText(userIdentifier) } );
 
     const tx = parachainApi.tx.TaskManagement.task_scheduler({
       task_kind: taskType,
@@ -177,10 +183,13 @@ const CyCloudTaskDeployment: React.FC<Props> = ({
       <div>
         <h2 className="mb-4">Deploy Task to CyCloud</h2>
 
+        {/*
+        // Commented out since we don't allow different task types, at least for now
         <div className="flex gap-4 items-center">
           <h5 className="m-0">Task Type</h5>
           <CyCloudTaskDropdown userIdentifier={userIdentifier} handleSelectDeploymentType={handleSetCyCloudTaskType} selectedDeploymentType={cyCloudTaskType} />
         </div>
+        */}
 
         <h5 className="flex">User Name</h5>
         <div className="mb-4">
