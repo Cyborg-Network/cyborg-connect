@@ -85,8 +85,7 @@ const getUserWorkers = async (
 
   const tasks = taskEntries.map(({keyArgs, value}) => {
     return {
-      taskExecutor: value[1],
-      workerId: value[1],
+      workerId: value[0],
       taskId: keyArgs[0],
     }
   })
@@ -96,8 +95,7 @@ const getUserWorkers = async (
       const reversedIndex = [...tasks]
         .reverse()
         .findIndex(
-          ({ taskExecutor, workerId }) =>
-            worker.owner === taskExecutor && worker.id === workerId
+          ({ workerId }) => worker.id === workerId.asText()
         )
 
       const lastTaskIndex =
@@ -123,6 +121,8 @@ const getUserWorkers = async (
       }
     })
   }
+
+  console.log(userWorkers)
 
   return userWorkers
 }

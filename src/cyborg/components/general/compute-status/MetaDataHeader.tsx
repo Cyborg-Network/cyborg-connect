@@ -34,7 +34,7 @@ const FlexContainer: React.FC<{ children: ReactNode }> = ({
 }
 
 const STATUS_STYLES = {
-  Active: {
+  Online: {
     bg: "bg-green-400",
     border: "border-green-500",
     dot: "bg-green-500",
@@ -67,6 +67,8 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
   depositContainerKey,
   createContainerKeyPair
 }: MetaDataHeaderProps) => {
+
+  console.log(status.type)
 
   const styles = STATUS_STYLES[status.type]
 
@@ -138,11 +140,7 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
       <div className="grid gap-2 text-right justify-end md:items-center items-end mx-2 text-white">
         <div className="flex items-center gap-2 lg:text-xl justify-end">
           <div className="text-lg">Node Name: </div>
-          <div className="text-cb-green">
-            {truncateAddress(owner, 600)}:{Array.from(id as unknown as Uint8Array)
-  .map(b => b.toString(16).padStart(2, '0'))
-  .join('')}
-          </div>
+          <div className="text-cb-green">{id}</div>
         </div>
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">
           <Button
