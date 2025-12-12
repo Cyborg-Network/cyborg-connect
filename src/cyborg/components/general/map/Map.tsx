@@ -43,6 +43,16 @@ const returnNodeColor = (node: Miner, selectedNode: MinerWithCountry) => {
         return '#737373'
       } else {
         return '#5B5A5A'
+    }
+  }
+
+  /*
+  switch (node.operational_status.type) {
+    case "Available":
+      if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
+        return '#15E674'
+      } else {
+        return '#439448'
       }
     // case "Suspended":
     //   if(selectedNode && node.id === selectedNode.id && node.owner === selectedNode.owner) {
@@ -57,6 +67,7 @@ const returnNodeColor = (node: Miner, selectedNode: MinerWithCountry) => {
     //     return '#C42928'
     //   }
   }
+  */
 }
 
 const Map: React.FC<MapProps> = ({

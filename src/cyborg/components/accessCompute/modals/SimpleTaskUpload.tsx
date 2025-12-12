@@ -8,12 +8,13 @@ import Button from '../../general/buttons/Button'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useParachain } from '../../../context/PapiContext'
 import { Binary, Enum } from 'polkadot-api'
+import { MinerReactRouterState } from '../../../types/miner'
 //import useService from '../../../hooks/useService'
 
 interface Props {
   setService: (service: string | null) => void
-  onCancel: () => void
-  nodes: any
+  onCancel: () => void,
+  nodes: MinerReactRouterState[]
 }
 
 const UploadDockerImgURL: React.FC<Props> = ({
@@ -46,8 +47,7 @@ const UploadDockerImgURL: React.FC<Props> = ({
   const submitTransaction = async parsedHoursDeposit => {
     const tx = parachainApi.tx.TaskManagement.task_scheduler({
       task_kind: Enum("OpenInference", {type: "Onnx", value: { storage_location_identifier: Binary.fromText(url) } }),
-      miner_owner: nodes[0].owner,
-      miner_id: nodes[0].id,
+      miner_id: Binary.fromText(nodes[0].id),
       compute_hours_deposit: parsedHoursDeposit
     });
 

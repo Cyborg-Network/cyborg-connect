@@ -13,12 +13,6 @@ import { parseGaugeMetric } from './util'
 import { UserMiner, useUserWorkersQuery } from '../../../api/parachain/useWorkersQuery'
 import { MetricName, SelectedGaugeState } from '../../../types/compute_status'
 import { Data } from '../Chart'
-import { Step, Stepper } from 'react-form-stepper'
-import Button from '../buttons/Button'
-import useTransaction from '../../../api/parachain/useTransaction'
-import { useSubstrateState } from '../../../../substrate-lib'
-import useService, { SERVICES } from '../../../hooks/useService'
-import { useParachain } from '../../../context/PapiContext'
 
 interface ComputeStatusProps {
   perspective: 'provider' | 'accessor'
@@ -33,10 +27,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   perspective,
 }: ComputeStatusProps) => {
   const { sidebarIsActive } = useUi()
-  const { service } = useService()
   const { domain } = useParams()
-  const { api } = useSubstrateState()
-  const { account, parachainApi} = useParachain()
 
   const [worker, setWorker] = useState<UserMiner | null>(null)
   const [selectedGauge, setSelectedGauge] = useState<SelectedGaugeState>({
@@ -44,11 +35,17 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     color: 'var(--gauge-red)',
     data: defaultData,
   })
-  const [proofStage, setProofStage] = useState<number>(0);
-  const [proofRequested, setProofRequested] = useState<boolean>(false);
 
-  const { usageData, agentSpecs, logs, lockState, authenticateWithAgent } =
-    useAgentCommunication(worker)
+  const { 
+    usageData, 
+    agentSpecs, 
+    logs, 
+    lockState, 
+    authenticateWithAgent,
+    containerPubKeyDeposited,
+    depositContainerKey, 
+    createContainerKeypair
+  } = useAgentCommunication(worker)
 
   useEffect(() => {
     if (usageData) {
@@ -73,39 +70,6 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     //isLoading: workerClustersIsLoading,
     //error: workerClustersError
   } = useUserWorkersQuery('cloudMiners')
-
-  useEffect(() => {
-   async function queryProofStage() {
-      if(worker){
-        if(
-          worker.lastTask && 
-          typeof worker.lastTask === "number" && 
-          Number.isFinite(worker.lastTask) && 
-          Number.isInteger(worker.lastTask)
-        ){
-          const task = await parachainApi.query.TaskManagement.Tasks.getValue(worker.lastTask)
-
-          switch (task.task_kind.type) {
-            case "NeuroZK": {
-              let task_value = task.task_kind.value
-                if (task_value.zk_proof && !task_value.last_proof_accepted) {
-                  setProofStage(2)
-                  return;
-                }
-
-                if (task_value.last_proof_accepted) {
-                  setProofStage(3)
-                  return;
-                }
-            }
-            break
-          }
-          
-        }
-      }
-   } 
-   queryProofStage();
-  }, [worker])
 
   const transformUsageDataToChartData = (usageType: MetricName): Data => {
     let truncatedUsageData
@@ -176,85 +140,12 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
     if (!executableWorkers || !workerClusters) return
     //This is necessary because if the user tries to share a link to the current node, it will not have the data otherwise
     const currentWorker: UserMiner = [...executableWorkers, ...workerClusters].find(
-      node => node.api.asText() === `https://${domain}`
+      node => node.api.asText() === domain
     )
     if (currentWorker && currentWorker.lastTask !== undefined && currentWorker.lastTask !== null) {
       setWorker(currentWorker)
     }
   }, [executableWorkers, workerClusters, setWorker, domain])
-
-  const { handleTransaction, isLoading } = useTransaction()
-
-  const requestProof = async (taskId: bigint) => {
-    const tx = parachainApi.tx.NeuroZk.request_proof({ task_id: taskId })
-
-    await handleTransaction({
-      tx,
-      account,
-      onSuccessFn: () => {
-        setProofStage(1);
-        setProofRequested(true)
-        pollTaskStatus(taskId, api, setProofStage);
-      },
-      txName: "Request Proof"
-    })
-  }
-
-  function getProofStageFromTask(task: any): number {
-    console.log("Nzk data", task.nzkData);
-    if (!task || !task.nzkData) return 0;
-
-    const { zkProof, lastProofAccepted } = task.nzkData;
-
-    if (lastProofAccepted?.[0]) return 3;
-    if (zkProof) return 2;
-
-    if ( proofRequested ) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  useEffect(() => {
-    if (!api || !worker) {
-      return;
-    }
-
-    if (worker.lastTask == null || worker.lastTask === undefined) {
-      return;
-    }
-
-    const cleanup = pollTaskStatus(api, worker.lastTask, setProofStage);
-    return () => cleanup();
-  }, [api, worker]);
-
-  function pollTaskStatus(api: any, taskId: bigint, setProofStage: (n: number) => void): () => void {
-    console.log('Starting pollTaskStatus for taskId:', taskId);
-    let intervalId = setInterval(async () => {
-      console.log('Polling task status for taskId:', taskId);
-      try {
-        const taskRaw = await api.query.taskManagement.tasks(taskId);
-        console.log('Raw task value:', taskRaw);
-        const task = taskRaw.toJSON();
-        console.log('Parsed task value:', task);
-        const newStage = getProofStageFromTask(task);
-
-        if (proofStage !== newStage) {
-          setProofStage(newStage);
-        }
-
-        if (newStage === 3) {
-          clearInterval(intervalId);
-        }
-      } catch (err) {
-        console.error('Polling error:', err);
-      }
-    }, 2000);
-
-    return () => clearInterval(intervalId);
-  }
-
 
   return (
     <>
@@ -272,54 +163,10 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
               id={worker.id}
               status={worker.oracle_status}
               lastCheck={worker.status_last_updated}
+              taskPubKeyDeposited={containerPubKeyDeposited}
+              createContainerKeyPair={createContainerKeypair}
+              depositContainerKey={depositContainerKey}
             />
-            {
-              service === SERVICES.NZK
-              ?
-              <div className="text-white w-full bg-cb-gray-600 flex rounded-lg gap-4 items-center">
-                <Button
-                  onClick={() => requestProof(worker.lastTask)}
-                  type="button"
-                  variation="primary"
-                  selectable={false}
-                  additionalClasses="ml-10"
-                >
-                  {isLoading ? 'Requesting Proof...' : 'Request Proof'}
-                </Button>
-                <div className='flex-grow'>
-                  <Stepper activeStep={proofStage} 
-                      connectorStateColors={true}
-                      connectorStyleConfig={{
-                        size: ".5em",
-                        activeColor: "#15e84c",
-                        completedColor: "#32b054",
-                        disabledColor: "#343735",
-                        style: ""
-                      }}
-                      styleConfig={{
-                        completedTextColor: "#ffffff",
-                        inactiveTextColor: "#ffffff",
-                        size: "3em",
-                        fontWeight: "regular",
-                        labelFontSize: "0.9em",
-                        circleFontSize: "1em",
-                        borderRadius: "50%",
-                        activeBgColor: "#15e84c",
-                        completedBgColor: "#32b054",
-                        inactiveBgColor: "#343735",
-                        activeTextColor: "#ffffff"
-                      }}
-                  >
-                    <Step label="Setup Complete" />
-                    <Step label="Proof Requested" />
-                    <Step label="Proof Submitted" />
-                    <Step label="Proof Verified" />
-                  </Stepper>
-                </div>
-              </div>
-              :
-              <></>
-            }
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 text-white w-full">
               {perspective === 'provider' ? (
                 <div className="col-span-1">

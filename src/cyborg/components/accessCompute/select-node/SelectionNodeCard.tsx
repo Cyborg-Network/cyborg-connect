@@ -38,7 +38,7 @@ const SelectionNodeCard: React.FC<Props> = ({
   // TODO: ugly workaround until the attestation based approach is implemented
   useEffect(() => {
     if(workers) {
-      let current = workers.filter(w => (w.id === nodeId))
+      let current = workers.filter(w => (w.id === nodeId.id))
       setWorker(current[0]);
     }
   }, [workers])

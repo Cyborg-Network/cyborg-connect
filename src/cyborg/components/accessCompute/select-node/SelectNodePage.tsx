@@ -10,12 +10,11 @@ import { DEPLOY_STATUS, useCyborgState } from '../../../CyborgContext'
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
-import NeuroZkUpload from '../modals/NeuroZKUpload'
 import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import FlashInferUpload from '../modals/FlashInferUpload'
 import { MinerReactRouterStateWithLocation } from '../../../types/miner'
-//import NeuroZkUpload from '../modals/NeuroZKUpload'
+import CyCloudTaskDeployment from '../modals/CyCloudTaskDeployment'
 
 const DEPLOYMENT_STAGES = {
   INIT: 'INIT',
@@ -77,7 +76,7 @@ const SelectNodePage: React.FC = () => {
       }
 
       workers.forEach(currentNode => {
-        if (fourNearest.length < 4 && currentNode.id !== selectedNodeId) {
+        if (fourNearest.length < 4 && currentNode.id !== selectedNodeId.id) {
           fourNearest.push(currentNode)
           return
         }
@@ -90,7 +89,7 @@ const SelectNodePage: React.FC = () => {
         const currentHaversine = haversineDistance(userLoc, nodeLoc)
 
         fourNearest.forEach((currentNearest, index) => {
-          if (currentNode.id !== selectedNodeId) {
+          if (currentNode.id !== selectedNodeId.id) {
             fourNearest[index] = {
               ...currentNode,
               haversine: currentHaversine,
@@ -100,7 +99,7 @@ const SelectNodePage: React.FC = () => {
           if (
             currentHaversine < currentNearest.haversine &&
             currentNode.id !== currentNearest.id &&
-            currentNode.id !== selectedNodeId
+            currentNode.id !== selectedNodeId.id
           ) {
             fourNearest[index] = currentNode
           }
@@ -233,10 +232,11 @@ const SelectNodePage: React.FC = () => {
         <></>
       )}
       {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
-      service.id === SERVICES.NZK.id ? (
-        <NeuroZkUpload
+      service.id === SERVICES.CYCL.id ? (
+        <CyCloudTaskDeployment
+          setService={() => {}}
           onCancel={setDeploymentStageToInit}
-          minerId={selectedNodes[0].toString()}
+          nodes={selectedNodes[0]}
         />
       ) : (
         <></>

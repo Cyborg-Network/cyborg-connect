@@ -163,7 +163,10 @@ const MapInteractor: React.FC = () => {
     // Simulates typesafety for react router
     const MinerReactRouterState: MinerReactRouterStateWithLocation = { 
       userLocation, 
-      selectedNodeId: selectedNode.id.toString()
+      selectedNodeId: {
+        id: selectedNode.id.toString(),
+        owner: selectedNode.owner.toString()
+      }
     }
     navigate(ROUTES.MODAL_NODES, {
       state: MinerReactRouterState,
