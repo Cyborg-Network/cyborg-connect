@@ -1,39 +1,39 @@
 import { useState } from 'react'
 import oi from '../../../public/assets/icons/cyberdock.svg'
-import nzk from '../../../public/assets/icons/neuro-zk.svg'
+import cycl from '../../../public/assets/icons/comingsoon.svg'
 import toast from 'react-hot-toast'
 
-type ServiceId = 'OI' | 'NZK' | 'FI'
+type ServiceId = 'OI' | 'NZK' | 'FI' | 'CYCL'
 
 export interface Service {
   id: ServiceId
   name: string
   icon: string
   substrateEnumValue: string
-  workerType: 'executableWorkers' | 'workerClusters'
+  workerType: 'edgeMiners' | 'cloudMiners'
 }
 
 export const SERVICES: Record<string, Service> = {
+  CYCL: {
+    id: 'CYCL',
+    name: 'CyCloud',
+    icon: cycl,
+    substrateEnumValue: 'executable',
+    workerType: 'cloudMiners',
+  },
   FI: {
     id: 'FI',
     name: 'Flash Infer',
     icon: oi,
     substrateEnumValue: 'executable',
-    workerType: 'executableWorkers',
+    workerType: 'edgeMiners',
   },
   OI: {
     id: 'OI',
     name: 'Open Inference',
     icon: oi,
     substrateEnumValue: 'executable',
-    workerType: 'executableWorkers',
-  },
-  NZK: {
-    id: 'NZK',
-    name: 'Neuro ZK',
-    icon: nzk,
-    substrateEnumValue: 'executable',
-    workerType: 'executableWorkers',
+    workerType: 'edgeMiners',
   },
 }
 
@@ -44,9 +44,7 @@ const useService = () => {
       try {
         const serviceString = JSON.parse(s)
         if (
-          serviceString === SERVICES.OI.id ||
-          serviceString === SERVICES.NZK.id || 
-          serviceString === SERVICES.FI.id
+          serviceString in SERVICES
         ) {
           return SERVICES[serviceString]
         } else {

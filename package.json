@@ -53,8 +53,10 @@
     "bn.js": "^5.2.1",
     "country-reverse-geocoding": "^0.2.2",
     "crypto-browserify": "^3.12.1",
+    "file-saver": "^2.0.5",
     "framer-motion": "^6.5.1",
     "haversine-distance": "^1.2.3",
+    "jszip": "^3.10.1",
     "libsodium-wrappers": "^0.7.15",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "polkadot-api": "^1.16.2",
@@ -78,6 +80,7 @@
     "victory": "^37.3.6"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",
     "eslint": "^8.10.0",

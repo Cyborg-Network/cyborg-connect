@@ -2,20 +2,22 @@ import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
-import { constructAgentApiRequest, constructAgentAuthRequest } from './agent'
+import { constructAgentApiRequest, constructAgentAuthRequest, downloadSshKeyZip } from './agent'
 import { decryptMessage } from '../../util/non-bc-crypto/decryptMessage'
 import {
   generateX25519KeyPair,
   X25519KeyPair,
 } from '../../util/non-bc-crypto/generateX25519KeyPair'
 import { processDiffieHellmanAuth } from '../../util/non-bc-crypto/processDiffieHellmanAuth'
-import { LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
+import { ContainerKeypair, LockState, MinerSpecs, MinerUsageData } from '../../types/agent'
 import { UserMiner } from '../parachain/useWorkersQuery'
+import { useToast } from '../../context/ToastContext'
 
 const CYBORG_SERVER_URL = process.env.REACT_APP_CYBORG_PROXY_URL
 
 export const useAgentCommunication = (miner: UserMiner) => {
   const navigate = useNavigate()
+  const { showToast } = useToast()
 
   const [keys, setKeys] = useState<X25519KeyPair | null>(null)
   const [agentUrl, setAgentUrl] = useState<string | null>(null)
@@ -34,18 +36,29 @@ export const useAgentCommunication = (miner: UserMiner) => {
     isLocked: true,
     isLoading: false,
   })
+  const [containerPubKeyDeposited, setContainerPubKeyDeposited] = useState<boolean>(false)
+  const [minerNeedsProxy, setMinerNeedsProxy] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(miner)
+    setMinerNeedsProxy(!miner.api.asText().includes('tail'))
+  }, [miner])
 
   useEffect(() => {
     if (miner) {
-      setAgentUrl(`${miner.api.asText().replace('https://', 'wss://')}/agent-usage`)
+      if (!minerNeedsProxy) {
+        setAgentUrl(`${miner.api.asText().replace('https://', 'wss://')}/agent-usage`)
+      } else {
+        setAgentUrl(miner.api.asText())
+      }
     }
-  }, [miner])
+  }, [miner, minerNeedsProxy])
 
   const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  const { sendMessage } = useWebSocket(agentUrl, {
+  const { sendMessage } = useWebSocket(minerNeedsProxy ? CYBORG_SERVER_URL : agentUrl, {
     shouldReconnect: () => !!agentUrl,
     onOpen: () => {
       console.log('Connection with cyborg-agent established')
@@ -54,6 +67,31 @@ export const useAgentCommunication = (miner: UserMiner) => {
       const messageData = JSON.parse(message.data)
 
       switch (messageData.response_type) {
+        case 'KeyPairReturned': {
+          console.log('KeyPairReturned')
+          const keypair = await decryptMessage(
+            messageData.encrypted_data_hex,
+            messageData.nonce_hex,
+            diffieHellmanSecret
+          )
+          let keypairJson: ContainerKeypair = JSON.parse(keypair)
+          console.log('keypair: ', keypairJson.pub_key)
+          showToast({type: "general", title: "Action Taken", text: "Keypair Successfully Generated"})
+          downloadSshKeyZip(keypairJson)
+          break
+        }
+        case 'PubKeyDeposited' : {
+          console.log('PubKeyDeposited')
+          const message = await decryptMessage(
+            messageData.encrypted_data_hex,
+            messageData.nonce_hex,
+            diffieHellmanSecret
+          )
+          console.log("Public key deposited: ", message)
+          showToast({type: "general", title: "Action Taken", text: "Public Key Successfully Deposited"})
+          setContainerPubKeyDeposited(true)
+          break
+        }
         case 'Usage': {
           const usageJson = await decryptMessage(
             messageData.encrypted_data_hex,
@@ -190,5 +228,22 @@ export const useAgentCommunication = (miner: UserMiner) => {
     }
   }
 
-  return { usageData, agentSpecs, logs, lockState, authenticateWithAgent }
+  const depositContainerKey = (pubKey: string, task_id: string) => {
+    sendMessage(
+      constructAgentApiRequest(agentUrl, {
+        DepositContainerKey: { task_id, key: pubKey },
+      })
+    )
+  }
+
+  const createContainerKeypair = (task_id: string) => {
+    console.log('createContainerKeypair called', task_id)
+    sendMessage(
+      constructAgentApiRequest(agentUrl, {
+        CreateContainerKey: { task_id },
+      })
+    )
+  }
+
+  return { usageData, agentSpecs, logs, lockState, authenticateWithAgent, containerPubKeyDeposited, depositContainerKey, createContainerKeypair }
 }

@@ -10,12 +10,11 @@ import { DEPLOY_STATUS, useCyborgState } from '../../../CyborgContext'
 import LoadingModal from '../../general/modals/Loading'
 import SelectionNodeCard from './SelectionNodeCard'
 import { useWorkersQuery } from '../../../api/parachain/useWorkersQuery'
-import NeuroZkUpload from '../modals/NeuroZKUpload'
 import useService, { SERVICES } from '../../../hooks/useService'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import FlashInferUpload from '../modals/FlashInferUpload'
 import { MinerReactRouterStateWithLocation } from '../../../types/miner'
-//import NeuroZkUpload from '../modals/NeuroZKUpload'
+import CyCloudTaskDeployment from '../modals/CyCloudTaskDeployment'
 
 const DEPLOYMENT_STAGES = {
   INIT: 'INIT',
@@ -52,7 +51,7 @@ const SelectNodePage: React.FC = () => {
     if (selectedNodeId)
       setSelectedNodes(prev => {
         const exists = prev.some(
-          n => n.id === selectedNodeId.id && n.owner === selectedNodeId.owner
+          n => n === selectedNodeId
         )
         return exists ? prev : [selectedNodeId, ...prev]
       })
@@ -128,9 +127,11 @@ const SelectNodePage: React.FC = () => {
     setDeploymentStage(DEPLOYMENT_STAGES.DEPLOYMENT)
   }
 
+  
+
   const toggleNodeSelection = combinedId => {
     const index = selectedNodes.findIndex(item => {
-      return combinedId.owner === item.owner && combinedId.id === item.id
+      return combinedId.id === item
     })
     if (index === -1) {
       setSelectedNodes([...selectedNodes, combinedId])
@@ -186,14 +187,12 @@ const SelectNodePage: React.FC = () => {
             {nearbyNodes.map(node => (
               <SelectionNodeCard
                 nodeId={node}
-                key={node.id}
+                key={node.toString()}
                 onClick={() =>
-                  toggleNodeSelection({ owner: node.owner, id: node.id })
+                  toggleNodeSelection({ id: node })
                 }
                 isSelected={selectedNodes.some(combinedId => {
-                  return (
-                    combinedId.owner === node.owner && combinedId.id === node.id
-                  )
+                  return (combinedId === node)
                 })}
               />
             ))}
@@ -233,11 +232,11 @@ const SelectNodePage: React.FC = () => {
         <></>
       )}
       {deploymentStage === DEPLOYMENT_STAGES.DEPLOYMENT &&
-      service.id === SERVICES.NZK.id ? (
-        <NeuroZkUpload
+      service.id === SERVICES.CYCL.id ? (
+        <CyCloudTaskDeployment
+          setService={() => {}}
           onCancel={setDeploymentStageToInit}
-          minerId={selectedNodes[0].id}
-          minerAdress={selectedNodes[0].owner}
+          nodes={selectedNodes[0]}
         />
       ) : (
         <></>

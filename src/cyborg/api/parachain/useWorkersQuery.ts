@@ -6,21 +6,27 @@ import { CyborgParachain, CyborgParachainQueries } from '@polkadot-api/descripto
 import { InjectedPolkadotAccount } from 'polkadot-api/dist/reexports/pjs-signer'
 import { useParachain } from '../../context/PapiContext'
 
-type workerType = 'executableWorkers' | 'workerClusters'
+type workerType = 'edgeMiners' | 'cloudMiners'
 
-export type Miner = 
-  CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["Value"] |
-  CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["Value"];
+export type SubstrateMiner = 
+  CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"] |
+  CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
+
+export type Miner = Omit<SubstrateMiner, "id"> & {
+  id: string;
+  workerType: workerType;
+  lastTask: bigint | null;
+}
 
 
 type WorkerCluster = {
-  keyArgs: CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["KeyArgs"]; 
-  value: CyborgParachainQueries["EdgeConnect"]["WorkerClusters"]["Value"];
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["EdgeMiners"]["Value"];
 };
 
 type ExecutableWorker = {
-  keyArgs: CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["KeyArgs"]; 
-  value: CyborgParachainQueries["EdgeConnect"]["ExecutableWorkers"]["Value"];
+  keyArgs: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["KeyArgs"]; 
+  value: CyborgParachainQueries["EdgeConnect"]["CloudMiners"]["Value"];
 }
 
 export type UserMiner = Miner & { lastTask: bigint };
@@ -29,17 +35,18 @@ export type UserMiner = Miner & { lastTask: bigint };
 const getWorkers = async (api: TypedApi<CyborgParachain>, workerType: workerType): Promise<Miner[]>  => {
   let workerEntries: WorkerCluster[] | ExecutableWorker[]
   switch (workerType) {
-    case "executableWorkers":
-      workerEntries = await api.query.EdgeConnect.ExecutableWorkers.getEntries();
+    case "edgeMiners":
+      workerEntries = await api.query.EdgeConnect.EdgeMiners.getEntries();
       break;
-    case "workerClusters":
-      workerEntries = await api.query.EdgeConnect.WorkerClusters.getEntries();
+    case "cloudMiners":
+      workerEntries = await api.query.EdgeConnect.CloudMiners.getEntries();
       break;
   }
 
   const workers = workerEntries.map(({value}) => {
     return {
       ...value,
+      id: value.id.asText(),
       location: {
         latitude: i32CoordinateToFloatCoordinate(value.location.latitude),
         longitude: i32CoordinateToFloatCoordinate(value.location.longitude),
@@ -78,8 +85,7 @@ const getUserWorkers = async (
 
   const tasks = taskEntries.map(({keyArgs, value}) => {
     return {
-      taskExecutor: value[0],
-      workerId: value[1],
+      workerId: value[0],
       taskId: keyArgs[0],
     }
   })
@@ -89,8 +95,7 @@ const getUserWorkers = async (
       const reversedIndex = [...tasks]
         .reverse()
         .findIndex(
-          ({ taskExecutor, workerId }) =>
-            worker.owner === taskExecutor && worker.id === workerId
+          ({ workerId }) => worker.id === workerId.asText()
         )
 
       const lastTaskIndex =
@@ -116,6 +121,8 @@ const getUserWorkers = async (
       }
     })
   }
+
+  console.log(userWorkers)
 
   return userWorkers
 }

@@ -9,16 +9,56 @@ import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
 import robo from '../../../../../public/assets/icons/robo.png'
 import { usePriceQuery } from '../../../api/parachain/usePriceQuery'
+import { useAssetPriceQuery } from '../../../api/parachain/useAssetPriceQuery'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useUserComputeHoursQuery } from '../../../api/parachain/useUserSubscription'
 import { transformToNumber } from '../../../util/numberOperations'
 import { useParachain } from '../../../context/PapiContext'
 import { safeNumberToBigIntTransform } from '../../../util/numberOperations'
 
+// Asset configuration
+const ASSETS = [
+  {
+    id: 0,
+    name: 'ENTT',
+    symbol: 'ENTT',
+    icon: robo,
+    isAvailable: true,
+    testnet: true,
+    isNative: true
+  },
+  {
+    id: 1,
+    name: 'USDT',
+    symbol: 'USDT',
+    icon: crypto,
+    isAvailable: true,
+    testnet: false,
+    isNative: false
+  },
+  {
+    id: 2,
+    name: 'USDC',
+    symbol: 'USDC',
+    icon: crypto,
+    isAvailable: true,
+    testnet: false,
+    isNative: false
+  },
+  {
+    id: 3,
+    name: 'BORG',
+    symbol: 'BORG',
+    icon: crypto,
+    isAvailable: true,
+    testnet: false,
+    isNative: false
+  },
+]
+
 const PAYMENT_OPTIONS = [
-  { name: 'ENTT', icon: robo, isAvailable: true, testnet: true },
-  { name: 'Crypto', icon: crypto, isAvailable: false, testnet: false },
-  { name: '', icon: fiat, isAvailable: false, testnet: false },
+  { name: 'Crypto', icon: crypto, isAvailable: true, testnet: false },
+  { name: 'FIAT', icon: fiat, isAvailable: false, testnet: false },
 ]
 
 interface Props {
@@ -34,9 +74,7 @@ const PaymentModal: React.FC<Props> = ({
   const { account, parachainApi } = useParachain()
 
   const {
-    data: computeHourPrice,
-    //isLoading: computeHourPriceIsLoading,
-    //error: computeHourPriceError
+    data: nativeComputeHourPrice,
   } = usePriceQuery()
 
   const {
@@ -46,17 +84,29 @@ const PaymentModal: React.FC<Props> = ({
     //error: userComputeHoursError 
   } = useUserComputeHoursQuery();
 
-  const [selectedOption, setSelectedOption] = useState(PAYMENT_OPTIONS[0].name)
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState(PAYMENT_OPTIONS[0].name)
+  const [selectedAsset, setSelectedAsset] = useState(ASSETS[0])
   const [termsAreAccepted, setTermsAreAccepted] = useState(false)
   const [hoursSelected, setHoursSelectedNumber] = useState<number | undefined>(undefined)
   const [totalSubscriptionCost, setTotalSubscriptionCost] = useState<bigint | null>(null)
+  const [assetPrice, setAssetPrice] = useState<bigint | null>(null)
+
+  // Fetch asset price when asset changes
+  const { data: assetPriceData } = useAssetPriceQuery(selectedAsset.id)
+
+  useEffect(() => {
+    if (selectedAsset.isNative) {
+      setAssetPrice(nativeComputeHourPrice || null)
+    } else {
+      setAssetPrice(assetPriceData || null)
+    }
+  }, [selectedAsset, nativeComputeHourPrice, assetPriceData])
 
   useEffect(() => {
     const calcTotalSubscriptionCost = (): void => {
       if (
-        computeHourPrice === undefined || 
+        assetPrice === null ||
         hoursSelected === undefined ||
-        computeHourPrice === null || 
         hoursSelected === null
       ) {
         setTotalSubscriptionCost(null)
@@ -70,11 +120,11 @@ const PaymentModal: React.FC<Props> = ({
         return
       }
 
-      setTotalSubscriptionCost(computeHourPrice * hoursBigInt)
+      setTotalSubscriptionCost(assetPrice * hoursBigInt)
     }
 
     calcTotalSubscriptionCost()
-  }, [computeHourPrice, hoursSelected])
+  }, [assetPrice, hoursSelected, selectedAsset])
 
   const startTransaction = () => {
     if (!termsAreAccepted) {
@@ -82,7 +132,7 @@ const PaymentModal: React.FC<Props> = ({
       return
     }
 
-    if (!selectedOption) {
+    if (!selectedPaymentOption) {
       toast('Please select a payment option!')
       return
     }
@@ -92,14 +142,19 @@ const PaymentModal: React.FC<Props> = ({
       return
     }
 
+    if (!assetPrice || assetPrice === 0n) {
+      toast('Price information not available for selected asset!')
+      return
+    }
+
     submitTransaction()
   }
 
   const setHoursSelected = (hours: string) => {
     let numberHours = transformToNumber(hours)
-    
-    if(numberHours !== undefined && numberHours !== null)
-    setHoursSelectedNumber(numberHours)
+
+    if (numberHours !== undefined && numberHours !== null)
+      setHoursSelectedNumber(numberHours)
   }
 
   const { handleTransaction } = useTransaction()
@@ -110,18 +165,37 @@ const PaymentModal: React.FC<Props> = ({
       return
     }
 
-    const tx = userComputeHours > 0 
-      ? parachainApi.tx.Payment.add_hours({ extra_hours: hoursSelected })
-      : parachainApi.tx.Payment.subscribe({ hours: hoursSelected })
+    let tx;
+
+    if (selectedAsset.isNative) {
+      // Use native token transaction
+      tx = userComputeHours > 0
+        ? parachainApi.tx.Payment.add_hours({ extra_hours: hoursSelected })
+        : parachainApi.tx.Payment.subscribe({ hours: hoursSelected })
+    } else {
+      // Use asset-based transaction
+      if (userComputeHours > 0) {
+        tx = parachainApi.tx.Payment.add_hours_with_asset({
+          asset_id: selectedAsset.id,
+          extra_hours: hoursSelected
+        })
+      } else {
+        tx = parachainApi.tx.Payment.subscribe_with_asset({
+          asset_id: selectedAsset.id,
+          hours: hoursSelected
+        })
+      }
+    }
 
     await handleTransaction({
       tx,
       account,
       onSuccessFn: () => {
-          onConfirm()
-          refetch()
+        onConfirm()
+        refetch()
       },
-      txName: "Top Up"
+      txName: selectedAsset.isNative ? "Top Up" : `Top Up with ${selectedAsset.symbol}`,
+      assetId: selectedAsset.id
     })
   }
 
@@ -142,62 +216,131 @@ const PaymentModal: React.FC<Props> = ({
           />
         </div>
         <Separator colorClass={'bg-cb-gray-400'} />
-        <input
-          type="text"
-          className="bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded w-16 sm:w-auto"
-          placeholder="Number of Hours"
-          onChange={e => setHoursSelected(e.target.value)}
-        />
+
+        {/* Hours Input */}
+        <div className="flex flex-col gap-2">
+          <label className="text-white">Number of Hours</label>
+          <input
+            type="text"
+            className="bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded w-full"
+            placeholder="Enter number of hours"
+            onChange={e => setHoursSelected(e.target.value)}
+          />
+        </div>
+
         <Separator colorClass={'bg-cb-gray-400'} />
-        <div className="flex flex-col md:flex-row gap-4 justify-center h-full">
-          {PAYMENT_OPTIONS.map(option => (
-            <Button
-              type="button"
-              key={option.name}
-              variation={option.isAvailable ? 'secondary' : 'inactive'}
-              selectable={{ isSelected: selectedOption === option.name }}
-              onClick={() => {
-                if (option.isAvailable) setSelectedOption(option.name)
-              }}
-            >
-              <div className="flex justify-center items-center gap-2">
-                <img
-                  className="h-10 aspect-square"
-                  alt="Currency"
-                  src={option.icon}
-                />
-                <div className="relative">
-                  {option.name}
-                  {option.testnet ? (
-                    <div className="absolute top-3/4 text-xs text-gray-400">
-                      Testnet
+
+        {/* Payment Method Selection */}
+        <div className="flex flex-col gap-4">
+          <div className="text-xl font-bold">Payment Method</div>
+          <div className="flex flex-col md:flex-row gap-4 justify-center">
+            {PAYMENT_OPTIONS.map(option => (
+              <Button
+                type="button"
+                key={option.name}
+                variation={option.isAvailable ? 'secondary' : 'inactive'}
+                selectable={{ isSelected: selectedPaymentOption === option.name }}
+                onClick={() => {
+                  if (option.isAvailable) setSelectedPaymentOption(option.name)
+                }}
+                additionalClasses="flex-1"
+              >
+                <div className="flex justify-center items-center gap-2">
+                  <img
+                    className="h-10 aspect-square"
+                    alt="Currency"
+                    src={option.icon}
+                  />
+                  <div className="relative">
+                    {option.name}
+                    {option.testnet ? (
+                      <div className="absolute top-3/4 text-xs text-gray-400">
+                        Testnet
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                  {!option.isAvailable ? (
+                    <div className="rounded-full bg-cb-gray-400 text-xs px-2 py-1">
+                      COMING SOON
                     </div>
                   ) : (
                     <></>
                   )}
                 </div>
-                {!option.isAvailable ? (
-                  <div className="rounded-full bg-cb-gray-400 text-xs px-2 py-1">
-                    COMING SOON
-                  </div>
-                ) : (
-                  <></>
-                )}
-              </div>
-            </Button>
-          ))}
+              </Button>
+            ))}
+          </div>
         </div>
+
+        {/* Asset Selection */}
+        {selectedPaymentOption === 'Crypto' && (
+          <>
+            <Separator colorClass={'bg-cb-gray-400'} />
+            <div className="flex flex-col gap-4">
+              <div className="text-xl font-bold">Select Asset</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {ASSETS.map(asset => (
+                  <Button
+                    type="button"
+                    key={asset.id}
+                    variation={asset.isAvailable ? 'secondary' : 'inactive'}
+                    selectable={{ isSelected: selectedAsset.id === asset.id }}
+                    onClick={() => {
+                      if (asset.isAvailable) setSelectedAsset(asset)
+                    }}
+                    additionalClasses="h-24"
+                  >
+                    <div className="flex flex-col justify-center items-center gap-2">
+                      <img
+                        className="h-10 aspect-square"
+                        alt={asset.name}
+                        src={asset.icon}
+                      />
+                      <div className="text-center">
+                        <div className="font-semibold">{asset.symbol}</div>
+                        <div className="text-sm text-gray-400">{asset.name}</div>
+                        {asset.testnet && (
+                          <div className="text-xs text-gray-400">Testnet</div>
+                        )}
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
         <Separator colorClass={'bg-cb-gray-400'} />
+
+        {/* Pricing Information */}
         <div className="text-xl font-bold">Fixed Pricing</div>
         <div className="flex justify-between">
           <div>Hourly Rate:</div>
-          <div className="text-right">{`${computeHourPrice ? computeHourPrice : 0} ENTT / hour`}</div>
+          <div className="text-right">
+            {assetPrice !== null 
+              ? `${assetPrice} ${selectedAsset.symbol} / hour`
+              : `Loading...`
+            }
+          </div>
         </div>
+
         <Separator colorClass={'bg-cb-gray-400'} />
+
+        {/* Total Cost */}
         <div className="flex justify-between text-xl font-bold">
           <div>Total:</div>
-          <div>{`${totalSubscriptionCost} ENTT`}</div>
+          <div>
+            {totalSubscriptionCost !== null
+              ? `${totalSubscriptionCost} ${selectedAsset.symbol}`
+              : `Calculating...`
+            }
+          </div>
         </div>
+
+        {/* Terms and Conditions */}
         <div className="flex gap-2 items-center">
           <input
             type="checkbox"
@@ -207,19 +350,23 @@ const PaymentModal: React.FC<Props> = ({
             I agree to CyborgNetwork's{' '}
             <a
               href="https://github.com/Cyborg-Network/cyborg-parachain/blob/master/Local%20Testing.md"
-              className="hover:cursor-pointer"
+              className="hover:cursor-pointer text-cb-green"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Terms of Service and Conditions
             </a>
           </div>
         </div>
-        <div className="flex flex-col-reverse justify-center gap-4">
+
+        {/* Action Buttons */}
+        <div className="flex flex-col-reverse sm:flex-row justify-center gap-4">
           <Button
             type="button"
             selectable={false}
             onClick={onCancel}
             variation="secondary"
-            additionalClasses="w-full"
+            additionalClasses="w-full sm:flex-1"
           >
             Cancel
           </Button>
@@ -227,11 +374,11 @@ const PaymentModal: React.FC<Props> = ({
             type="button"
             selectable={false}
             variation="primary"
-            additionalClasses="w-full"
+            additionalClasses="w-full sm:flex-1"
             onClick={startTransaction}
           >
-            <div className="flex gap-2 justify-center">
-              <div>Confirm Payment and Proceed to Upload</div>
+            <div className="flex gap-2 justify-center items-center">
+              <div>Confirm Payment with {selectedAsset.symbol}</div>
               <TiArrowRight />
             </div>
           </Button>

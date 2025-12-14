@@ -24,7 +24,7 @@ export const ConnectWalletComponent: React.FC = () => {
 
   if (extensions.length === 0) {
     return (
-      <div className="fixed top-2 right-2 z-40">
+      <div className="z-40">
         <div className="bg-cb-gray-500 text-white px-4 py-2 rounded-lg">
           No wallets detected
         </div>
@@ -34,7 +34,7 @@ export const ConnectWalletComponent: React.FC = () => {
 
   if (!selectedExtension) {
     return (
-      <div className="fixed top-2 right-2 z-40">
+      <div className="z-40">
         <Select.Root
           value={selectedExtension?.title}
           onValueChange={(value) => {
@@ -64,7 +64,7 @@ export const ConnectWalletComponent: React.FC = () => {
   }
 
   return (
-    <div className="fixed top-2 right-2 z-40 flex flex-col gap-2 justify-end items-end">
+    <div className="z-40 flex flex-col gap-2 justify-center items-center">
       <div className="text-white text-lg">Connected Wallet</div>
 
       <Select.Root

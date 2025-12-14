@@ -1,24 +1,28 @@
-import React, { useEffect, useState } from 'react'
+//import React, { useEffect, useState } from 'react'
 import logo from '../../../../../public/assets/Logo.png'
-import profile from '../../../../../public/assets/icons/profile.png'
+//import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
-import { BsThreeDots } from 'react-icons/bs'
+//import { BsThreeDots } from 'react-icons/bs'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../..'
 import { useUi } from '../../../context/UiContext'
 import Button from '../buttons/Button'
-import { useAuth0 } from '@auth0/auth0-react'
+import { ConnectWalletComponent } from '../buttons/ConnectWallet'
+//import { useAuth0 } from '@auth0/auth0-react'*/
 
 const SideBar = () => {
   const navigate = useNavigate();
   const { sidebarIsActive, setSidebarIsActive } = useUi();
-  const { loginWithRedirect, isAuthenticated, logout, user, getAccessTokenSilently } = useAuth0();
-  const [userMetadata, setUserMetadata] = useState(null);
 
-  const navigateAndCloseSidebar = url => {
+  const navigateAndCloseSidebar = (url: string) => {
     setSidebarIsActive(false)
     navigate(url)
   }
+
+  /*
+  const { loginWithRedirect, isAuthenticated, logout, user, getAccessTokenSilently } = useAuth0();
+  const [userMetadata, setUserMetadata] = useState(null);
+
 
   useEffect(() => {
     const getUserMetadata = async () => {
@@ -50,6 +54,7 @@ const SideBar = () => {
 
     getUserMetadata();
   }, [getAccessTokenSilently, user?.sub]);
+  */
 
   const returnSidebarClass = sidebarIsActive ? '' : '-translate-x-full'
   const returnButtonClass = sidebarIsActive
@@ -76,6 +81,7 @@ const SideBar = () => {
               <IoMenu size={27} color="gray" />
             </div>
           </span>
+          <ConnectWalletComponent />
           <span className="flex flex-col items-center my-6">
             <Button
               type="button"
@@ -96,6 +102,7 @@ const SideBar = () => {
               <li>Help</li>
             </ul>
           </span>
+          {/*
           <span className="flex flex-col p-4 bg-cb-gray-700 m-4 rounded-md">
             <div className="flex justify-between items-center pb-6">
               <div className="flex gap-4 justify-between">
@@ -136,6 +143,7 @@ const SideBar = () => {
               "No user metadata defined"
             )}
           </span>
+          */}
         </div>
       </div>
       {/*Invisible overlay for the sidebar so that clicks beside it can also deactivate it*/}

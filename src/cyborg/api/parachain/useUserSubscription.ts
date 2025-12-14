@@ -4,7 +4,11 @@ import { CyborgParachain } from '@polkadot-api/descriptors'
 import { InjectedPolkadotAccount } from 'polkadot-api/pjs-signer'
 import { useParachain } from '../../context/PapiContext'
 
-const getUserComputeHours = async (api: TypedApi<CyborgParachain>, account: InjectedPolkadotAccount): Promise<number> => {
+// Get unified compute hours (works for all payment methods)
+const getUserComputeHours = async (
+  api: TypedApi<CyborgParachain>, 
+  account: InjectedPolkadotAccount
+): Promise<number> => {
   return await api.query.Payment.ComputeHours.getValue(account.address)
 }
 

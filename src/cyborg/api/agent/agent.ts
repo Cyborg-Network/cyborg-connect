@@ -1,9 +1,11 @@
-import { AgentRequestType, IpAddress } from '../../types/agent'
+import { AgentRequestType, ContainerKeypair, IpAddress } from '../../types/agent'
 import { TaskId } from '../../types/task'
 import { X25519PubKey } from '../../util/non-bc-crypto/generateX25519KeyPair'
 import { signTimestampWithWallet } from '../../util/non-bc-crypto/signTimestampWithWallet'
 import sodium from 'libsodium-wrappers'
 import { safeBigIntToNumberTransform } from '../../util/numberOperations'
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver'
 
 export const constructAgentApiRequest = (
   target_ip: IpAddress,
@@ -37,4 +39,15 @@ export const constructAgentAuthRequest = async (
   })
 
   return request
+}
+
+export const downloadSshKeyZip = async (keypair: ContainerKeypair) => {
+    if (!keypair) return;
+  
+    const zip = new JSZip();
+    zip.file('id_ed25519', keypair.priv_key);
+    zip.file('id_ed25519.pub', keypair.pub_key);
+  
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, 'cycloud-keypair.zip');
 }

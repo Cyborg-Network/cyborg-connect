@@ -8,12 +8,13 @@ import Button from '../../general/buttons/Button'
 import useTransaction from '../../../api/parachain/useTransaction'
 import { useParachain } from '../../../context/PapiContext'
 import { Binary, Enum } from 'polkadot-api'
+import { MinerReactRouterState } from '../../../types/miner'
 //import useService from '../../../hooks/useService'
 
 interface Props {
   setService: (service: string | null) => void
   onCancel: () => void
-  nodes: any
+  nodes: MinerReactRouterState[]
 }
 
 const FlashInferUpload: React.FC<Props> = ({
@@ -47,8 +48,7 @@ const FlashInferUpload: React.FC<Props> = ({
   const submitTransaction = async parsedHoursDeposit => {
     const tx = parachainApi.tx.TaskManagement.task_scheduler({
       task_kind: Enum("FlashInfer", {type: "Huggingface", value: Binary.fromText(huggingfaceId)}),
-      worker_owner: nodes[0].owner,
-      worker_id: nodes[0].id,
+      miner_id: Binary.fromText(nodes[0].id),
       compute_hours_deposit: parsedHoursDeposit
     });
 

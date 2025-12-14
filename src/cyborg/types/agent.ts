@@ -21,7 +21,30 @@ export interface LockState {
   isLoading: boolean
 }
 
-export type AgentRequestType = 'Auth' | 'Usage' | 'Init'
+export interface ContainerKeypair {
+  pub_key: string
+  priv_key: string
+}
+
+type AgentEndpointSimple = "Auth" | "Usage" | "Init"
+
+type AgentEndpointCreateContainerKeypairRequest = {
+  CreateContainerKey: {
+    task_id: string;
+  };
+}
+
+export type AgentEndpointDepositContainerKeyRequest = {
+  DepositContainerKey: {
+    task_id: string;
+    key: string;
+  };
+};
+
+export type AgentRequestType = 
+  | AgentEndpointSimple 
+  | AgentEndpointCreateContainerKeypairRequest
+  | AgentEndpointDepositContainerKeyRequest;
 
 export type Logs = string[]
 
