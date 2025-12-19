@@ -48,7 +48,7 @@ const RpcSelector: React.FC = () => {
   const DropdownButton = ({ name, onClick }) => {
     return (
       <div
-        className="text-white bg-cb-gray-400 p-3 rounded-xl"
+        className="text-white bg-color-background-4 p-3 rounded-xl"
         onClick={() => onClick()}
       >
         <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ const RpcSelector: React.FC = () => {
   return (
     <>
       {window.innerWidth < 768 ? (
-        <div className="hover:cursor-pointer flex flex-col rounded-lg p-1 bg-cb-gray-600">
+        <div className="hover:cursor-pointer flex flex-col rounded-lg p-1 bg-color-background-2">
           {dropdownIsOpen ? (
             rpcItems
               .filter(item => item !== chain)
@@ -71,7 +71,7 @@ const RpcSelector: React.FC = () => {
                   name={item}
                   key={index}
                   onClick={handleMenuItemClick}
-                  additionalStyles="text-gray-400 bg-cb-gray-600"
+                  additionalStyles="text-gray-400 bg-color-background-2"
                 />
               ))
           ) : (
@@ -80,13 +80,13 @@ const RpcSelector: React.FC = () => {
           <DropdownButton name={chain} onClick={handleDropdownClick} />
         </div>
       ) : (
-        <div className="hover:cursor-pointer flex rounded-lg p-1 bg-cb-gray-600">
+        <div className="hover:cursor-pointer flex rounded-lg p-1 bg-color-background-2">
           {rpcItems.map((item, index) => (
             <MenuItem
               additionalStyles={
                 chain === item
-                  ? 'text-white bg-cb-gray-400'
-                  : 'text-gray-400 bg-cb-gray-600'
+                  ? 'text-white bg-color-background-4'
+                  : 'text-gray-400 bg-color-background-2'
               }
               name={item}
               key={index}

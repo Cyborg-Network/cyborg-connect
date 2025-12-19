@@ -4,6 +4,9 @@ import { Separator } from '../../general/Separator'
 import Modal from '../../general/modals/Modal'
 import crypto from '../../../../../public/assets/icons/crypto.svg'
 import fiat from '../../../../../public/assets/icons/fiat-currencty.svg'
+import dot from '../../../../../public/assets/icons/dot.svg'
+import usdt from '../../../../../public/assets/icons/usdt.svg'
+import usdc from '../../../../../public/assets/icons/usdc.svg'
 import Button from '../../general/buttons/Button'
 import { TiArrowRight } from 'react-icons/ti'
 import { toast } from 'react-hot-toast'
@@ -31,7 +34,7 @@ const ASSETS = [
     id: 1,
     name: 'USDT',
     symbol: 'USDT',
-    icon: crypto,
+    icon: usdt,
     isAvailable: true,
     testnet: false,
     isNative: false
@@ -40,7 +43,7 @@ const ASSETS = [
     id: 2,
     name: 'USDC',
     symbol: 'USDC',
-    icon: crypto,
+    icon: usdc,
     isAvailable: true,
     testnet: false,
     isNative: false
@@ -50,6 +53,15 @@ const ASSETS = [
     name: 'BORG',
     symbol: 'BORG',
     icon: crypto,
+    isAvailable: true,
+    testnet: false,
+    isNative: false
+  },
+  {
+    id: 3,
+    name: 'DOT',
+    symbol: 'DOT',
+    icon: dot,
     isAvailable: true,
     testnet: false,
     isNative: false
@@ -203,36 +215,36 @@ const PaymentModal: React.FC<Props> = ({
     <Modal
       onOutsideClick={onCancel}
       additionalClasses={
-        'p-8 2xl:w-4/12 xl:w-3/5 lg:w-4/5 sm:w-4/5 w-11/12 md:p-16'
+        'p-8 2xl:w-4/12 xl:w-3/5 lg:w-4/5 sm:w-4/5 w-11/12 md:p-16 border border-color-text-1'
       }
     >
       <div className="flex flex-col gap-6 w-full h-full rounded-lg text-lg">
         <div className="flex justify-between">
-          <div className="text-2xl font-bold">{userComputeHours > 0 ? "Extend Subscription" : "Subscribe"}</div>
+          <div className="text-2xl font-bold text-color-text-1">{userComputeHours > 0 ? "Extend Subscription" : "Subscribe"}</div>
           <CloseButton
             type="button"
             onClick={onCancel}
             additionalClasses={'absolute top-6 right-6'}
           />
         </div>
-        <Separator colorClass={'bg-cb-gray-400'} />
+        <Separator colorClass={'bg-color-background-4'} />
 
         {/* Hours Input */}
         <div className="flex flex-col gap-2">
-          <label className="text-white">Number of Hours</label>
+          <label className="text-color-text-1">Number of Hours</label>
           <input
             type="text"
-            className="bg-cb-gray-700 text-white border border-gray-600 focus:border-cb-green focus:outline-none p-2 rounded w-full"
+            className="bg-color-background-1 text-color-text-1 border border-gray-600 focus:border-color-foreground focus:outline-none p-2 rounded w-full"
             placeholder="Enter number of hours"
             onChange={e => setHoursSelected(e.target.value)}
           />
         </div>
 
-        <Separator colorClass={'bg-cb-gray-400'} />
+        <Separator colorClass={'bg-color-background-4'} />
 
         {/* Payment Method Selection */}
         <div className="flex flex-col gap-4">
-          <div className="text-xl font-bold">Payment Method</div>
+          <div className="text-xl font-bold text-color-text-1">Payment Method</div>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             {PAYMENT_OPTIONS.map(option => (
               <Button
@@ -243,7 +255,7 @@ const PaymentModal: React.FC<Props> = ({
                 onClick={() => {
                   if (option.isAvailable) setSelectedPaymentOption(option.name)
                 }}
-                additionalClasses="flex-1"
+                additionalClasses="flex-1 text-color-text-2"
               >
                 <div className="flex justify-center items-center gap-2">
                   <img
@@ -251,10 +263,10 @@ const PaymentModal: React.FC<Props> = ({
                     alt="Currency"
                     src={option.icon}
                   />
-                  <div className="relative">
+                  <div className="relative text-color-text-2">
                     {option.name}
                     {option.testnet ? (
-                      <div className="absolute top-3/4 text-xs text-gray-400">
+                      <div className="absolute top-3/4 text-xs text-color-text-2">
                         Testnet
                       </div>
                     ) : (
@@ -262,7 +274,7 @@ const PaymentModal: React.FC<Props> = ({
                     )}
                   </div>
                   {!option.isAvailable ? (
-                    <div className="rounded-full bg-cb-gray-400 text-xs px-2 py-1">
+                    <div className="rounded-full bg-color-background-4 text-xs px-2 py-1 text-color-text-2">
                       COMING SOON
                     </div>
                   ) : (
@@ -277,9 +289,9 @@ const PaymentModal: React.FC<Props> = ({
         {/* Asset Selection */}
         {selectedPaymentOption === 'Crypto' && (
           <>
-            <Separator colorClass={'bg-cb-gray-400'} />
+            <Separator colorClass={'bg-color-background-4'} />
             <div className="flex flex-col gap-4">
-              <div className="text-xl font-bold">Select Asset</div>
+              <div className="text-xl font-bold text-color-text-1">Select Asset</div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {ASSETS.map(asset => (
                   <Button
@@ -290,7 +302,7 @@ const PaymentModal: React.FC<Props> = ({
                     onClick={() => {
                       if (asset.isAvailable) setSelectedAsset(asset)
                     }}
-                    additionalClasses="h-24"
+                    additionalClasses="h-32"
                   >
                     <div className="flex flex-col justify-center items-center gap-2">
                       <img
@@ -299,7 +311,7 @@ const PaymentModal: React.FC<Props> = ({
                         src={asset.icon}
                       />
                       <div className="text-center">
-                        <div className="font-semibold">{asset.symbol}</div>
+                        <div className="font-semibold text-color-text-2">{asset.symbol}</div>
                         <div className="text-sm text-gray-400">{asset.name}</div>
                         {asset.testnet && (
                           <div className="text-xs text-gray-400">Testnet</div>
@@ -313,11 +325,11 @@ const PaymentModal: React.FC<Props> = ({
           </>
         )}
 
-        <Separator colorClass={'bg-cb-gray-400'} />
+        <Separator colorClass={'bg-color-background-4'} />
 
         {/* Pricing Information */}
-        <div className="text-xl font-bold">Fixed Pricing</div>
-        <div className="flex justify-between">
+        <div className="text-xl font-bold text-color-text-1">Fixed Pricing</div>
+        <div className="flex justify-between text-color-text-1">
           <div>Hourly Rate:</div>
           <div className="text-right">
             {assetPrice !== null 
@@ -327,10 +339,10 @@ const PaymentModal: React.FC<Props> = ({
           </div>
         </div>
 
-        <Separator colorClass={'bg-cb-gray-400'} />
+        <Separator colorClass={'bg-color-background-4'} />
 
         {/* Total Cost */}
-        <div className="flex justify-between text-xl font-bold">
+        <div className="flex justify-between text-xl font-bold text-color-text-1">
           <div>Total:</div>
           <div>
             {totalSubscriptionCost !== null
@@ -341,7 +353,7 @@ const PaymentModal: React.FC<Props> = ({
         </div>
 
         {/* Terms and Conditions */}
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center text-color-text-1">
           <input
             type="checkbox"
             onChange={() => setTermsAreAccepted(!termsAreAccepted)}
@@ -350,7 +362,7 @@ const PaymentModal: React.FC<Props> = ({
             I agree to CyborgNetwork's{' '}
             <a
               href="https://github.com/Cyborg-Network/cyborg-parachain/blob/master/Local%20Testing.md"
-              className="hover:cursor-pointer text-cb-green"
+              className="hover:cursor-pointer text-color-foreground"
               target="_blank"
               rel="noopener noreferrer"
             >

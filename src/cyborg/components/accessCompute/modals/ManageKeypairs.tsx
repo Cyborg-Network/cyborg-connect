@@ -42,7 +42,7 @@ const ManageKeypairs: React.FC<Props> = ({
         onClick={() => onCancel()}
         additionalClasses="absolute top-6 right-6"
       />
-      <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-4 text-color-text-1'>
         <h2>Manage CyCloud Keys</h2>
         <Button
           type="button"
@@ -56,7 +56,7 @@ const ManageKeypairs: React.FC<Props> = ({
           </div>
         </Button>
         <div className='flex gap-4 w-full'>
-          <input className='p-3 rounded-md w-full' type="text" placeholder="Deposit Public Key" onChange={(e) => { setPubKey(e.target.value) }} />
+          <input className='p-3 rounded-md w-full border border-color-text-1' type="text" placeholder="Deposit Public Key" onChange={(e) => { setPubKey(e.target.value) }} />
           <Button
               type="button"
               variation="primary"

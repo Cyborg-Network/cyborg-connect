@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../../../index'
-import cyberdock from '../../../../../public/assets/icons/cyberdockDash.png'
+import cyberdock from '../../../../../public/assets/icons/cyberdock.svg'
 import { Separator } from '../Separator'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import RemoveNodeModal from '../../provideCompute/modals/RemoveNode'
@@ -43,37 +43,35 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
   }
 
   //span with exactly these specs needed a lot here, sets parent up for responsiveness
-  const SPAN = ({ children }) => <span className="lg:hidden">{children}</span>
+  const SPAN = ({ children, additionalClasses }) => <span className={`lg:hidden ${additionalClasses}`}>{children}</span>
 
   return (
     <>
       <div
         onClick={() => navigateToComputeScreen()}
-        className={`hover:text-cb-green hover:font-bold hover:cursor-pointer rounded-lg lg:rounded-none relative`}
+        className={`hover:text-color-foreground hover:font-bold hover:cursor-pointer rounded-lg lg:rounded-none relative text-color-text-2`}
       >
-        <div className="lg:w-full items-center py-4 px-5 bg-cb-gray-400 rounded-lg">
+        <div className="lg:w-full items-center py-4 px-5 bg-color-background-4 rounded-lg h-22">
           <ul className="w-full flex flex-col gap-2 items-center lg:grid lg:gap-0 lg:grid-cols-4 lg:grid-rows-1">
             <li className="flex items-center gap-3]">
-              <a>
-                <img src={cyberdock} />
-              </a>
+              <img className='h-3/4' src={cyberdock} />
               <button className="pl-3 flex flex-col items-start">
-                <p className="mt-0 text-lg lg:text-sm">
+                <p className="mt-0 text-lg lg:text-sm text-color-text-2">
                   ID: {item.id}
                 </p>
               </button>
             </li>
             <LI>
-              <SPAN>Type:</SPAN>
-              <span>Providers</span>
+              <SPAN additionalClasses='text-color-text-2'>Type:</SPAN>
+              <span className='text-color-text-2'>Providers</span>
             </LI>
             <Separator
               colorClass={'bg-gray-500'}
               additionalStyles={'lg:hidden'}
             />
             <LI>
-              <SPAN>IP / URL:</SPAN>
-              <span>{`${item.api.asText()}`}</span>
+              <SPAN additionalClasses='text-color-text-2'>IP / URL:</SPAN>
+              <span className='text-color-text-2'>{`${item.api.asText()}`}</span>
             </LI>
             <Separator
               colorClass={'bg-gray-500'}
@@ -81,11 +79,11 @@ const NodeCard: React.FC<Props> = ({ item, lastTask, isProvider }: Props) => {
             />
             <LI
               additionalClasses={`flex gap-2 ${
-                item.oracle_status ? 'text-cb-green' : 'text-red-600'
+                item.oracle_status ? 'text-color-foreground' : 'text-red-600'
               }`}
             >
-              <SPAN>Status:</SPAN>
-              <span className="flex gap-2">
+              <SPAN additionalClasses="text-color-text-2">Status:</SPAN>
+              <span className="flex gap-2 text-color-text-2">
                 {item.lastTask ? `taskId: ${item.lastTask}` : 'Active'}
                 <p
                   className={`font-bold ${

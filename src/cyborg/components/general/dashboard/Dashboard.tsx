@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import nondeployed from '../../../../../public/assets/icons/nondeployed.png'
-import deploymentsTab from '../../../../../public/assets/icons/deployment-logo.png'
+import deploymentsTab from '../../../../../public/assets/icons/deployments-logo.svg'
 import Button from '../buttons/Button'
 import { TbRefresh } from 'react-icons/tb'
 import NodeList from './NodeList'
@@ -23,7 +23,7 @@ const PlaceholderIfNoNodes: React.FC<PlaceholderProps> = ({
       <img src={nondeployed} alt="No Node Deployed" />
       <div className="text-white flex flex-col">
         <p>Currently, you don't have any nodes.</p>
-        <button onClick={() => addNode(true)} className="hover:text-cb-green">
+        <button onClick={() => addNode(true)} className="hover:text-color-foreground">
           <u>Add your first node</u>
         </button>
       </div>
@@ -80,7 +80,7 @@ const Dashboard: React.FC = () => {
       } transition-all duration-500 ease-in-out`}
     >
       <div className="w-full h-full justify-self-start flex flex-col">
-        <div className="flex items-center justify-between mx-2 text-white">
+        <div className="flex items-center justify-between mx-2 text-color-text-1">
           <div
             className={`flex items-center ${
               sidebarIsActive ? 'ml-0' : 'ml-burger-btn-offset'
@@ -91,7 +91,7 @@ const Dashboard: React.FC = () => {
               <h3 className="mb-0">
                 {isProvider ? 'Your Nodes' : 'Deployments'}
               </h3>
-              <p className="hidden sm:block text-white text-opacity-70">
+              <p className="hidden sm:block text-color-text-1 text-opacity-70">
                 Dashboard / Node List
               </p>
             </div>

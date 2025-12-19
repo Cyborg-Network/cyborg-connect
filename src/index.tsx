@@ -183,9 +183,9 @@ root.render(
                     reverseOrder={false}
                     toastOptions={{
                         style: {
-                          background: 'var(--cb-gray-600)',
+                          background: 'var(--color-background-2)',
                           color: 'white',
-                          border: '1px solid var(--cb-green)'
+                          border: '1px solid var(--color-foreground)'
                         }
                       }}
                   />

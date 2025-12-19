@@ -52,18 +52,18 @@ const RemoveNodeModal: React.FC<Props> = ({ nodeInfo, onCancel }: Props) => {
           <div>
             After the node has been removed it will need to be registered again.
           </div>
-          <Separator colorClass={'bg-cb-gray-500'} />
+          <Separator colorClass={'bg-color-background-3'} />
           <div>
             <div>Worker ID: {nodeInfo.id.toString()}</div>
           </div>
-          <Separator colorClass={'bg-cb-gray-500'} />
+          <Separator colorClass={'bg-color-background-3'} />
           <Button
             type="button"
             selectable={false}
             variation="primary"
             additionalClasses="w-full"
             onClick={e => submitTransaction()}
-            //className='flex w-1/2 items-center text-cb-gray-500 self-center justify-center gap-1 size-30 py-3 px-6 rounded-md bg-cb-green focus:bg-cb-gray-500 focus:text-cb-green'
+            //className='flex w-1/2 items-center text-color-background-3 self-center justify-center gap-1 size-30 py-3 px-6 rounded-md bg-color-foreground focus:bg-color-background-3 focus:text-color-foreground'
           >
             Remove
           </Button>

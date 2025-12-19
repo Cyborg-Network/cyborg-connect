@@ -100,8 +100,8 @@ const Map: React.FC<MapProps> = ({
               x2="100%"
               y2="100%"
             >
-              <stop offset="0%" stopColor="#455445" stopOpacity={1} />
-              <stop offset="100%" stopColor="#576257" stopOpacity={1} />
+              <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity={.8} />
+              <stop offset="100%" stopColor="var(--color-foreground)" stopOpacity={.4} />
             </linearGradient>
 
             {/* Marker shadow */}
@@ -121,7 +121,7 @@ const Map: React.FC<MapProps> = ({
               />
             </filter>
           </defs>
-          <Geographies fill="#2C3631" geography={topoJson}>
+          <Geographies style={{ fill: 'var(--color-foreground)' }} geography={topoJson}>
             {({ geographies }) =>
               geographies.map(geo => (
                 <Geography

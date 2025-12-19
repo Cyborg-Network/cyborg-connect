@@ -39,8 +39,8 @@ type ToastContextType = {
     showToast: (msg: ToastMessage) => void 
 }
 
-const postClass: string = "bg-green-400 bg-opacity-15 text-white border border-green-500 rounded-lg p-4 relative"
-const errorPostClass: string = "bg-red-400 bg-opacity-15 text-white border border-red-500 rounded-lg p-4 relative"
+const postClass: string = "bg-green-400 bg-opacity-15 text-color-text-1 border border-green-500 rounded-lg p-4 relative"
+const errorPostClass: string = "bg-red-400 bg-opacity-15 text-color-text-1 border border-red-500 rounded-lg p-4 relative"
 
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined)
@@ -89,7 +89,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
                         m.type === "tx" && m.action
                         ? 
                         <Toast.Action onClick={() => m.action.fn()} altText={m.action.text}>
-                            <div className="flex items-center font-bold text-lg hover:text-cb-green">{m.action.text}<TiArrowRight/></div>
+                            <div className="flex items-center font-bold text-lg hover:text-color-foreground">{m.action.text}<TiArrowRight/></div>
                         </Toast.Action>
                         : <></>
                     }

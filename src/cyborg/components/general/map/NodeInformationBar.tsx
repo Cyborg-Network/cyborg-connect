@@ -13,11 +13,11 @@ interface Props {
   distance: number
   returntoNearestNode: () => void
   onNavigate: () => void
-  handleManualSelection: (nodeId: Miner["id"], nodeOwner: string) => void
+  handleManualSelection: (nodeId: Miner["id"]) => void
 }
 
 interface ManualSelectionModalProps {
-  handleManualSelection: (nodeId: Miner["id"], nodeOwner: string) => void
+  handleManualSelection: (nodeId: Miner["id"]) => void
 }
 
 const NodeInformationBar: React.FC<Props> = ({
@@ -35,13 +35,12 @@ const NodeInformationBar: React.FC<Props> = ({
   }: ManualSelectionModalProps) => {
     const [nodeInfo, setNodeInfo] = useState<{
       id: null | Miner["id"]
-      owner: null | string
-    }>({ id: null, owner: null })
+    }>({ id: null })
 
     const returnManualSelection = () => {
       // const bigIntId = safeNumberToBigIntTransform(nodeInfo.id)
-      if (nodeInfo.id && nodeInfo.owner) {
-        handleManualSelection(nodeInfo.id, nodeInfo.owner)
+      if (nodeInfo.id) {
+        handleManualSelection(nodeInfo.id)
         setManualSelectionModalIsActive(false)
       } else {
         toast('Please enter all of the required information!')
@@ -53,20 +52,14 @@ const NodeInformationBar: React.FC<Props> = ({
         additionalClasses="flex flex-col gap-4 items-center"
         onOutsideClick={() => setManualSelectionModalIsActive(false)}
       >
-        <div>Please enter the worker ID and the worker owner:</div>
+        <div>Please enter the Miner ID</div>
         <input
-          value={nodeInfo.id.toString() || ''}
+          value={nodeInfo.id ? nodeInfo.id.toString() : ''}
           onChange={e =>
             setNodeInfo({ ...nodeInfo, id: e.target.value as string })
           }
           placeholder="Worker ID"
-          className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-        />
-        <input
-          value={nodeInfo.owner}
-          onChange={e => setNodeInfo({ ...nodeInfo, owner: e.target.value })}
-          placeholder="Worker Owner"
-          className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+          className="focus:border-color-foreground text-color-background-2 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
         />
         <div className="flex gap-4">
           <Button
@@ -94,13 +87,13 @@ const NodeInformationBar: React.FC<Props> = ({
 
   return (
     <>
-      <div className="p-3 grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4 items-center justify-evenly text-lg text-cb-green absolute w-11/12 h-fit left-1/2 -translate-x-1/2 bottom-20 text-white rounded-lg bg-gray-300 bg-opacity-10 backdrop-blur-md shadow-glass-shadow">
-        <div className="font-bold">{`Worker Location: ${node.location.latitude} ${node.location.longitude}`}</div>
-        <div className="font-bold flex flex-col sm:flex-row">
-          <div>Owner: </div>
-          <TruncatedAddress address={node.owner} screenWidth={3000} />
+      <div className="p-3 grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4 items-center justify-evenly text-lg absolute w-11/12 h-fit left-1/2 -translate-x-1/2 bottom-20 rounded-lg bg-gray-300 bg-opacity-10 backdrop-blur-md shadow-glass-shadow text-color-text-2">
+        <div className="font-bold text-color-text-2">{`Worker Location: ${node.location.latitude} ${node.location.longitude}`}</div>
+        <div className="font-bold flex flex-col sm:flex-row text-white">
+          <div className='text-color-text-2'>Owner: </div>
+          <TruncatedAddress additionalClasses='text-color-text-2' address={node.owner} screenWidth={3000} />
         </div>
-        <div className="font-bold">{`Distance to you: ${distance} kilometers`}</div>
+        <div className="font-bold text-color-text-2">{`Distance to you: ${distance} kilometers`}</div>
         <Button
           type="button"
           selectable={false}

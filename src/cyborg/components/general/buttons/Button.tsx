@@ -68,17 +68,17 @@ const Button: React.FC<Props> = ({
       content = children
       break
     case 'cancel':
-      className = `bg-cb-gray-400 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center hover:text-cb-green ${additionalClasses}`
+      className = `bg-color-background-4 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center hover:text-color-foreground ${additionalClasses}`
       content = <IoClose size={20} />
       break
     case 'warning':
-      className = `size-30 border-red-500 border text-white py-3 px-6 rounded-md btn-warn ${returnButtonClass(
+      className = `size-30 border-red-500 border text-color-text-1 py-3 px-6 rounded-md btn-warn ${returnButtonClass(
         'warn'
       )} ${additionalClasses}`
       content = children
       break
     case 'inactive':
-      className = `bg-cb-gray-400 size-30 text-gray-500 py-3 px-6 rounded-md border border-gray-500 ${additionalClasses}`
+      className = `bg-color-background-4 size-30 text-gray-500 py-3 px-6 rounded-md border border-gray-500 ${additionalClasses}`
       content = children
       break
     default:

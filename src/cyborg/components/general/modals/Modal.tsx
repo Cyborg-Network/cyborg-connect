@@ -19,7 +19,7 @@ const Modal: React.FC<Props> = ({
       onClick={onOutsideClick}
     >
       <div
-        className={`${additionalClasses} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white bg-cb-gray-700 2xl:w-1/5 xl:w-2/5 lg:w-3/5 sm:w-1/2 w-5/6 rounded-lg p-16`}
+        className={`${additionalClasses} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white bg-color-background-1 2xl:w-1/5 xl:w-2/5 lg:w-3/5 sm:w-1/2 w-5/6 rounded-lg p-16`}
         onClick={e => e.stopPropagation()}
       >
         {children}

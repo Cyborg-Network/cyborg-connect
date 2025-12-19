@@ -4,7 +4,7 @@ import './PageWrapper.styles.css'
 const PageWrapper = ({ children }) => {
   return (
     <div className="h-screen w-screen">
-      <div className="-z-50 h-screen w-screen fixed left-0 top-0 bg-cb-gray-700" />
+      <div className="-z-50 h-screen w-screen fixed left-0 top-0 bg-color-background-1" />
       <div className="-z-30 h-full aspect-square fixed rounded-full background-1" />
       <div className="-z-30 h-2/3 aspect-square fixed rounded-full background-1" />
       <div className="-z-20 h-5/6 aspect-square rounded-full fixed background-2" />

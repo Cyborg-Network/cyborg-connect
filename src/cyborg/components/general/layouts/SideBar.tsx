@@ -1,5 +1,5 @@
 //import React, { useEffect, useState } from 'react'
-import logo from '../../../../../public/assets/Logo.png'
+import logo from '../../../../../public/assets/logos/cyborg_logo_white.svg'
 //import profile from '../../../../../public/assets/icons/profile.png'
 import { IoMenu } from 'react-icons/io5'
 //import { BsThreeDots } from 'react-icons/bs'
@@ -64,21 +64,18 @@ const SideBar = () => {
   return (
     <>
       <div
-        className={`w-80 fixed left-0 top-0 flex flex-col bg-cb-gray-600 h-screen justify-between transform ${returnSidebarClass} transition-transform duration-500 z-50`}
+        className={`w-80 fixed left-0 top-0 flex flex-col bg-color-background-4 h-screen justify-between transform ${returnSidebarClass} transition-transform duration-500 z-50`}
       >
         <div>
           <span className="flex items-center justify-between p-4 pr-6">
-            <div className="flex gap-4 items-center flex-shrink-0">
-              <button></button>
-              <Link to={ROUTES.CHOOSE_PATH}>
-                <img src={logo} className="h-10S" />
-              </Link>
-            </div>
+            <Link to={ROUTES.CHOOSE_PATH} className="w-full">
+              <img src={logo} className="w-full h-full" />
+            </Link>
             <div
               onClick={() => setSidebarIsActive(!sidebarIsActive)}
-              className={`hover:cursor-pointer absolute right-4 transform ${returnButtonClass} transition-transform duration-500 border border-cb-gray-400 flex items-center justify-center size-10 bg-cb-gray-700 rounded-md`}
+              className={`hover:cursor-pointer absolute right-4 transform ${returnButtonClass} transition-transform duration-500 border border-color-background-4 flex items-center justify-center size-10 bg-color-background-3 rounded-md`}
             >
-              <IoMenu size={27} color="gray" />
+              <IoMenu size={27} color="var(--color-background-4)" />
             </div>
           </span>
           <ConnectWalletComponent />
@@ -103,7 +100,7 @@ const SideBar = () => {
             </ul>
           </span>
           {/*
-          <span className="flex flex-col p-4 bg-cb-gray-700 m-4 rounded-md">
+          <span className="flex flex-col p-4 bg-color-background-1 m-4 rounded-md">
             <div className="flex justify-between items-center pb-6">
               <div className="flex gap-4 justify-between">
                 <a>
