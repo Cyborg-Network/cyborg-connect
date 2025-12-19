@@ -127,8 +127,6 @@ const SelectNodePage: React.FC = () => {
     setDeploymentStage(DEPLOYMENT_STAGES.DEPLOYMENT)
   }
 
-  
-
   const toggleNodeSelection = combinedId => {
     const index = selectedNodes.findIndex(item => {
       return combinedId.id === item
@@ -146,10 +144,10 @@ const SelectNodePage: React.FC = () => {
   return (
     <div className="h-screen w-screen grid">
       <div className="text-white bg-transparent p-0 flex flex-col gap-4 2xl:w-2/5 xl:w-3/5 lg:w-4/6 sm:w-4/5 w-11/12 self-center justify-self-center my-24">
-        <div className="flex justify-between bg-cb-gray-600 p-3 sm:p-8 rounded-lg">
+        <div className="flex justify-between bg-color-background-2 p-3 sm:p-8 rounded-lg">
           <div className="flex justify-between w-full">
             <div className='flex gap-2'>
-              <div className="w-16 h-16 p-2 rounded-full bg-cb-gray-500">
+              <div className="w-16 h-16 p-2 rounded-full bg-color-background-4">
                 <img
                   className="h-full aspect-square"
                   alt="Service"
@@ -157,12 +155,12 @@ const SelectNodePage: React.FC = () => {
                 />
               </div>
               <div className="flex flex-col justify-center">
-                <div className="font-bold text-xl">{service.name}</div>
-                <div className="text-cb-green text-lg">Cyborg Miner</div>
+                <div className="font-bold text-xl text-color-text-2">{service.name}</div>
+                <div className="text-color-foreground text-lg">Cyborg Miner</div>
               </div>
             </div>
             <div className='flex flex-col justify-end'>
-              <div className='text-lg'>Hours left in subscription: {userComputeHours}</div>
+              <div className='text-lg text-color-text-2'>Hours left in subscription: {userComputeHours}</div>
               <Button
                 type="button"
                 selectable={false}
@@ -178,10 +176,10 @@ const SelectNodePage: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="bg-cb-gray-600 rounded-lg p-6 sm:p-16 flex flex-col gap-10 items-center">
+        <div className="bg-color-background-2 rounded-lg p-6 sm:p-16 flex flex-col gap-10 items-center">
           <div className="relative">
-            <div className="text-4xl">Other Nearby Nodes</div>
-            <div className="absolute left-full bottom-0 text-cb-green w-full ml-2">{`${selectedNodes.length} Selected`}</div>
+            <div className="text-4xl text-color-text-2">Other Nearby Nodes</div>
+            <div className="absolute left-full bottom-0 text-color-foreground w-full ml-2">{`${selectedNodes.length} Selected`}</div>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {nearbyNodes.map(node => (

@@ -1,30 +1,30 @@
 .background-1 {
-  background-image: radial-gradient(#064137 1%, var(--cb-gray-700));
+  background-image: radial-gradient(var(--color-foreground) 1%, var(--color-background-1));
   animation: bg1 120s linear reverse infinite;
 }
 
 .background-2 {
-  background-image: radial-gradient(#064137 1%, var(--cb-gray-700));
+  background-image: radial-gradient(var(--color-foreground) 1%, var(--color-background-1));
   animation: bg2 170s linear infinite;
 }
 
 .background-3 {
-  background-image: radial-gradient(#0c5e4c 1%, var(--cb-gray-700));
+  background-image: radial-gradient(var(--color-foreground-accent) 1%, var(--color-background-1));
   animation: bg3 180s linear reverse infinite;
 }
 
 .background-4 {
-  background-image: radial-gradient(#085142 1%, var(--cb-gray-700));
+  background-image: radial-gradient(var(--color-foreground-accent-3) 1%, var(--color-background-1));
   animation: bg4 150s linear infinite;
 }
 
 .background-5 {
-  background-image: radial-gradient(#085142 1%, var(--cb-gray-700));
+  background-image: radial-gradient(var(--color-foreground-accent-3) 1%, var(--color-background-1));
   animation: bg5 190s linear reverse infinite;
 }
 
 .background-6 {
-  background-image: radial-gradient(#0c5e4c 1%, var(--cb-gray-700));
+  background-image: radial-gradient(var(--color-foreground-accent-4) 1%, var(--color-background-1));
   animation: bg6 100s linear infinite;
 }
 

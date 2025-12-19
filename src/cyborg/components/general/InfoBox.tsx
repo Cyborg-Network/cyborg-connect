@@ -13,11 +13,11 @@ const InfoBox: React.FC<Props> = ({ children }: Props) => {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative rounded-full bg-cb-gray-70 p-1 border border-white text-white"
+      className="relative rounded-full p-0.5 border border-color-text-1 text-color-text-1"
     >
       <BsQuestion size={16} />
       {isHovered ? (
-        <div className="absolute top-full left-full rounded-lg border border-cb-gray-400 bg-cb-gray-600 text-white w-96 p-6 text-lg">
+        <div className="absolute top-full left-full rounded-lg border border-2 border-color-background-4 bg-color-background-2 text-color-text-2 w-96 p-6 text-lg">
           {children}
         </div>
       ) : (

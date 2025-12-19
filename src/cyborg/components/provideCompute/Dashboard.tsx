@@ -18,7 +18,7 @@ function AddNodeButton({ addNode }) {
   return (
     <button
       onClick={() => addNode(true)}
-      className="flex items-center gap-1 size-30 text-white py-3 px-6 rounded-md bg-cb-green focus:bg-cb-gray-400"
+      className="flex items-center gap-1 size-30 text-white py-3 px-6 rounded-md bg-color-foreground focus:bg-color-background-4"
     >
       <FiPlusCircle size={18} /> Add Node
     </button>
@@ -33,7 +33,7 @@ function NoNodes({ addNode }) {
       </a>
       <div className="text-white flex flex-col">
         <p>Currently, you don't have any nodes.</p>
-        <button onClick={() => addNode(true)} className="hover:text-cb-green">
+        <button onClick={() => addNode(true)} className="hover:text-color-foreground">
           <u>Add your first node</u>
         </button>
       </div>
@@ -44,9 +44,9 @@ function NoNodes({ addNode }) {
 //alignment should be either 'items-center' or undefined, this will be better with ts
 function Modal({ children, alignment }) {
   return (
-    <div className="fixed bg-cb-gray-400 backdrop-blur-lg bg-opacity-30 h-full w-full left-0 top-0 z-50 grid justify-center items-center">
+    <div className="fixed bg-color-background-4 backdrop-blur-lg bg-opacity-30 h-full w-full left-0 top-0 z-50 grid justify-center items-center">
       <div
-        className={`${alignment} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 text-white bg-cb-gray-700 2xl:w-1/5 xl:w-2/5 lg:w-3/5 sm:w-1/2 w-5/6 rounded-lg p-16`}
+        className={`${alignment} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 text-white bg-color-background-1 2xl:w-1/5 xl:w-2/5 lg:w-3/5 sm:w-1/2 w-5/6 rounded-lg p-16`}
       >
         {children}
       </div>
@@ -63,12 +63,12 @@ function AddNodeModal({ addNode }) {
         <h3>Deploy Master Node</h3>
         <button
           onClick={() => addNode(false)}
-          className="bg-cb-gray-400 rounded-full h-fit p-1.5 aspect-square hover:text-cb-green"
+          className="bg-color-background-4 rounded-full h-fit p-1.5 aspect-square hover:text-color-foreground"
         >
           <IoClose size={20} />
         </button>
       </div>
-      <div className="h-1 border-t border-cb-gray-500 w-full" />
+      <div className="h-1 border-t border-color-background-3 w-full" />
       <div className="relative h-fit">
         <input
           type="text"
@@ -76,21 +76,21 @@ function AddNodeModal({ addNode }) {
           onChange={e => {
             setDeployCommand(e.target.value)
           }}
-          className="w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none"
+          className="w-full p-3.5 bg-color-background-3 border border-color-background-2 text-white rounded-lg focus:border-color-foreground focus:ring-color-foreground focus:outline-none"
           required
         />
         <CopyToClipboard text={deployCommand}>
-          <button className="absolute rounded-lg bg-cb-gray-400 focus:text-cb-green right-2 top-1/2 -translate-y-1/2">
+          <button className="absolute rounded-lg bg-color-background-4 focus:text-color-foreground right-2 top-1/2 -translate-y-1/2">
             <IoMdCopy size={25} />
           </button>
         </CopyToClipboard>
       </div>
-      <div className="h-1 border-t border-cb-gray-500 w-full" />
+      <div className="h-1 border-t border-color-background-3 w-full" />
       <button
         onClick={() => {
           alert('Not yet implemented')
         }}
-        className="flex w-1/2 items-center text-cb-gray-500 self-center justify-center gap-1 size-30 py-3 px-6 rounded-md bg-cb-green focus:bg-cb-gray-500 focus:text-cb-green"
+        className="flex w-1/2 items-center text-color-background-3 self-center justify-center gap-1 size-30 py-3 px-6 rounded-md bg-color-foreground focus:bg-color-background-3 focus:text-color-foreground"
       >
         Deploy
       </button>
@@ -110,12 +110,12 @@ function WaitingForNodeModal() {
 function SuccessfulDeployModal() {
   return (
     <Modal alignment={'items-center'}>
-      <div className="grid justify-center items-center rounded-full w-32 aspect-square bg-cb-gray-600">
-        <div className="grid justify-center items-center rounded-full w-24 aspect-square bg-cb-gray-400 text-cb-green">
+      <div className="grid justify-center items-center rounded-full w-32 aspect-square bg-color-background-2">
+        <div className="grid justify-center items-center rounded-full w-24 aspect-square bg-color-background-4 text-color-foreground">
           <FaCheck size={50} />
         </div>
       </div>
-      <div className="text-cb-green text-4xl">Success!</div>
+      <div className="text-color-foreground text-4xl">Success!</div>
       <div className="text-3xl">Your master node is connected.</div>
     </Modal>
   )
@@ -146,13 +146,13 @@ function NodeList({ nodes, taskMetadata }) {
               onClick={() => {
                 return
               }}
-              className={`hover:text-cb-green hover:font-bold hover:cursor-pointer ${
+              className={`hover:text-color-foreground hover:font-bold hover:cursor-pointer ${
                 lastTask === item.lastTask
-                  ? 'p-1 border border-transparent bg-gradient-to-r from-cb-green via-yellow-500 to-cb-green bg-clip-border animated-border'
+                  ? 'p-1 border border-transparent bg-gradient-to-r from-color-foreground via-yellow-500 to-color-foreground bg-clip-border animated-border'
                   : ''
               }`}
             >
-              <span className="flex justify-between w-full items-center py-4 px-5 bg-cb-gray-400">
+              <span className="flex justify-between w-full items-center py-4 px-5 bg-color-background-4">
                 <ul className="grid grid-cols-4 w-full items-center">
                   <li className="flex items-center gap-3]">
                     <a>
@@ -168,7 +168,7 @@ function NodeList({ nodes, taskMetadata }) {
                   <li>{`${item.api.domain}`}</li>
                   <li
                     className={`flex gap-2 ${
-                      item.status ? 'text-cb-green' : 'text-red-600'
+                      item.status ? 'text-color-foreground' : 'text-red-600'
                     }`}
                   >
                     {item.lastTask ? `taskId: ${item.lastTask}` : 'idle'}
@@ -215,7 +215,7 @@ function Dashboard() {
   } = useUserWorkersQuery(isProvider, "executableWorkers");
 
   return (
-    <div className="h-screen bg-cb-gray-700 flex flex-col ">
+    <div className="h-screen bg-color-background-1 flex flex-col ">
       <div className="flex items-center justify-between mx-2 text-white">
         <div className="flex items-center">
           <img src={deploymentsTab} />

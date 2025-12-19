@@ -18,7 +18,7 @@ const ChoosePath: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4 items-center justify-center">
-      <div className="text-white text-3xl font-bold mb-2">Choose Your Path</div>
+      <div className="text-color-text-1 text-3xl font-bold mb-2">Choose Your Path</div>
       <div className="flex gap-4">
         <Button
           type="button"

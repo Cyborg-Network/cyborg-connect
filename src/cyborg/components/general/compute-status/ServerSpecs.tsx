@@ -13,18 +13,18 @@ export const ServerSpecs: React.FC<ServerSpecsProps> = ({
   uptime,
 }: ServerSpecsProps) => {
   return (
-    <div className="bg-cb-gray-600 rounded-lg w-full h-full">
-      <div className="flex items-center justify-between bg-gradient-to-b from-cb-gray-400 p-6 rounded-lg">
-        <div className="font-thin">Server Specifications</div>
-        <div className="rounded-full bg-cb-gray-400 border border-gray-500 py-1 px-3 flex items-center">
+    <div className="bg-color-background-2 rounded-lg w-full h-full">
+      <div className="flex items-center justify-between bg-gradient-to-b from-color-background-4 p-6 rounded-lg">
+        <div className="font-thin text-color-text-2">Server Specifications</div>
+        <div className="rounded-full bg-color-background-4 border border-gray-500 py-1 px-3 flex items-center text-color-text-2">
           {`Uptime: ${uptime}%`}
         </div>
       </div>
 
       <ul className="px-6 py-3 h-auto">
         <li className="flex justify-between">
-          <p>OS:</p>
-          <p>{specs ? specs.specs.os : null}</p>
+          <p className='text-color-text-2'>OS:</p>
+          <p className='text-color-text-2'>{specs ? specs.specs.os : null}</p>
         </li>
         <li
           className="flex justify-between gap-4"
@@ -36,22 +36,22 @@ export const ServerSpecs: React.FC<ServerSpecsProps> = ({
                 }
           }
         >
-          <p>CPU:</p>
-          <p className="truncate">{specs ? specs.specs.cpus[0] : null}</p>
+          <p className='text-color-text-2'>CPU:</p>
+          <p className="truncate text-color-text-2">{specs ? specs.specs.cpus[0] : null}</p>
         </li>
         <li className="flex justify-between">
-          <p>Memory:</p>
-          <p>
+          <p className='text-color-text-2'>Memory:</p>
+          <p className='text-color-text-2'>
             {specs ? `~${Math.round(specs.specs.memory / (1024 * 1024))} MB` : null}
           </p>
         </li>
         <li className="flex justify-between">
-          <p>Storage:</p>
-          <p>{specs ? `~${Math.round(specs.specs.disk / 1073741824)} GB` : null}</p>
+          <p className='text-color-text-2'>Storage:</p>
+          <p className='text-color-text-2'>{specs ? `~${Math.round(specs.specs.disk / 1073741824)} GB` : null}</p>
         </li>
         <li className="flex justify-between">
-          <p>Location:</p>
-          <p>
+          <p className='text-color-text-2'>Location:</p>
+          <p className='text-color-text-2'>
             {specs
               ? `
                   ${i32CoordinateToFloatCoordinate(

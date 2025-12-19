@@ -32,7 +32,7 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
   const [worker, setWorker] = useState<UserMiner | null>(null)
   const [selectedGauge, setSelectedGauge] = useState<SelectedGaugeState>({
     name: 'CPU',
-    color: 'var(--gauge-red)',
+    color: 'var(--cyborg-red)',
     data: defaultData,
   })
 
@@ -200,9 +200,9 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
                           ? parseGaugeMetric(usageData.CPU, null)
                           : 1
                       }
-                      fill={'var(--gauge-red)'}
+                      fill={'var(--cyborg-red)'}
                       name={'CPU'}
-                      styleAdditions={'ring-gauge-red bg-gauge-red'}
+                      styleAdditions={'ring-cyborg-red bg-cyborg-red'}
                     />
                   </div>
                   <div className="col-span-1">
@@ -214,9 +214,9 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
                           ? parseGaugeMetric(usageData.RAM, agentSpecs.specs.memory)
                           : 1
                       }
-                      fill={'var(--gauge-green)'}
+                      fill={'var(--cyborg-green)'}
                       name={'RAM'}
-                      styleAdditions={'ring-gauge-green bg-gauge-green'}
+                      styleAdditions={'ring-cyborg-green bg-cyborg-green'}
                     />
                   </div>
                   <div className="col-span-1">
@@ -228,9 +228,9 @@ const ComputeStatus: React.FC<ComputeStatusProps> = ({
                           ? parseGaugeMetric(usageData.DISK, agentSpecs.specs.disk)
                           : 1
                       }
-                      fill={'var(--gauge-yellow)'}
+                      fill={'var(--cyborg-yellow)'}
                       name={'DISK'}
-                      styleAdditions={'ring-gauge-yellow bg-gauge-yellow'}
+                      styleAdditions={'ring-cyborg-yellow bg-cyborg-yellow'}
                     />
                   </div>
                 </>

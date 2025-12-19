@@ -13,7 +13,7 @@ function WarnConfirmModal({ text, onClick, onCancel, isLoading }) {
           ?
           <img className="h-full aspect-square" src={dockdeploy} />
           :
-          <p className="text-lg">{text}</p>
+          <p className="text-lg text-color-text-1">{text}</p>
         }
         <div className='flex gap-3'>
           <Button

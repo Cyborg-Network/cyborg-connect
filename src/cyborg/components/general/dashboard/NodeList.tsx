@@ -15,7 +15,7 @@ const NodeList: React.FC<Props> = ({ nodes, isProvider }: Props) => {
   }, [nodes])
 
   return (
-    <div className="flex flex-col w-full text-white text-opacity-70 ">
+    <div className="flex flex-col w-full text-color-text-1">
       <span
         className={`${nodes.length < 1 ? 'hidden' : ''} flex w-full py-2 px-5`}
       >

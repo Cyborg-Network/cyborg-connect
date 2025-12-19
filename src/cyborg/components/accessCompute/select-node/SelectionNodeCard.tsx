@@ -52,33 +52,33 @@ const SelectionNodeCard: React.FC<Props> = ({
       onClick={() => onClick()}
     >
       <div
-        className={`absolute h-8 grid justify-center items-center rounded-full aspect-square top-4 right-4 border border-cb-gray-400 text-white ${
-          isSelected ? 'bg-cb-green' : 'bg-cb-gray-700'
+        className={`absolute h-8 grid justify-center items-center rounded-full aspect-square top-4 right-4 border border-color-background-4 text-white ${
+          isSelected ? 'bg-color-foreground' : 'bg-color-background-1'
         }`}
       >
         {isSelected ? <FaCheck /> : <></>}
       </div>
       <div className="flex py-3 flex-col gap-6 w-full">
         <div className="flex gap-3 items-center justify-start mr-9">
-          <div className="bg-cb-gray-400 rounded-full p-2 sm:p-4 h-10 w-10 sm:h-16 sm:w-16 grid items-center justify-center">
+          <div className="bg-color-background-4 rounded-full p-2 sm:p-4 h-10 w-10 sm:h-16 sm:w-16 grid items-center justify-center">
             <img src={server} />
           </div>
           <div className="flex flex-col justify-center items-start">
-            <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis">
-              {'Cyborg Miner'}
+            <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis text-color-text-2">
+              Cyborg Miner
             </div>
             <div className="flex gap-2">
               <div className="text-xl font-bold text-white">
                 {`${computeHourPrice}`}
                 <span className="text-gray-400 text-base">ENTT</span>
               </div>
-              <div className="bg-white rounded-lg px-1 py-0.5 text-cb-gray-700 text-xs h-fit w-fit self-center">
+              <div className="bg-white rounded-lg px-1 py-0.5 text-color-text-1 text-xs h-fit w-fit self-center">
                 HOURLY
               </div>
             </div>
           </div>
         </div>
-        <Separator colorClass="bg-cb-gray-400" />
+        <Separator colorClass="bg-color-background-4" />
         <div className="grid grid-cols-4 gap-4">
           <div className="text-left">
             <div className="text-gray-500 text-sm">{'CPU'}</div>

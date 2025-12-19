@@ -1,9 +1,9 @@
 .btn-prim {
   background: linear-gradient(
     100deg,
-    var(--cb-green) 40%,
-    #84ffa5 50%,
-    #32b054 60%
+    var(--color-foreground) 40%,
+    var(--color-foreground-accent) 50%,
+    var(--color-foreground) 60%
   );
   background-size: 400% 400%;
   background-position: right;
@@ -26,8 +26,8 @@
 }
 
 .btn-sec {
-  border: 1px solid var(--cb-gray-500);
-  background-color: var(--cb-gray-600);
+  border: 1px solid var(--color-background-3);
+  background-color: var(--color-background-2);
 }
 
 .btn-sec-on {
@@ -43,8 +43,8 @@
 }
 
 .btn-sec-selected {
-  border-color: var(--cb-green);
-  background-color: var(--cb-gray-400);
+  border-color: var(--color-foreground);
+  background-color: var(--color-background-4);
 }
 
 .btn-warn {
@@ -94,22 +94,22 @@
 
 @keyframes border-bg-highlight-on {
   0% {
-    border-color: var(--cb-gray-500);
-    background-color: var(--cb-gray-600);
+    border-color: var(--color-background-3);
+    background-color: var(--color-background-2);
   }
   100% {
-    border-color: var(--cb-green);
-    background-color: var(--cb-gray-400);
+    border-color: var(--color-foreground);
+    background-color: var(--color-background-4);
   }
 }
 
 @keyframes border-bg-highlight-off {
   0% {
-    border-color: var(--cb-green);
-    background-color: var(--cb-gray-400);
+    border-color: var(--color-foreground);
+    background-color: var(--color-background-4);
   }
   100% {
-    border-color: var(--cb-gray-500);
-    background-color: var(--cb-gray-600);
+    border-color: var(--color-background-3);
+    background-color: var(--color-background-2);
   }
 }

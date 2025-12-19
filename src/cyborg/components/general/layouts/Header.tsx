@@ -4,7 +4,7 @@ import profile from '../../../public/assets/icons/profile.png'
 
 const Header = () => {
   return (
-    <div className="flex gap-10 lg:gap-20 justify-between bg-cb-gray-700 border-b border-cb-gray-400 py-4">
+    <div className="flex gap-10 lg:gap-20 justify-between bg-color-background-1 border-b border-color-background-4 py-4">
       <div className="flex gap-4 items-center flex-shrink-0">
         <button></button>
         <a href="/cyborg-connect">

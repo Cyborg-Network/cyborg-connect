@@ -16,7 +16,7 @@ const ChooseServices: React.FC = () => {
 
   return (
     <div className="relative py-20 flex flex-col items-center justify-center md:py-0">
-      <h1 className="text-white">Choose Services</h1>
+      <h1 className="text-color-text-1">Choose Services</h1>
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row gap-4 p-2">
         <ServiceCard
           logo={SERVICES.CYCL.icon}
@@ -40,7 +40,7 @@ const ChooseServices: React.FC = () => {
         />
         */}
       </div>
-      <h4 className='text-white'>More coming soon...</h4>
+      <h4>More coming soon...</h4>
     </div>
   )
 }

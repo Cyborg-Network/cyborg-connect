@@ -30,13 +30,13 @@ const FirstNodeDeployModal: React.FC<Props> = ({
         onClick={onCancel}
       />
       <div className="text-2xl font-bold">Instructions</div>
-      <Separator colorClass="bg-cb-gray-500" />
+      <Separator colorClass="bg-color-background-3" />
       <div className="text-lg">
         To deploy your first node you'll need to install some software on the
         machine that is supposed to act as the node. The following screens will
         guide you through the process of deploying your first node.
       </div>
-      <Separator colorClass="bg-cb-gray-500" />
+      <Separator colorClass="bg-color-background-3" />
       <Button
         type="button"
         selectable={false}

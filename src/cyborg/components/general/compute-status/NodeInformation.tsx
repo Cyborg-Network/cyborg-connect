@@ -12,7 +12,7 @@ export const NodeInformation: React.FC = () => {
 
   function InformationItem({ name, value, icon }) {
     return (
-      <div className="bg-cb-gray-600 rounded-lg flex justify-between p-6">
+      <div className="bg-color-background-2 rounded-lg flex justify-between p-6">
         <div className="flex flex-col gap-4">
           <div className="text-2xl">{name}</div>
           <div className="text-3xl">{value}</div>
