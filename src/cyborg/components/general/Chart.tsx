@@ -95,10 +95,10 @@ const Chart: React.FC<Props> = ({ color, data }: Props) => {
             />
           }
           style={{
-            axis: { stroke: 'var(--cb-gray-400)' },
-            ticks: { stroke: 'var(--cb-gray-400)' },
+            axis: { stroke: 'var(--color-background-4)' },
+            ticks: { stroke: 'var(--color-background-4)' },
             tickLabels: { fontSize: dimensions.fontSize, fill: 'white' },
-            grid: { stroke: 'var(--cb-gray-400)', strokeWidth: 0.5 },
+            grid: { stroke: 'var(--color-background-4)', strokeWidth: 0.5 },
           }}
         />
         <VictoryAxis
@@ -107,10 +107,10 @@ const Chart: React.FC<Props> = ({ color, data }: Props) => {
             <VictoryLabel dx={dimensions.Ydx} textAnchor="middle" />
           }
           style={{
-            axis: { stroke: 'var(--cb-gray-400)' }, // Custom color for the axis line
-            ticks: { stroke: 'var(--cb-gray-400)' },
+            axis: { stroke: 'var(--color-background-4)' }, // Custom color for the axis line
+            ticks: { stroke: 'var(--color-background-4)' },
             tickLabels: { fontSize: dimensions.fontSize, fill: 'white' },
-            grid: { stroke: 'var(--cb-gray-400)', strokeWidth: 0.5 },
+            grid: { stroke: 'var(--color-background-4)', strokeWidth: 0.5 },
           }}
           tickFormat={tick => `${tick}${data.yUnits.name}`}
         />

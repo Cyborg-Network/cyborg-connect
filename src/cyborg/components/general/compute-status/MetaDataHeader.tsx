@@ -117,7 +117,7 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
         sidebarIsActive ? 'md:ml-0' : 'md:ml-6'
       } transition-all duration-500 ease-in-out grid gap-2 justify-end md:flex md:justify-between`}
     >
-      <div className="flex text-white gap-3 flex-row-reverse md:flex-row flex-nowrap items-center">
+      <div className="flex text-color-text-1 gap-3 flex-row-reverse md:flex-row flex-nowrap items-center">
         <div className="rounded-md h-24 aspect-square p-3 flex items-center justify-center">
           <img src={ service ? service.icon : comingsoon } />
         </div>
@@ -138,8 +138,8 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
       </div>
       <div className="grid gap-2 text-right justify-end md:items-center items-end mx-2 text-white">
         <div className="flex items-center gap-2 lg:text-xl justify-end">
-          <div className="text-lg">Node Name: </div>
-          <div className="text-cb-green">{id}</div>
+          <div className="text-lg text-color-text-1">Node Name: </div>
+          <div className="text-color-foreground">{id}</div>
         </div>
         <div className="flex flex-col-reverse items-end justify-end md:flex-row md:items-center gap-3 text-lg">
           <Button
@@ -160,13 +160,11 @@ export const MetaDataHeader: React.FC<MetaDataHeaderProps> = ({
           >
             Stop Task
           </Button>
-          <div className="text-opacity-50 text-white">
+          <div className="text-color-text-1">
             Domain:{' '}
-            <span className="text-white text-opacity-100">
-              {domain.asText()}
-            </span>
+            {domain.asText()}
           </div>
-          <div className="bg-cb-gray-600 w-fit text-md rounded-full text-white">
+          <div className="bg-color-background-2 w-fit text-md rounded-full text-white">
             <div className={`h-full w-fit rounded-full border ${styles.bg} ${styles.border} bg-opacity-15 flex  gap-2 py-1 px-3 items-center`}>
               <div className={`h-3 aspect-square rounded-full ${styles.dot}`}/>
               <div>{`${status.type}, Last Check: ${lastCheck}`}</div>

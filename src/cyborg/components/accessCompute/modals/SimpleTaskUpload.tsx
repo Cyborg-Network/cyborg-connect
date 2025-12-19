@@ -89,7 +89,7 @@ const UploadDockerImgURL: React.FC<Props> = ({
             name="url"
             placeholder={'Insert model location'}
             onChange={e => handleUrlChange(e)}
-            className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+            className="focus:border-color-foreground text-color-background-2 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <h5 className="flex">Deposit Compute Hours</h5>
@@ -100,7 +100,7 @@ const UploadDockerImgURL: React.FC<Props> = ({
             name="url"
             placeholder="Insert Number of Compute Hours"
             onChange={e => handleComputeHourDepositChange(e)}
-            className="focus:border-cb-green text-cb-gray-600 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+            className="focus:border-color-foreground text-color-background-2 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
 

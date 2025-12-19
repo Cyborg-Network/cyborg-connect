@@ -13,7 +13,7 @@ const RenderChart: React.FC<RenderChartProps> = ({
   color,
 }: RenderChartProps) => {
   return (
-    <div className="bg-cb-gray-600 rounded-lg w-full">
+    <div className="bg-color-background-2 rounded-lg w-full">
       <div className="flex justify-between pt-6 px-6">
         <div className="text-2xl font-bold">{metric} Usage</div>
         <div>1 Hour</div>

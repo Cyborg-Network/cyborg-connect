@@ -133,7 +133,7 @@ export const GetLogs: React.FC<GetLogsProps> = ({ link, taskId }: GetLogsProps) 
   console.log('logs data: ', data)
   // console.log("display data: ", display)
   return (
-    <code className="flex justify-between h-full text-opacity-75 text-white bg-cb-gray-700 bg-opacity-25 w-full rounded-md p-2">
+    <code className="flex justify-between h-full text-opacity-75 text-white bg-color-background-1 bg-opacity-25 w-full rounded-md p-2">
       <div className="flex flex-col">
         {status && status.conditions && status.conditions.length > 0 ? (
           <div
@@ -182,7 +182,7 @@ const NodeInformation: React.FC = () => {
 
   const InformationItem = ({ name, value, icon }) => {
     return (
-      <div className="bg-cb-gray-600 rounded-lg flex justify-between p-6">
+      <div className="bg-color-background-2 rounded-lg flex justify-between p-6">
         <div className="flex flex-col gap-4">
           <div className="text-2xl">{name}</div>
           <div className="text-3xl">{value}</div>
@@ -203,8 +203,8 @@ const NodeInformation: React.FC = () => {
 
 const ServerSpecs: React.FC<ServerSpecsProps> = ({ spec, metric }: ServerSpecsProps) => {
   return (
-    <div className="bg-cb-gray-600 rounded-lg col-span-1 lg:col-span-2 xl:col-span-1">
-      <div className="bg-gradient-to-b from-cb-gray-400 p-6 rounded-lg">
+    <div className="bg-color-background-2 rounded-lg col-span-1 lg:col-span-2 xl:col-span-1">
+      <div className="bg-gradient-to-b from-color-background-4 p-6 rounded-lg">
         <h4 className="font-thin">Server Specifications</h4>
       </div>
 
@@ -251,7 +251,7 @@ const Terminal: React.FC<TerminalProps> = ({ link, taskId }: TerminalProps) => {
           <img src={widget} />
         </a>
       </div>
-      <div className="bg-gradient-to-b from-cb-gray-400 to-cb-gray-600 p-6 rounded-t-lg">
+      <div className="bg-gradient-to-b from-color-background-4 to-color-background-2 p-6 rounded-t-lg">
         <h4 className="flex justify-center font-thin">Terminal</h4>
       </div>
       <ul className="h-full">
@@ -280,9 +280,9 @@ const GaugeDisplay: React.FC<GaugeDisplayProps> = ({
       onMouseDown={() => onMouseDownHandler()}
       className={`${
         name === selectedGauge.name
-          ? 'bg-cb-gray-400 border border-cb-green'
+          ? 'bg-color-background-4 border border-color-foreground'
           : ''
-      } bg-cb-gray-600 rounded-lg relative`}
+      } bg-color-background-2 rounded-lg relative`}
     >
       <div className="flex items-center p-2 gap-4 absolute top-4 left-4">
         {' '}
@@ -313,7 +313,7 @@ const GaugeDisplay: React.FC<GaugeDisplayProps> = ({
       </div>
       <div
         className={`${
-          name === selectedGauge.name ? 'bg-cb-green' : 'bg-cb-gray-400'
+          name === selectedGauge.name ? 'bg-color-foreground' : 'bg-color-background-4'
         } w-full flex gap-2 text-lg justify-center items-center h-12 rounded-b-lg`}
       >
         <div>View Details</div>
@@ -325,7 +325,7 @@ const GaugeDisplay: React.FC<GaugeDisplayProps> = ({
 
 const RenderChart: React.FC<RenderChartProps> = ({ metric, data, color }: RenderChartProps) => {
   return (
-    <div className="bg-cb-gray-600 rounded-lg p-10 col-span-1 lg:col-span-2 xl:col-span-3">
+    <div className="bg-color-background-2 rounded-lg p-10 col-span-1 lg:col-span-2 xl:col-span-3">
       <div className="flex justify-between">
         <div className="text-2xl font-bold">{metric} Usage</div>
         <div>1 Hour</div>
@@ -349,7 +349,7 @@ const ComputeProviderStatus: React.FC<ComputeProviderProps> = ({ perspective }: 
   const [metrics, setMetrics] = useState()
   const [selectedGauge, setSelectedGauge] = useState({
     name: 'CPU',
-    color: 'var(--gauge-red)',
+    color: 'var(--cyborg-red)',
     data: data1,
   }) //"CPU || "RAM" || "DISK"
 
@@ -412,11 +412,11 @@ const ComputeProviderStatus: React.FC<ComputeProviderProps> = ({ perspective }: 
   console.log('task state: ', taskId)
   // TODO: Retrieve Server Usage Specs to replace gauge values
   return (
-    <div className="h-screen bg-cb-gray-700 flex flex-col overflow-scroll">
+    <div className="h-screen bg-color-background-1 flex flex-col overflow-scroll">
       <div className="flex items-center justify-between mx-2 text-white p-4 px-14">
         <div className="flex items-end gap-2 text-xl">
           <div>Node Name: </div>
-          <div className="text-cb-green">
+          <div className="text-color-foreground">
             {metadata.owner}:{metadata.id}
           </div>
         </div>
@@ -441,9 +441,9 @@ const ComputeProviderStatus: React.FC<ComputeProviderProps> = ({ perspective }: 
                   ? Number(metrics.cpuUsage.usage.slice(0, -1))
                   : 1
               }
-              fill={'var(--gauge-red)'}
+              fill={'var(--cyborg-red)'}
               name={'CPU'}
-              styleAdditions={'ring-gauge-red bg-gauge-red'}
+              styleAdditions={'ring-cyborg-red bg-cyborg-red'}
             />
             <GaugeDisplay
               setAsSelectedGauge={handleSetSelectedGauge}
@@ -453,9 +453,9 @@ const ComputeProviderStatus: React.FC<ComputeProviderProps> = ({ perspective }: 
                   ? Number(metrics.memoryUsage.usage.slice(0, -1))
                   : 1
               }
-              fill={'var(--gauge-green)'}
+              fill={'var(--cyborg-green)'}
               name={'RAM'}
-              styleAdditions={'ring-gauge-green bg-gauge-green'}
+              styleAdditions={'ring-cyborg-green bg-cyborg-green'}
             />
             <GaugeDisplay
               setAsSelectedGauge={handleSetSelectedGauge}
@@ -465,9 +465,9 @@ const ComputeProviderStatus: React.FC<ComputeProviderProps> = ({ perspective }: 
                   ? Number(metrics.diskUsage[0]['use%'].slice(0, -1))
                   : 1
               }
-              fill={'var(--gauge-yellow)'}
+              fill={'var(--cyborg-yellow)'}
               name={'DISK'}
-              styleAdditions={'ring-gauge-yellow bg-gauge-yellow'}
+              styleAdditions={'ring-cyborg-yellow bg-cyborg-yellow'}
             />
           </>
         )}

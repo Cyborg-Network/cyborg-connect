@@ -165,7 +165,7 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
             onClick={() => onCancel()}
           />
           <div className="text-2xl">Deploy Master Node</div>
-          <Separator colorClass={'bg-cb-gray-500'} />
+          <Separator colorClass={'bg-color-background-3'} />
           <div className="flex w-full justify-center gap-4">
             <Button
               type="button"
@@ -191,14 +191,14 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
               onChange={e => {
                 setDeployIP(e.target.value)
               }}
-              className="w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none"
+              className="w-full p-3.5 bg-color-background-3 border border-color-background-2 text-white rounded-lg focus:border-color-foreground focus:ring-color-foreground focus:outline-none"
               required
             />
             <CopyToClipboard text={deployIP}>
               <button
                 onClick={() => handleCopyToClipboardClick()}
-                className={`absolute rounded-lg bg-cb-gray-400 right-2 top-1/2 -translate-y-1/2 ${
-                  copyToClipboardWasClicked ? 'text-cb-green' : 'text-white'
+                className={`absolute rounded-lg bg-color-background-4 right-2 top-1/2 -translate-y-1/2 ${
+                  copyToClipboardWasClicked ? 'text-color-foreground' : 'text-white'
                 }`}
               >
                 <IoMdCopy size={25} />
@@ -212,7 +212,7 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
               onChange={e =>
                 setNodeLocation({ ...nodeLocation, latitude: e.target.value })
               }
-              className="w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none"
+              className="w-full p-3.5 bg-color-background-3 border border-color-background-2 text-white rounded-lg focus:border-color-foreground focus:ring-color-foreground focus:outline-none"
               required
             />
             <input
@@ -221,7 +221,7 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
               onChange={e =>
                 setNodeLocation({ ...nodeLocation, longitude: e.target.value })
               }
-              className="w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none"
+              className="w-full p-3.5 bg-color-background-3 border border-color-background-2 text-white rounded-lg focus:border-color-foreground focus:ring-color-foreground focus:outline-none"
               required
             />
           </div>
@@ -232,7 +232,7 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
               onChange={e =>
                 setNodeSpecs({ ...nodeSpecs, ram: e.target.value })
               }
-              className="w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none"
+              className="w-full p-3.5 bg-color-background-3 border border-color-background-2 text-white rounded-lg focus:border-color-foreground focus:ring-color-foreground focus:outline-none"
               required
             />
             <input
@@ -241,7 +241,7 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
               onChange={e =>
                 setNodeSpecs({ ...nodeSpecs, storage: e.target.value })
               }
-              className="w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none"
+              className="w-full p-3.5 bg-color-background-3 border border-color-background-2 text-white rounded-lg focus:border-color-foreground focus:ring-color-foreground focus:outline-none"
               required
             />
             <input
@@ -250,18 +250,18 @@ const AddNodeModal: React.FC<Props> = ({ onCancel }: Props) => {
               onChange={e =>
                 setNodeSpecs({ ...nodeSpecs, cpu: e.target.value })
               }
-              className="w-full p-3.5 bg-cb-gray-500 border border-cb-gray-600 text-white rounded-lg focus:border-cb-green focus:ring-cb-green focus:outline-none"
+              className="w-full p-3.5 bg-color-background-3 border border-color-background-2 text-white rounded-lg focus:border-color-foreground focus:ring-color-foreground focus:outline-none"
               required
             />
           </div>
-          <Separator colorClass={'bg-cb-gray-500'} />
+          <Separator colorClass={'bg-color-background-3'} />
           <Button
             type="button"
             variation="primary"
             additionalClasses="w-full"
             onClick={e => handleAddNode(e)}
             selectable={false}
-            //className='flex w-1/2 items-center text-cb-gray-500 self-center justify-center gap-1 size-30 py-3 px-6 rounded-md bg-cb-green focus:bg-cb-gray-500 focus:text-cb-green'
+            //className='flex w-1/2 items-center text-color-background-3 self-center justify-center gap-1 size-30 py-3 px-6 rounded-md bg-color-foreground focus:bg-color-background-3 focus:text-color-foreground'
           >
             Deploy
           </Button>

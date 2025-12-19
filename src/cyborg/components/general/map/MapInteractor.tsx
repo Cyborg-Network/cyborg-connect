@@ -72,8 +72,8 @@ const MapInteractor: React.FC = () => {
     setSelectedNode({ ...node, country: getNodeCountry(node) })
   }
 
-  const handleManualSelection = (id: string, owner: string) => {
-    const node = workers.find(node => node.owner === owner && node.id === id)
+  const handleManualSelection = (id: string) => {
+    const node = workers.find(node => node.id === id)
 
     if (node) {
       setSelectedNode({ ...node, country: getNodeCountry(node) })
@@ -186,7 +186,7 @@ const MapInteractor: React.FC = () => {
         ) : (
           <></>
         )}
-        <div className="h-full rounded-lg bg-cb-gray-600">
+        <div className="h-full rounded-lg bg-[color-mix(in_srgb,var(--color-background-4)_80%,transparent)]">
           <Map
             nodes={workers}
             userCoordinates={userLocation}
@@ -210,7 +210,7 @@ const MapInteractor: React.FC = () => {
             onOutsideClick={() => {}}
             additionalClasses="flex flex-col gap-3"
           >
-            <div className="text-xl font-bold">Choose Location</div>
+            <div className="text-xl font-bold text-color-text-1">Choose Location</div>
             <Button
               type="button"
               variation="primary"
@@ -221,7 +221,7 @@ const MapInteractor: React.FC = () => {
             </Button>
             <div className="font-bold self-center text-lg">or</div>
             <div className="flex gap-2">
-              <div className="text-xl font-bold">Enter Manually</div>
+              <div className="text-xl font-bold text-color-text-1">Enter Manually</div>
               <InfoBox>
                 <div>
                   If your device doesn't support automatic location access, you
@@ -234,7 +234,7 @@ const MapInteractor: React.FC = () => {
             </div>
             <div className="flex gap-2">
               <input
-                className="w-full p-2 rounded-md text-black"
+                className="w-full p-2 rounded-md text-color-text-1 border border-2 border-color-text-1"
                 type="text"
                 placeholder="Latiitude"
                 onChange={e =>
@@ -242,7 +242,8 @@ const MapInteractor: React.FC = () => {
                 }
               />
               <input
-                className="w-full p-2 rounded-md text-black"
+                className="w-full p-2 rounded-md text-color-text-1 border border-2 border-color-text-1"
+
                 type="text"
                 placeholder="Longitude"
                 onChange={e =>

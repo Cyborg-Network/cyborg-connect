@@ -25,7 +25,7 @@ export const ConnectWalletComponent: React.FC = () => {
   if (extensions.length === 0) {
     return (
       <div className="z-40">
-        <div className="bg-cb-gray-500 text-white px-4 py-2 rounded-lg">
+        <div className="bg-color-background-3 text-white px-4 py-2 rounded-lg">
           No wallets detected
         </div>
       </div>
@@ -42,17 +42,17 @@ export const ConnectWalletComponent: React.FC = () => {
             if (wallet) connectExtension(wallet)
           }}
         >
-          <Select.Trigger className="bg-cb-gray-500 border border-cb-green flex items-center gap-2 px-4 py-2 text-white rounded-lg shadow-md hover:bg-cb-gray-400 min-w-[200px]">
+          <Select.Trigger className="bg-color-background-3 border border-color-foreground flex items-center gap-2 px-4 py-2 text-white rounded-lg shadow-md hover:bg-color-background-4 min-w-[200px]">
             <Select.Value placeholder="Select Wallet">
               {selectedExtension ? selectedExtension.title : 'Select Wallet'}
             </Select.Value>
           </Select.Trigger>
-          <Select.Content side="bottom" className="bg-cb-gray-600 rounded-lg shadow-lg overflow-hidden min-w-[200px]">
+          <Select.Content side="bottom" className="bg-color-background-2 rounded-lg shadow-lg overflow-hidden min-w-[200px]">
             {extensions.map(ext => (
               <Select.Item
                 key={ext.title}
                 value={ext.title}
-                className="px-4 py-2 text-white cursor-pointer hover:bg-cb-gray-400"
+                className="px-4 py-2 text-white cursor-pointer hover:bg-color-background-4"
               >
                 <WalletIcon wallet={ext} />
               </Select.Item>
@@ -75,7 +75,7 @@ export const ConnectWalletComponent: React.FC = () => {
           if (wallet) connectExtension(wallet)
         }}
       >
-        <Select.Trigger className="bg-cb-gray-500 border border-cb-green flex items-center gap-2 px-4 py-2 text-white rounded-lg shadow-md hover:bg-cb-gray-400 min-w-[200px]">
+        <Select.Trigger className="bg-color-background-2 border border-color-foreground flex items-center gap-2 px-4 py-2 text-white rounded-lg shadow-md hover:bg-color-background-4 min-w-[200px]">
           <Select.Value placeholder="Select Wallet">
             {selectedExtension 
               ? <WalletIcon wallet={selectedExtension} />
@@ -83,12 +83,12 @@ export const ConnectWalletComponent: React.FC = () => {
             }
           </Select.Value>
         </Select.Trigger>
-        <Select.Content side="bottom" sideOffset={5} align="start" position="popper" className="bg-cb-gray-600 rounded-lg shadow-lg overflow-hidden min-w-[200px]">
+        <Select.Content side="bottom" sideOffset={5} align="start" position="popper" className="bg-color-background-2 rounded-lg shadow-lg overflow-hidden min-w-[200px]">
           {extensions.map(ext => (
             <Select.Item
               key={ext.title}
               value={ext.title}
-              className="px-4 py-2 text-white cursor-pointer hover:bg-cb-gray-400"
+              className="px-4 py-2 text-white cursor-pointer hover:bg-color-background-4"
             >
               <WalletIcon wallet={ext} />
             </Select.Item>
@@ -101,17 +101,17 @@ export const ConnectWalletComponent: React.FC = () => {
           value={account?.address}
           onValueChange={(address) => selectAccount(address)}
         >
-          <Select.Trigger className="bg-cb-gray-500 border border-cb-green flex items-center gap-2 px-4 py-2 text-white rounded-lg shadow-md hover:bg-cb-gray-400 min-w-[200px]">
+          <Select.Trigger className="bg-color-background-2 border border-color-foreground flex items-center gap-2 px-4 py-2 text-white rounded-lg shadow-md hover:bg-color-background-4 min-w-[200px]">
             <Select.Value placeholder="Select Account">
               {account ? account.name || account.address : "Select Account"}
             </Select.Value>
           </Select.Trigger>
-          <Select.Content side="bottom" sideOffset={5} position="popper" className="bg-cb-gray-600 rounded-lg shadow-lg overflow-hidden min-w-[200px]">
+          <Select.Content side="bottom" sideOffset={5} position="popper" className="bg-color-background-2 rounded-lg shadow-lg overflow-hidden min-w-[200px]">
             {accounts.map(acc => (
               <Select.Item
                 key={acc.address}
                 value={acc.address}
-                className="px-4 py-2 text-white cursor-pointer hover:bg-cb-gray-400"
+                className="px-4 py-2 text-white cursor-pointer hover:bg-color-background-4"
               >
                 {acc.name || acc.address}
               </Select.Item>

@@ -17,9 +17,9 @@ const CloseButton: React.FC<Props> = ({
     <button
       type={type}
       onClick={() => onClick()}
-      className={`bg-cb-gray-400 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center hover:text-red-400 ${additionalClasses}`}
+      className={`bg-color-background-4 rounded-full w-8 sm:w-10 aspect-square grid justify-center items-center ${additionalClasses}`}
     >
-      <IoClose size={20} />
+      <IoClose size={20} className="text-red-800 hover:text-red-500" />
     </button>
   )
 }
